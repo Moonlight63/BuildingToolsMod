@@ -1,6 +1,7 @@
 package com.moonlight.buildingtools.items.tools.selectiontool;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -690,6 +691,8 @@ public class RegoinCopyThread implements BlockChangeBase{
 			if(!selectionSet.isEmpty()){
 				System.out.println("Running First Pass");
 				BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue = new BlockChangeQueue(RunFirstPass(), world, true);
+				BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(CalcUndoList(
+						BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.blockpos));
 				currentlyCalculating = false;
 				System.out.println("First Pass Done");
 			}
@@ -697,6 +700,8 @@ public class RegoinCopyThread implements BlockChangeBase{
 				if(!secondPassSet.isEmpty()){
 					System.out.println("Running Second Pass");
 					BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue = new BlockChangeQueue(RunSecondPass(), world, true);
+					BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(CalcUndoList(
+							BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.blockpos));
 					currentlyCalculating = false;
 					System.out.println("Second Pass Done");
 				}
@@ -708,6 +713,8 @@ public class RegoinCopyThread implements BlockChangeBase{
 						System.out.println("Entity Pass Done");
 					}
 					else{
+						if(BuildingTools.getPlayerRegistry().getPlayer(entity).get().undolist.add(new LinkedHashSet<ChangeBlockToThis>((BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList))))
+							BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.clear();
 						System.out.println("Finished");
 						isFinished = true;
 					}
@@ -715,6 +722,37 @@ public class RegoinCopyThread implements BlockChangeBase{
 			}			
 		}
 		
+	}
+	
+	public Set<ChangeBlockToThis> CalcUndoList(Set<ChangeBlockToThis> tempList){
+		Set<ChangeBlockToThis> newTempList = new LinkedHashSet<ChangeBlockToThis>();
+		
+		for(ChangeBlockToThis pos : tempList){
+			newTempList.add(addBlockWithNBT(pos.getBlockPos(), world.getBlockState(pos.getBlockPos()), pos.getBlockPos()));
+		}
+		
+		return newTempList;
+	}
+	
+	public ChangeBlockToThis addBlockWithNBT(BlockPos oldPosOrNull, IBlockState blockState, BlockPos newPos){
+		if(oldPosOrNull != null && world.getTileEntity(oldPosOrNull) != null){
+    		NBTTagCompound compound = new NBTTagCompound();
+    		world.getTileEntity(oldPosOrNull).writeToNBT(compound);
+    		//tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
+    		return new ChangeBlockToThis(newPos, blockState, compound);
+		}
+    	else{
+    		//tempList.add(new ChangeBlockToThis(newPos, blockState));
+    		if(blockState.getBlock() instanceof BlockDoor){
+    			if(blockState.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.LOWER){
+					return new ChangeBlockToThis(newPos, blockState.withProperty(BlockDoor.HINGE, world.getBlockState(oldPosOrNull.up()).getValue(BlockDoor.HINGE)));
+				}
+    			else if(blockState.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.UPPER){
+					return new ChangeBlockToThis(newPos, blockState.withProperty(BlockDoor.FACING, world.getBlockState(oldPosOrNull.down()).getValue(BlockDoor.FACING)));
+				}
+    		}
+    		return new ChangeBlockToThis(newPos, blockState);
+    	}
 	}
 	
 	public boolean isFinished(){

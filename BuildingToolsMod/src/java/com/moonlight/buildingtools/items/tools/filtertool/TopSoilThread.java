@@ -1,10 +1,14 @@
 package com.moonlight.buildingtools.items.tools.filtertool;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
+import net.minecraft.block.BlockDoor;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
@@ -28,6 +32,8 @@ public class TopSoilThread implements IShapeable, BlockChangeBase {
 	protected boolean isFinished = false;
 	protected EntityPlayer entity;
 	protected int count = 0;
+	
+	protected boolean currentlyCalculating = false;
 	
 	//protected List<BlockPos> tempList = new ArrayList<BlockPos>();
 	protected Set<ChangeBlockToThis> tempList = new HashSet<ChangeBlockToThis>();
@@ -55,22 +61,6 @@ public class TopSoilThread implements IShapeable, BlockChangeBase {
 			if(count<4096 && !checkedList.contains(tempPos)){
 				
 				checkedList.add(tempPos);
-				
-				//world.getChunkFromBlockCoords(tempPos.add(origin)).setTerrainPopulated(false);
-				//world.markChunkDirty(bpos.add(origin), new TileEntity() {
-				//});
-				
-				/*if (side == EnumFacing.UP || side == EnumFacing.DOWN){
-					bpos = new BlockPos(tempPos.getX(), side == EnumFacing.UP ? tempPos.getY() : -tempPos.getY(), tempPos.getZ());
-				}
-				else if (side == EnumFacing.NORTH || side == EnumFacing.SOUTH){
-					bpos = new BlockPos(tempPos.getX(), tempPos.getZ(), side == EnumFacing.NORTH ? -tempPos.getY() : tempPos.getY());
-				}
-				else if (side == EnumFacing.EAST || side == EnumFacing.WEST){
-					bpos = new BlockPos(side == EnumFacing.WEST ? -tempPos.getY() : tempPos.getY(), tempPos.getX(), tempPos.getZ());
-				}*/
-				
-				
 				
                 if(bpos.add(origin).getY() > 0 && bpos.add(origin).getY() < 256){
 	                //if(this.world.isAirBlock(blockpos1.up()) && (blockpos1.up()).getY() > 0 && (blockpos1.up()).getY() < 256){
@@ -117,17 +107,59 @@ public class TopSoilThread implements IShapeable, BlockChangeBase {
 	
 	public void perform(){
 		
-		Shapes.Cuboid.generator.generateShape(radiusX, radiusY, radiusZ, this, true);
+		if(!currentlyCalculating){
+			
+			tempList.clear();
+			
+			Shapes.Cuboid.generator.generateShape(radiusX, radiusY, radiusZ, this, true);
+			
+			if(!tempList.isEmpty() && tempList != null){
+				BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(CalcUndoList(tempList));
+				BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue = new BlockChangeQueue(tempList, world, true);
+			}
+			
+			if(count < 4096){
+				if(BuildingTools.getPlayerRegistry().getPlayer(entity).get().undolist.add(new LinkedHashSet<ChangeBlockToThis>((BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList))))
+					BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.clear();
+				isFinished = true;
+			}
+			
+			currentlyCalculating = false;
+			
+			count = 0;
+		}
+
+	}
+	
+	public Set<ChangeBlockToThis> CalcUndoList(Set<ChangeBlockToThis> tempList){
+		Set<ChangeBlockToThis> newTempList = new LinkedHashSet<ChangeBlockToThis>();
 		
-		if(count < 4096){
-			System.out.println("Finished " + count);
-			isFinished = true;
+		for(ChangeBlockToThis pos : tempList){
+			newTempList.add(addBlockWithNBT(pos.getBlockPos(), world.getBlockState(pos.getBlockPos()), pos.getBlockPos()));
 		}
 		
-		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue = new BlockChangeQueue(tempList, world, true);
-		System.out.println(count);
-		count = 0;
-
+		return newTempList;
+	}
+	
+	public ChangeBlockToThis addBlockWithNBT(BlockPos oldPosOrNull, IBlockState blockState, BlockPos newPos){
+		if(oldPosOrNull != null && world.getTileEntity(oldPosOrNull) != null){
+    		NBTTagCompound compound = new NBTTagCompound();
+    		world.getTileEntity(oldPosOrNull).writeToNBT(compound);
+    		//tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
+    		return new ChangeBlockToThis(newPos, blockState, compound);
+		}
+    	else{
+    		//tempList.add(new ChangeBlockToThis(newPos, blockState));
+    		if(blockState.getBlock() instanceof BlockDoor){
+    			if(blockState.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.LOWER){
+					return new ChangeBlockToThis(newPos, blockState.withProperty(BlockDoor.HINGE, world.getBlockState(oldPosOrNull.up()).getValue(BlockDoor.HINGE)));
+				}
+    			else if(blockState.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.UPPER){
+					return new ChangeBlockToThis(newPos, blockState.withProperty(BlockDoor.FACING, world.getBlockState(oldPosOrNull.down()).getValue(BlockDoor.FACING)));
+				}
+    		}
+    		return new ChangeBlockToThis(newPos, blockState);
+    	}
 	}
 	
 	/**

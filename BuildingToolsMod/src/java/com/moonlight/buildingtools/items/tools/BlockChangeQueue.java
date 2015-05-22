@@ -14,7 +14,7 @@ public class BlockChangeQueue {
 	
 	protected World world;
 	protected boolean isFinished = false;
-	protected Set<ChangeBlockToThis> blockpos;
+	public Set<ChangeBlockToThis> blockpos;
 	protected IBlockState blockStateToPlace = Blocks.stone.getDefaultState();
 	protected IBlockState blockStateToReplace = Blocks.air.getDefaultState();
 	protected boolean replaceAll = false;
