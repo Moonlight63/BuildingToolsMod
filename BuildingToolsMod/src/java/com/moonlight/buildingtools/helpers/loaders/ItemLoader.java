@@ -17,9 +17,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBow;
 
 public class ItemLoader {
-	public static Item brushtool;
+	public static Item brushTool;
 	public static Item blockSmoother;
-	public static Item copyTool;
+	public static Item selectionTool;
 	public static Item buildingTool;
 	public static Item tempblockplacer;
 	public static Item filterTool;
@@ -30,14 +30,14 @@ public class ItemLoader {
 	public static Set<Item> itemsToRegister;
 	
 	public static void loadItems(){
-		brushtool = new BrushTool();
-		RegisterHelper.registerItem(brushtool);
+		brushTool = new BrushTool();
+		RegisterHelper.registerItem(brushTool);
 		
 		blockSmoother = new BlockSmoother();
 		RegisterHelper.registerItem(blockSmoother);
 		
-		copyTool = new SelectionTool();
-		RegisterHelper.registerItem(copyTool);
+		selectionTool = new SelectionTool();
+		RegisterHelper.registerItem(selectionTool);
 		
 		buildingTool = new BuildingTool();
 		RegisterHelper.registerItem(buildingTool);
@@ -59,9 +59,9 @@ public class ItemLoader {
 		
 		
 		itemsToRegister = Sets.newHashSet();
-		itemsToRegister.add(brushtool);
+		itemsToRegister.add(brushTool);
 		itemsToRegister.add(blockSmoother);
-		itemsToRegister.add(copyTool);
+		itemsToRegister.add(selectionTool);
 		itemsToRegister.add(buildingTool);
 		itemsToRegister.add(tempblockplacer);
 		itemsToRegister.add(filterTool);

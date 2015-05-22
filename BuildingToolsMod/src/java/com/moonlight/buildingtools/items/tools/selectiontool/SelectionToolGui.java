@@ -63,22 +63,22 @@ public class SelectionToolGui extends GuiScreen{
 		
 		NBTTagCompound heldnbt = SelectionTool.getNBT(player.getHeldItem());
 		
-		buttonList.add(new GuiButton(1, this.width / 2 - 170 / 2, this.height / 2 -10 - 80, 170, 20, "Copy Selection To Clipboard"));
-		buttonList.add(new GuiButton(2, this.width / 2 - 170 / 2, this.height / 2 -10 - 60, 170, 20, "Paste Clipboard"));
-		buttonList.add(new GuiButton(3, this.width / 2 - 170 / 2, this.height / 2 -10 - 40, 170, 20, "Select paste region"));
-		buttonList.add(new GuiButton(4, this.width / 2 - 170 / 2, this.height / 2 -10 - 20, 170, 20, "Rotate 90? " + heldnbt.getInteger("Rotation")));
+		buttonList.add(new GuiButton(1, this.width / 2 - 170 - 1, this.height / 2 -10 - 80, 170, 20, "Copy Selection To Clipboard"));
+		buttonList.add(new GuiButton(2, this.width / 2 - 170 - 1, this.height / 2 -10 - 60, 170, 20, "Paste Clipboard"));
+		buttonList.add(new GuiButton(3, this.width / 2 - 170 - 1, this.height / 2 -10 - 40, 170, 20, "Select paste region"));
+		buttonList.add(new GuiButton(4, this.width / 2 - 170 - 1, this.height / 2 -10 - 20, 170, 20, "Rotate 90? " + heldnbt.getInteger("Rotation")));
 		
-		buttonList.add(new GuiButton(5, this.width / 2 - 170 / 2, this.height / 2 -10 - 0, 170, 20, "Flip X? " + heldnbt.getBoolean("flipX")));
-		buttonList.add(new GuiButton(6, this.width / 2 - 170 / 2, this.height / 2 -10 + 20, 170, 20, "Flip Y? " + heldnbt.getBoolean("flipY")));
-		buttonList.add(new GuiButton(7, this.width / 2 - 170 / 2, this.height / 2 -10 + 40, 170, 20, "Flip Z? " + heldnbt.getBoolean("flipZ")));
-		buttonList.add(new GuiButton(8, this.width / 2 - 170 / 2, this.height / 2 -10 + 60, 170, 20, "Clear all in selection: "));
+		buttonList.add(new GuiButton(5, this.width / 2 - 170 - 1, this.height / 2 -10 - 0, 170, 20, "Flip X? " + heldnbt.getBoolean("flipX")));
+		buttonList.add(new GuiButton(6, this.width / 2 - 170 - 1, this.height / 2 -10 + 20, 170, 20, "Flip Y? " + heldnbt.getBoolean("flipY")));
+		buttonList.add(new GuiButton(7, this.width / 2 - 170 - 1, this.height / 2 -10 + 40, 170, 20, "Flip Z? " + heldnbt.getBoolean("flipZ")));
+		buttonList.add(new GuiButton(8, this.width / 2 - 170 - 1, this.height / 2 -10 + 60, 170, 20, "Clear selection"));
 		
 		
-		buttonList.add(new GuiButton(9, this.width / 2 - 170*4 / 2, this.height / 2 -10 - 0, 170, 20, "Repeatitions:  " + heldnbt.getInteger("repeat")));
-		buttonList.add(new GuiButton(10, this.width / 2 - 170*4 / 2, this.height / 2 -10 + 20, 170, 20, "X Movment: " + heldnbt.getInteger("repeatMovmentX")));
-		buttonList.add(new GuiButton(11, this.width / 2 - 170*4 / 2, this.height / 2 -10 + 40, 170, 20, "Y Movment: " + heldnbt.getInteger("repeatMovmentY")));
-		buttonList.add(new GuiButton(12, this.width / 2 - 170*4 / 2, this.height / 2 -10 + 60, 170, 20, "Z Movment: " + heldnbt.getInteger("repeatMovmentZ")));
-		
+		buttonList.add(new GuiButton(9, this.width / 2 + 1, this.height / 2 -10 - 0, 170, 20, "Repeatitions:  " + heldnbt.getInteger("repeat")));
+		buttonList.add(new GuiButton(10, this.width / 2 + 1, this.height / 2 -10 + 20, 170, 20, "X Movment: " + heldnbt.getInteger("repeatMovmentX")));
+		buttonList.add(new GuiButton(11, this.width / 2 + 1, this.height / 2 -10 + 40, 170, 20, "Y Movment: " + heldnbt.getInteger("repeatMovmentY")));
+		buttonList.add(new GuiButton(12, this.width / 2 + 1, this.height / 2 -10 + 60, 170, 20, "Z Movment: " + heldnbt.getInteger("repeatMovmentZ")));
+		buttonList.add(new GuiButton(13, this.width / 2 + 1, this.height / 2 -10 - 80, 170, 20, "Clear all in selection"));
 	}
 	
 	@Override
@@ -108,7 +108,8 @@ public class SelectionToolGui extends GuiScreen{
 	//@Override
 	protected void actionPerformed(GuiButton button, int mouseButton){
 		PacketDispatcher.sendToServer(new SendGuiButtonPressedToItemMessage((byte) button.id, mouseButton, isCtrlKeyDown(), func_175283_s(), isShiftKeyDown()));
-		
+		if(button.id == 1 || button.id == 2 || button.id == 3)
+			this.mc.thePlayer.closeScreen();
 	}
 	
 }

@@ -46,6 +46,15 @@ public class BrushToolGui extends GuiScreen{
 		return false;
 	}
 	
+	@Override
+	protected void keyTyped(char par1, int par2)
+	{
+		if (par2 == 1 || par2 == this.mc.gameSettings.keyBindInventory.getKeyCode())
+		{
+			this.mc.thePlayer.closeScreen();
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui(){
@@ -99,7 +108,8 @@ public class BrushToolGui extends GuiScreen{
 	//@Override
 	protected void actionPerformed(GuiButton button, int mouseButton){
 		PacketDispatcher.sendToServer(new SendGuiButtonPressedToItemMessage((byte) button.id, mouseButton, isCtrlKeyDown(), func_175283_s(), isShiftKeyDown()));
-		
+		if(button.id == 8 || button.id == 9)
+			this.mc.thePlayer.closeScreen();
 	}
 	
 }

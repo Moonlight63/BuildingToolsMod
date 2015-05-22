@@ -35,7 +35,7 @@ public class SelectionTool extends Item implements IOutlineDrawer, IGetGuiButton
 	
 	public SelectionTool(){
 		super();
-		setUnlocalizedName("copyTool");
+		setUnlocalizedName("selectionTool");
 		setCreativeTab(BuildingTools.tabBT);
 	}
 	
@@ -276,17 +276,8 @@ public class SelectionTool extends Item implements IOutlineDrawer, IGetGuiButton
 			break;
 			
 		case 8:
-			System.out.println("Clearing");
-			if(getBlockPos1(stack) != null && getBlockPos2(stack) != null){
-				player.addPending(new ClearSelectionThread(
-						new BlockPos(getBlockPos1(stack).getX(),
-									getBlockPos1(stack).getY(),
-									getBlockPos1(stack).getZ()),
-						new BlockPos(getBlockPos2(stack).getX(),
-									getBlockPos2(stack).getY(),
-									getBlockPos2(stack).getZ()), 
-						world));
-			}
+			getNBT(stack).setBoolean("bpos1Set", false);
+			getNBT(stack).setBoolean("bpos2Set", false);
 			break;
 			
 		case 9:
@@ -323,6 +314,20 @@ public class SelectionTool extends Item implements IOutlineDrawer, IGetGuiButton
 			}
 			else if(mouseButton == 1){
 				getNBT(stack).setInteger("repeatMovmentZ", getNBT(stack).getInteger("repeatMovmentZ") - 1);
+			}
+			break;
+			
+		case 13:
+			System.out.println("Clearing");
+			if(getBlockPos1(stack) != null && getBlockPos2(stack) != null){
+				player.addPending(new ClearSelectionThread(
+						new BlockPos(getBlockPos1(stack).getX(),
+									getBlockPos1(stack).getY(),
+									getBlockPos1(stack).getZ()),
+						new BlockPos(getBlockPos2(stack).getX(),
+									getBlockPos2(stack).getY(),
+									getBlockPos2(stack).getZ()), 
+						world));
 			}
 			break;
 			

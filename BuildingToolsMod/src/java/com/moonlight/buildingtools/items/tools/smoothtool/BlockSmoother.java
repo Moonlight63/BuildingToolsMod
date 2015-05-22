@@ -33,7 +33,7 @@ public class BlockSmoother extends Item implements IKeyHandler, IGetGuiButtonPre
 	
 	public BlockSmoother(){
 		super();
-		setUnlocalizedName("blockSmoother");
+		setUnlocalizedName("smoothTool");
 		setCreativeTab(BuildingTools.tabBT);
 	}
 	

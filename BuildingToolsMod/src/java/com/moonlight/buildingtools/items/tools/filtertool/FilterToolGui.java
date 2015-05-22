@@ -36,6 +36,13 @@ public class FilterToolGui extends GuiScreen{
 	}
 	
 	@Override
+	protected void keyTyped(char par1, int par2){
+		if (par2 == 1 || par2 == this.mc.gameSettings.keyBindInventory.getKeyCode()){
+			this.mc.thePlayer.closeScreen();
+		}
+	}
+	
+	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks){
 		this.drawDefaultBackground();
 		
@@ -79,10 +86,10 @@ public class FilterToolGui extends GuiScreen{
 		NBTTagCompound heldnbt = FilterTool.getNBT(player.getHeldItem());
 		Shapes gen = Shapes.VALUES[heldnbt.getInteger("generator")];
 		
-		buttonList.add(new GuiButton(1, posX, posY, xSizeOfTexture, 20, (gen.fixedRatio ? "Radius: " : "Radius X: ") + heldnbt.getInteger("radiusX")));
-		buttonList.add(new GuiButton(2, posX, posY+25, xSizeOfTexture, 20, (gen.fixedRatio ? "Fixed Ratio: " : "Radius Z: ") + heldnbt.getInteger("radiusY")));
+		buttonList.add(new GuiButton(1, posX, posY, xSizeOfTexture, 20, "Radius X: " + heldnbt.getInteger("radiusX")));
+		buttonList.add(new GuiButton(2, posX, posY+25, xSizeOfTexture, 20, (gen.fixedRatio ? "Fixed Ratio: " : "Radius Y: ") + heldnbt.getInteger("radiusY")));
 		buttonList.add(new GuiButton(3, posX, posY+50, xSizeOfTexture, 20, (gen.fixedRatio ? "Fixed Ratio: " : "Radius Z: ") + heldnbt.getInteger("radiusZ")));
-		buttonList.add(new GuiButton(4, posX, posY+75, xSizeOfTexture, 20, (gen.fixedRatio ? "Fixed Ratio: " : "Radius Z: ") + heldnbt.getInteger("topsoildepth")));
+		buttonList.add(new GuiButton(4, posX, posY+75, xSizeOfTexture, 20, "Depth: " + heldnbt.getInteger("topsoildepth")));
 		
 		
 	}
