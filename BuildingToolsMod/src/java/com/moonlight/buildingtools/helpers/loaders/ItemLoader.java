@@ -9,7 +9,7 @@ import com.moonlight.buildingtools.items.tools.buildingtool.BuildingTool;
 import com.moonlight.buildingtools.items.tools.filtertool.FilterTool;
 import com.moonlight.buildingtools.items.tools.idAdvancer.IdAdvancer;
 import com.moonlight.buildingtools.items.tools.placetempblock.TempBlockTool;
-import com.moonlight.buildingtools.items.tools.selectiontool.CopyTool;
+import com.moonlight.buildingtools.items.tools.selectiontool.SelectionTool;
 import com.moonlight.buildingtools.items.tools.smoothtool.BlockSmoother;
 import com.moonlight.buildingtools.items.tools.undoTool.UndoTool;
 
@@ -36,7 +36,7 @@ public class ItemLoader {
 		blockSmoother = new BlockSmoother();
 		RegisterHelper.registerItem(blockSmoother);
 		
-		copyTool = new CopyTool();
+		copyTool = new SelectionTool();
 		RegisterHelper.registerItem(copyTool);
 		
 		buildingTool = new BuildingTool();

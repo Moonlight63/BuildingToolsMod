@@ -24,7 +24,7 @@ public class BlockGuide extends BlockContainer{
 
 	public BlockGuide() {
 		super(Material.rock);
-		setCreativeTab(BuildingTools.tabBT);
+		//setCreativeTab(BuildingTools.tabBT);
 		setUnlocalizedName("blockGuide");
 		setTickRandomly(true);
 	}

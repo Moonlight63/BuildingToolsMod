@@ -19,7 +19,7 @@ import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.IOutlineDrawer;
 import com.moonlight.buildingtools.utils.RGBA;
 
-public class CopyTool extends Item implements IOutlineDrawer, IGetGuiButtonPressed{
+public class SelectionTool extends Item implements IOutlineDrawer, IGetGuiButtonPressed{
 	
 	public static BlockPos targetBlock;
 	public World world;
@@ -33,7 +33,7 @@ public class CopyTool extends Item implements IOutlineDrawer, IGetGuiButtonPress
 	
 	public static RegoinCopyThread copyThread;
 	
-	public CopyTool(){
+	public SelectionTool(){
 		super();
 		setUnlocalizedName("copyTool");
 		setCreativeTab(BuildingTools.tabBT);

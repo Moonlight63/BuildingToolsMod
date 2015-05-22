@@ -61,7 +61,7 @@ public class SelectionToolGui extends GuiScreen{
 		
 		buttonList.clear();
 		
-		NBTTagCompound heldnbt = CopyTool.getNBT(player.getHeldItem());
+		NBTTagCompound heldnbt = SelectionTool.getNBT(player.getHeldItem());
 		
 		buttonList.add(new GuiButton(1, this.width / 2 - 170 / 2, this.height / 2 -10 - 80, 170, 20, "Copy Selection To Clipboard"));
 		buttonList.add(new GuiButton(2, this.width / 2 - 170 / 2, this.height / 2 -10 - 60, 170, 20, "Paste Clipboard"));
