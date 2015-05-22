@@ -3,8 +3,6 @@ package com.moonlight.buildingtools.buildingGuide;
 import com.moonlight.buildingtools.BuildingTools;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRedstoneLight;
-import net.minecraft.block.BlockSlab;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.AxisAlignedBB;

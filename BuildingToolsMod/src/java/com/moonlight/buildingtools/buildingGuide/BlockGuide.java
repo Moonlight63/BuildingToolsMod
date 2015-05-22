@@ -2,27 +2,18 @@ package com.moonlight.buildingtools.buildingGuide;
 
 import java.util.Random;
 
-import com.moonlight.buildingtools.BuildingTools;
-
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockContainer;
-import net.minecraft.block.BlockFurnace;
-import net.minecraft.block.BlockWorkbench;
-import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
+import com.moonlight.buildingtools.BuildingTools;
 
 public class BlockGuide extends BlockContainer{
 	
@@ -47,11 +38,6 @@ public class BlockGuide extends BlockContainer{
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ) {
 		TileEntity te = world.getTileEntity(pos);
-
-		/*if (te instanceof IHasGui && ((IHasGui)te).canOpenGui(player) && !player.isSneaking()) {
-			if (!world.isRemote) openGui(player, world, x, y, z);
-			return true;
-		}*/
 		
 		world.forceBlockUpdateTick(this, pos, new Random());
 

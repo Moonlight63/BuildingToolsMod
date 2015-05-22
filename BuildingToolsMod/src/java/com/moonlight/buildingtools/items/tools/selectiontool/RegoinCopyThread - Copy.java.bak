@@ -1,0 +1,583 @@
+package com.moonlight.buildingtools.items.tools.selectiontool;
+
+import io.netty.util.internal.ConcurrentSet;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
+import com.google.common.collect.ImmutableMap;
+import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.buildingGuide.GuideShape;
+import com.moonlight.buildingtools.helpers.loaders.BlockLoader;
+import com.moonlight.buildingtools.helpers.shapes.GeometryUtils;
+import com.moonlight.buildingtools.helpers.shapes.IShapeable;
+import com.moonlight.buildingtools.items.tools.BlockChangeBase;
+import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
+import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockBanner;
+import net.minecraft.block.BlockBanner.BlockBannerHanging;
+import net.minecraft.block.BlockBanner.BlockBannerStanding;
+import net.minecraft.block.BlockDoor;
+import net.minecraft.block.BlockFlower;
+import net.minecraft.block.BlockLog;
+import net.minecraft.block.BlockQuartz;
+import net.minecraft.block.BlockSign;
+import net.minecraft.block.BlockSkull;
+import net.minecraft.block.BlockStairs;
+import net.minecraft.block.BlockStandingSign;
+import net.minecraft.block.BlockTorch;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.properties.PropertyInteger;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.command.CommandClone;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityHanging;
+import net.minecraft.entity.item.EntityItemFrame;
+import net.minecraft.entity.item.EntityPainting;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemDoor;
+import net.minecraft.item.ItemHangingEntity;
+import net.minecraft.item.ItemSign;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntitySkull;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
+
+public class RegoinCopyThread implements BlockChangeBase, IShapeable{
+	
+	protected StructureBoundingBox structureBoundingBox;
+	protected AxisAlignedBB entityDetectionBox;
+	protected World world;
+	protected BlockPos copyToPos;
+	protected EntityPlayer entity;
+	
+	protected boolean isFinished = false;
+	//protected boolean doorsPlaced = true;
+	
+	//protected Set<ChangeBlockToThis> tempList = new HashSet<ChangeBlockToThis>();
+	//protected Set<ChangeBlockToThis> doorSet = new HashSet<ChangeBlockToThis>();
+	
+	protected Set<ChangeBlockToThis> firstPassSet = new CopyOnWriteArraySet<ChangeBlockToThis>();
+	protected Set<SecondPass> secondPassSet = new CopyOnWriteArraySet<SecondPass>();
+	protected Set<EntityPass> entityPassSet = new CopyOnWriteArraySet<EntityPass>();
+	
+	protected Set<ChangeBlockToThis> selectionSet = new CopyOnWriteArraySet<ChangeBlockToThis>();
+	
+	public boolean selectionCalculated = false;
+	protected boolean currentlyCalculating = false;
+	
+	public boolean startCopy = false;
+	public boolean startPaste = false;
+	
+	public void StartCopy(){
+		startCopy = true;
+	}
+	public void StartPaste(){
+		startPaste = true;
+	}
+	public void SetPastePos(BlockPos pos){
+		this.copyToPos = pos;
+	}
+	
+	//protected boolean firstPassCalculated = false;
+	//protected boolean secondPassCalculated = false;
+	//protected boolean entityPassCalculated = false;
+	
+	protected Set<BlockPos> checkedEntityPos = new CopyOnWriteArraySet<BlockPos>();
+	
+	//protected Set<BlockPos> checkedList = new HashSet<BlockPos>();
+	
+	public RegoinCopyThread(BlockPos blockpos1, BlockPos blockpos2, World world, EntityPlayer player, BlockPos copyTo){
+		this.structureBoundingBox = new StructureBoundingBox(blockpos1, blockpos2);
+		
+		int p1x = (blockpos1.getX() <= blockpos2.getX()) ? blockpos1.getX() : blockpos1.getX() + 1;
+        int p1y = (blockpos1.getY() <= blockpos2.getY()) ? blockpos1.getY() : blockpos1.getY() + 1;
+        int p1z = (blockpos1.getZ() <= blockpos2.getZ()) ? blockpos1.getZ() : blockpos1.getZ() + 1;
+        int p2x = (blockpos2.getX() < blockpos1.getX()) ? blockpos2.getX() : blockpos2.getX() + 1;
+        int p2y = (blockpos2.getY() < blockpos1.getY()) ? blockpos2.getY() : blockpos2.getY() + 1;
+        int p2z = (blockpos2.getZ() < blockpos1.getZ()) ? blockpos2.getZ() : blockpos2.getZ() + 1;
+		
+		this.entityDetectionBox = new AxisAlignedBB(new BlockPos(p1x, p1y, p1z), new BlockPos(p2x, p2y, p2z));
+		this.world = world;
+		this.copyToPos = copyTo;		
+		this.entity = player;
+	}
+	
+	public ChangeBlockToThis addBlockWithNBT(BlockPos oldPosOrNull, IBlockState blockState, BlockPos newPos){
+		if(oldPosOrNull != null && world.getTileEntity(oldPosOrNull) != null){
+    		NBTTagCompound compound = new NBTTagCompound();
+    		world.getTileEntity(oldPosOrNull).writeToNBT(compound);
+    		//tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
+    		return new ChangeBlockToThis(newPos, blockState, compound);
+		}
+    	else{
+    		//tempList.add(new ChangeBlockToThis(newPos, blockState));
+    		return new ChangeBlockToThis(newPos, blockState);
+    	}
+	}
+	
+	@Override
+	public void setBlock(BlockPos bpos){
+		if(/*!selectionSet.contains(bpos) && */bpos.getY() > 0 && bpos.getY() < 256 && !world.isAirBlock(bpos)){
+			currentlyCalculating = true;
+			selectionSet.add(addBlockWithNBT(bpos, world.getBlockState(bpos), bpos));
+		}
+	}
+	
+	public Set<ChangeBlockToThis> RunFirstPass(){
+		Set<ChangeBlockToThis> tempList = new HashSet<ChangeBlockToThis>();
+		int firstPassCount = 0;
+		
+		currentlyCalculating = true;
+		
+		for(ChangeBlockToThis bpos : selectionSet){
+			if(firstPassCount < 4096){
+				System.out.println(firstPassCount);
+				BlockPos normalizedPos = bpos.getBlockPos().subtract(new BlockPos(structureBoundingBox.minX, structureBoundingBox.minY, structureBoundingBox.minZ));
+				BlockPos adjustedPos = (new BlockPos(normalizedPos.getX(), normalizedPos.getY(), normalizedPos.getZ()));
+				BlockPos newPos = adjustedPos.add(copyToPos);
+				
+				IBlockState blockState = bpos.getBlockState();//world.getBlockState(bpos);
+				NBTTagCompound compound = bpos.getNBTTag();
+				Block block = blockState.getBlock();
+				
+				ImmutableMap properties = blockState.getProperties();
+				IProperty directionalBlockProperty = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
+				IProperty logDirectionProperty = PropertyEnum.create("axis", BlockLog.EnumAxis.class);
+				IProperty quartzPillerProperty = PropertyEnum.create("variant", BlockQuartz.EnumType.class);
+				IProperty bannerStandingRotation = PropertyInteger.create("rotation", 0, 15);
+				
+				List<Entity> entitiesInBox = world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(entityDetectionBox.minX,  entityDetectionBox.minY, entityDetectionBox.minZ, entityDetectionBox.maxX, entityDetectionBox.maxY, entityDetectionBox.maxZ));
+				
+				int rotation = 1;
+				
+				switch (rotation) {
+				case 0:
+					
+					//SPECIAL CASES FOR BLOCKS THAT REQUIRE A BLOCK TO SIT ON
+					if(block instanceof BlockDoor){
+						if(blockState.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.LOWER){
+							secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState, compound), newPos.down()));
+							//secondPassSet.add(new SecondPass(addBlockWithNBT(bpos, blockState, newPos), newPos.down()));
+						}
+					}
+					else if (block instanceof BlockTorch){
+						EnumFacing facing = (EnumFacing)blockState.getValue(directionalBlockProperty);
+						secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState, compound), newPos.offset(facing.getOpposite())));
+						//secondPassSet.add(new SecondPass(addBlockWithNBT(bpos, blockState, newPos), newPos.offset(facing.getOpposite())));
+					}
+					else if (block instanceof BlockBannerHanging){
+						EnumFacing facing = (EnumFacing)blockState.getValue(directionalBlockProperty);
+						secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState, compound), newPos.offset(facing.getOpposite())));
+						//secondPassSet.add(new SecondPass(addBlockWithNBT(bpos, blockState, newPos), newPos.offset(facing.getOpposite())));
+					}
+					else if (block instanceof BlockBannerStanding){
+						secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState, compound), newPos.down()));
+						//secondPassSet.add(new SecondPass(addBlockWithNBT(bpos, blockState, newPos), newPos.down()));						
+					}
+					
+					
+					//NORMAL BLOCKS
+					else{
+						tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
+						//tempList.add(addBlockWithNBT(bpos, blockState, newPos));
+					}
+					
+					
+					//PAINTINGS AND ITEM FRAMES
+					if(!entitiesInBox.isEmpty()){
+						for(Entity e : entitiesInBox){
+							if (e instanceof EntityHanging){
+								if(!checkedEntityPos.contains(((EntityHanging)e).func_174857_n().subtract(new BlockPos(structureBoundingBox.minX, structureBoundingBox.minY, structureBoundingBox.minZ)).add(copyToPos))){
+									checkedEntityPos.add(((EntityHanging)e).func_174857_n().subtract(new BlockPos(structureBoundingBox.minX, structureBoundingBox.minY, structureBoundingBox.minZ)).add(copyToPos));
+									entityPassSet.add(new EntityPass(((EntityHanging)e).func_174857_n().subtract(new BlockPos(structureBoundingBox.minX, structureBoundingBox.minY, structureBoundingBox.minZ)).add(copyToPos), e, e.getHorizontalFacing().getOpposite()));
+								}
+							}
+						}
+					}
+										
+					break;
+					
+					
+				case 1:
+					
+					adjustedPos = (new BlockPos(-normalizedPos.getZ(), normalizedPos.getY(), normalizedPos.getX()));
+					newPos = adjustedPos.add(copyToPos);
+					
+					
+					//GET BLOCKS THAT HAVE A ROTATION STATE
+					if(properties.containsKey(directionalBlockProperty)){
+						EnumFacing facing = (EnumFacing)blockState.getValue(directionalBlockProperty);
+						
+						//SPECIAL BLOCK CASES THAT NEED A SECOND PASS
+						
+						//Doors
+						if(block instanceof BlockDoor){
+							
+							if(blockState.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.LOWER){
+								secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, facing.rotateY()), compound), newPos.down()));
+								//secondPassSet.add(new SecondPass(addBlockWithNBT(bpos, blockState.withProperty(directionalBlockProperty, facing.rotateY()), newPos), newPos.down()));
+								//secondPassSet.add(new SecondPass(newPos, blockState.withProperty(directionalBlockProperty, facing.rotateY()), newPos.down()));
+							}
+							
+						}
+						
+						//Torches
+						else if (block instanceof BlockTorch){
+							
+							if(facing != EnumFacing.UP && facing != EnumFacing.DOWN){
+								secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, facing.rotateY()), compound), newPos.offset(facing.rotateY().getOpposite())));
+								//secondPassSet.add(new SecondPass(addBlockWithNBT(bpos, blockState.withProperty(directionalBlockProperty, facing.rotateY()), newPos), newPos.offset(facing.rotateY().getOpposite())));
+								//secondPassSet.add(new SecondPass(newPos, blockState.withProperty(directionalBlockProperty, facing.rotateY()), newPos.offset(facing.rotateY().getOpposite())));
+							}
+							else{
+								secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState, compound), newPos.offset(facing.getOpposite())));
+								//secondPassSet.add(new SecondPass(addBlockWithNBT(bpos, blockState, newPos), newPos.offset(facing.getOpposite())));
+								//secondPassSet.add(new SecondPass(newPos, blockState, newPos.down()));
+							}
+							
+						}
+						
+						//Hanging Banners
+						else if (block instanceof BlockBannerHanging){
+							//EnumFacing facing = (EnumFacing)blockState.getValue(directionalBlockProperty);
+							secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, facing.rotateY()), compound), newPos.offset(facing.rotateY().getOpposite())));
+							//secondPassSet.add(new SecondPass(addBlockWithNBT(bpos, blockState.withProperty(directionalBlockProperty, facing.rotateY()), newPos), newPos));
+						}
+						
+						//Any Other 'Rotatable' Block
+						else{
+							if(facing != EnumFacing.UP && facing != EnumFacing.DOWN){
+								tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, facing.rotateY()), compound));
+								//tempList.add(new SecondPass(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, facing.rotateY()), compound), newPos));
+								//tempList.add(addBlockWithNBT(bpos, blockState.withProperty(directionalBlockProperty, facing.rotateY()), newPos));
+							}
+							else{
+								//SKULL EXCEPTION
+		                		if(block instanceof BlockSkull){
+		                			//System.out.println(((TileEntitySkull)world.getTileEntity(bpos)).getSkullRotation());
+		                			//((TileEntitySkull)world.getTileEntity(bpos)).setSkullRotation(((TileEntitySkull)world.getTileEntity(bpos)).getSkullRotation() + 4);
+		                			System.out.println("Skull Rotation " + compound.getByte("Rot"));
+		                			compound.setByte("Rot", (byte) (compound.getByte("Rot") + (byte)4));
+		                		}
+								tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
+		                		//tempList.add(addBlockWithNBT(bpos, blockState, newPos));
+							}
+							
+						}
+												
+						break;
+					}
+					
+					//LOGS
+					else if(properties.containsKey(logDirectionProperty)){
+						
+						if(blockState.getValue(logDirectionProperty) == BlockLog.EnumAxis.X){
+							
+							tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(logDirectionProperty, BlockLog.EnumAxis.Z), compound));
+							//tempList.add(addBlockWithNBT(bpos, blockState.withProperty(logDirectionProperty, BlockLog.EnumAxis.Z), newPos));
+							
+						}
+						else if(blockState.getValue(logDirectionProperty) == BlockLog.EnumAxis.Z){
+							
+							tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(logDirectionProperty, BlockLog.EnumAxis.X), compound));
+							//tempList.add(addBlockWithNBT(bpos, blockState.withProperty(logDirectionProperty, BlockLog.EnumAxis.X), newPos));
+							
+						}
+						else{
+							tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
+							//tempList.add(addBlockWithNBT(bpos, blockState, newPos));
+						}
+						
+						break;
+					}
+					
+					//Quartz Pillar
+					else if(properties.containsKey(quartzPillerProperty)){
+						
+						if(blockState.getValue(quartzPillerProperty) == BlockQuartz.EnumType.LINES_X){
+							
+							tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(quartzPillerProperty, BlockQuartz.EnumType.LINES_Z), compound));
+							//tempList.add(addBlockWithNBT(bpos, blockState.withProperty(quartzPillerProperty, BlockQuartz.EnumType.LINES_Z), newPos));
+							
+						}
+						else if(blockState.getValue(quartzPillerProperty) == BlockQuartz.EnumType.LINES_Z){
+							
+							tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(quartzPillerProperty, BlockQuartz.EnumType.LINES_X), compound));
+							//tempList.add(addBlockWithNBT(bpos, blockState.withProperty(quartzPillerProperty, BlockQuartz.EnumType.LINES_X), newPos));
+							
+						}
+						else{
+							
+							tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
+							//tempList.add(addBlockWithNBT(bpos, blockState, newPos));
+							
+						}
+						
+						break;
+					}
+					
+					//STANDING BANNERS AND SIGNS
+					else if (properties.containsKey(bannerStandingRotation)){
+						
+						tempList.add(new ChangeBlockToThis(newPos, blockState.
+								cycleProperty(bannerStandingRotation).
+								cycleProperty(bannerStandingRotation).
+								cycleProperty(bannerStandingRotation).
+								cycleProperty(bannerStandingRotation),
+								compound));
+						
+						//tempList.add(addBlockWithNBT(bpos, blockState.
+						//		cycleProperty(bannerStandingRotation).
+						//		cycleProperty(bannerStandingRotation).
+						//		cycleProperty(bannerStandingRotation).
+						//		cycleProperty(bannerStandingRotation),
+						//		newPos));
+						
+						//NBTTagCompound compound = new NBTTagCompound();
+                		//world.getTileEntity(bpos).writeToNBT(compound);
+                		//tempList.add(new ChangeBlockToThis(newPos, blockState.cycleProperty(bannerStandingRotation).cycleProperty(bannerStandingRotation).cycleProperty(bannerStandingRotation).cycleProperty(bannerStandingRotation), compound));
+					}					
+					
+					else{
+						
+						tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
+						//tempList.add(addBlockWithNBT(bpos, blockState, newPos));
+						
+					}
+					
+					if(!entitiesInBox.isEmpty()){
+						for(Entity e : entitiesInBox){
+							if (e instanceof EntityHanging){
+								BlockPos entPos = ((EntityHanging)e).func_174857_n().subtract(new BlockPos(structureBoundingBox.minX, structureBoundingBox.minY, structureBoundingBox.minZ));
+								if(!checkedEntityPos.contains(new BlockPos(-entPos.getZ(), entPos.getY(), entPos.getX()).add(copyToPos))){
+									checkedEntityPos.add(new BlockPos(-entPos.getZ(), entPos.getY(), entPos.getX()).add(copyToPos));
+									entityPassSet.add(new EntityPass(new BlockPos(-entPos.getZ(), entPos.getY(), entPos.getX()).add(copyToPos), e, e.getHorizontalFacing().rotateY().getOpposite()));
+								}
+							}
+						}
+					}
+					
+					break;
+					
+				}
+				
+				firstPassCount++;
+				selectionSet.remove(bpos);
+				
+			}
+			
+			else{
+				System.out.println("Break Loop");
+				break;
+			}
+		}
+		
+		return tempList;
+	}
+	
+	
+	public Set<ChangeBlockToThis> RunSecondPass(){
+		Set<ChangeBlockToThis> tempSet = new HashSet<ChangeBlockToThis>();
+		int secondPassCount = 0;
+		
+		currentlyCalculating = true;
+		
+		for(SecondPass pass : secondPassSet){
+			if(secondPassCount < 4096){
+				if(!world.isAirBlock(pass.posToCheckForAir)){
+					//if(pass.stateToPlace.getBlock() instanceof BlockDoor){
+					if(pass.blockChange.getBlockState().getBlock() instanceof BlockDoor){
+						tempSet.add(new ChangeBlockToThis(pass.blockChange.getBlockPos(), pass.blockChange.getBlockState().withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.LOWER)));
+						tempSet.add(new ChangeBlockToThis(pass.blockChange.getBlockPos().up(), pass.blockChange.getBlockState().withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.UPPER)));
+						//world.setBlockState(pass.placmentPos, pass.stateToPlace.withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.LOWER), 2);
+						//world.setBlockState(pass.placmentPos.up(), pass.stateToPlace.withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.UPPER), 2);
+					}
+					else{
+						tempSet.add(pass.blockChange);
+						//world.setBlockState(pass.placmentPos, pass.stateToPlace);
+					}
+					secondPassCount++;
+					secondPassSet.remove(pass);
+				}
+			}
+			else{
+				break;
+			}
+		}
+			//System.out.println(tempSet);
+		
+		return tempSet;
+		
+		//return tempSet;
+	}
+	
+	public void RunEntityPass(){
+		
+		currentlyCalculating = true;
+		
+		//if(!entityPassSet.isEmpty()){
+			for(EntityPass e : entityPassSet){
+				//System.out.println(e.entityToPlace);
+				
+				if(!world.isAirBlock(e.placmentPos.offset(e.posToCheckForAir))){
+					//System.out.println("Checked for air at " + e.placmentPos.offset(e.posToCheckForAir));
+					if(e.entityToPlace instanceof EntityPainting){
+						world.spawnEntityInWorld(new EntityPainting(world, e.placmentPos, e.posToCheckForAir.getOpposite(), ((EntityPainting)e.entityToPlace).art.title));
+						entityPassSet.remove(e);
+					}
+					else if(e.entityToPlace instanceof EntityItemFrame){
+						EntityItemFrame itemframe = new EntityItemFrame(world, e.placmentPos, e.posToCheckForAir.getOpposite());
+						itemframe.setDisplayedItem(((EntityItemFrame)e.entityToPlace).getDisplayedItem());
+						world.spawnEntityInWorld(itemframe);
+						entityPassSet.remove(e);
+					}
+				}
+			}
+		//}
+		
+	}
+	
+	//protected int count = 0;
+	public void perform(){
+		
+		if(!currentlyCalculating){
+			
+			if(!selectionCalculated){
+				if(startCopy){
+					GeometryUtils.makeFilledCube(new BlockPos(structureBoundingBox.minX, structureBoundingBox.minY, structureBoundingBox.minZ), structureBoundingBox.getXSize()-1, structureBoundingBox.getYSize()-1, structureBoundingBox.getZSize()-1, this);
+					currentlyCalculating = false;
+					selectionCalculated = true;
+					System.out.println("Done Copying");
+				}
+			}
+			
+			else{
+				
+				if(startPaste){
+				System.out.println("Starting Paste");
+					if(!selectionSet.isEmpty()){
+						System.out.println("Running First Pass");
+						BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue = new BlockChangeQueue(RunFirstPass(), world, true);
+						currentlyCalculating = false;
+						System.out.println("First Pass Done");
+					}
+					else{
+						if(!secondPassSet.isEmpty()){
+							BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue = new BlockChangeQueue(RunSecondPass(), world, true);
+							currentlyCalculating = false;
+						}
+						else{
+							if(!entityPassSet.isEmpty()){
+								RunEntityPass();
+								currentlyCalculating = false;
+							}
+							else{
+								isFinished = true;
+							}
+						}
+					}
+				
+				}
+				
+				
+			}
+			
+		}
+		
+		
+		/*
+		GeometryUtils.makeFilledCube(new BlockPos(structureBoundingBox.minX, structureBoundingBox.minY, structureBoundingBox.minZ), structureBoundingBox.getXSize()-1, structureBoundingBox.getYSize()-1, structureBoundingBox.getZSize()-1, this);
+		
+		if(count < 4096){
+			
+			if(secondPassSet.isEmpty() && entityPassSet.isEmpty()){
+				isFinished = true;
+			}
+			
+			else{
+				
+				System.out.println("Running SecondPass");
+				
+				Set<ChangeBlockToThis> secondarySet = RunSecondPass();
+				if(!secondarySet.isEmpty() && secondarySet != null){
+					System.out.println(secondarySet);
+					BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue = new BlockChangeQueue(secondarySet, world, true);
+				}
+				//RunSecondPass();
+				
+				
+				if(!entityPassSet.isEmpty()){
+					for(EntityPass e : entityPassSet){
+						//System.out.println(e.entityToPlace);
+						
+						if(!world.isAirBlock(e.placmentPos.offset(e.posToCheckForAir))){
+							//System.out.println("Checked for air at " + e.placmentPos.offset(e.posToCheckForAir));
+							if(e.entityToPlace instanceof EntityPainting){
+								world.spawnEntityInWorld(new EntityPainting(world, e.placmentPos, e.posToCheckForAir.getOpposite(), ((EntityPainting)e.entityToPlace).art.title));
+								entityPassSet.remove(e);
+							}
+							else if(e.entityToPlace instanceof EntityItemFrame){
+								EntityItemFrame itemframe = new EntityItemFrame(world, e.placmentPos, e.posToCheckForAir.getOpposite());
+								itemframe.setDisplayedItem(((EntityItemFrame)e.entityToPlace).getDisplayedItem());
+								world.spawnEntityInWorld(itemframe);
+								entityPassSet.remove(e);
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		//System.out.println("Adding templist");
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue = new BlockChangeQueue(tempList, world, true);
+		
+		count = 0;
+		*/
+	}
+	
+	public boolean isFinished(){
+		return isFinished;
+	}
+	
+	public class SecondPass{
+		//public final BlockPos placmentPos;
+		//public final IBlockState stateToPlace;
+		
+		public final ChangeBlockToThis blockChange;
+		public final BlockPos posToCheckForAir;
+		//public SecondPass(BlockPos posToPlace, IBlockState stateToPlace, BlockPos posForCheck){
+		public SecondPass(ChangeBlockToThis blockChange, BlockPos posForCheck){
+			//this.placmentPos = posToPlace;
+			//this.stateToPlace = stateToPlace;
+			this.blockChange = blockChange;
+			this.posToCheckForAir = posForCheck;
+		}
+	}
+	
+	public class EntityPass{
+		public final BlockPos placmentPos;
+		public final Entity entityToPlace;
+		public final EnumFacing posToCheckForAir;
+		public EntityPass(BlockPos posToPlace, Entity entityToPlace, EnumFacing posForCheck){
+			this.placmentPos = posToPlace;
+			this.entityToPlace = entityToPlace;
+			this.posToCheckForAir = posForCheck;
+		}
+	}
+
+}
