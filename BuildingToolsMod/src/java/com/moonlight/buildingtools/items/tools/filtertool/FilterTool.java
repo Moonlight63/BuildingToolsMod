@@ -21,6 +21,7 @@ import com.moonlight.buildingtools.helpers.RenderHelper;
 import com.moonlight.buildingtools.helpers.Shapes;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
+import com.moonlight.buildingtools.items.tools.IToolOverrideHitDistance;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
@@ -32,7 +33,7 @@ import com.moonlight.buildingtools.utils.KeyHelper;
 import com.moonlight.buildingtools.utils.RGBA;
 //import com.moonlight.buildingtools.utils.KeyBindsHandler.ETKeyBinding;
 
-public class FilterTool extends Item implements IKeyHandler, IOutlineDrawer, IItemBlockAffector, IShapeable, IGetGuiButtonPressed{
+public class FilterTool extends Item implements IKeyHandler, IOutlineDrawer, IItemBlockAffector, IShapeable, IGetGuiButtonPressed, IToolOverrideHitDistance{
 	
 	private static Set<Key.KeyCode> handledKeys;
 	
@@ -67,15 +68,6 @@ public class FilterTool extends Item implements IKeyHandler, IOutlineDrawer, IIt
 	        stack.getTagCompound().setInteger("topsoildepth", 1);
 	    }
 	    return stack.getTagCompound();	    
-	}
-
-	@Override
-	public void onUpdate(ItemStack itemstack, World world, Entity entity, int metadata, boolean bool){
-		EntityPlayer player = (EntityPlayer) entity;
-		
-		if(player.getCurrentEquippedItem() == itemstack){
-			BuildingTools.proxy.setExtraReach(player, 200);
-		}
 	}
 	
 	@SuppressWarnings("unchecked")

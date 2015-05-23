@@ -27,7 +27,8 @@ public class UndoThread implements BlockChangeBase {
 		this.entity = entity;
 		
 		PlayerWrapper playerwrap = BuildingTools.getPlayerRegistry().getPlayer(entity).get();
-		undoSet.addAll(playerwrap.undolist.pollLast());
+		if(!playerwrap.undolist.isEmpty())
+			undoSet.addAll(playerwrap.undolist.pollLast());
 		
 		System.out.println(undoSet.size());
 	}

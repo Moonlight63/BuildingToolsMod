@@ -1,5 +1,6 @@
 package com.moonlight.buildingtools.items.tools.undoTool;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import net.minecraft.entity.Entity;
@@ -11,6 +12,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
 import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.items.tools.selectiontool.RegoinCopyThread;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.KeyHelper;
 
@@ -22,15 +24,6 @@ public class UndoTool extends Item{
 		super();
 		setUnlocalizedName("undoTool");
 		setCreativeTab(BuildingTools.tabBT);
-	}
-
-	@Override
-	public void onUpdate(ItemStack itemstack, World world, Entity entity, int metadata, boolean bool){
-		EntityPlayer player = (EntityPlayer) entity;
-		
-		if(player.getCurrentEquippedItem() == itemstack){
-			BuildingTools.proxy.setExtraReach(player, 200);
-		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -62,8 +55,12 @@ public class UndoTool extends Item{
 	@Override
 	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
     {
-		if(playerIn.isSneaking()){
-			
+		if(!worldIn.isRemote){
+			System.out.println("Used Undo Tool");
+			PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
+			if(!player.undolist.isEmpty())
+				player.addPending(new RegoinCopyThread(worldIn, playerIn, player.undolist.pollLast(), new LinkedHashSet<Entity>()));
+			//player.addPending(new UndoThread(worldIn, playerIn));
 		}
         return itemStackIn;
     }
@@ -80,7 +77,8 @@ public class UndoTool extends Item{
 		if(!worldIn.isRemote){
 			System.out.println("Used Undo Tool");
 			PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
-			player.addPending(new UndoThread(worldIn, playerIn));
+			if(!player.undolist.isEmpty())
+				player.addPending(new RegoinCopyThread(worldIn, playerIn, player.undolist.pollLast(), new LinkedHashSet<Entity>()));
 		}
 		
 		return true;

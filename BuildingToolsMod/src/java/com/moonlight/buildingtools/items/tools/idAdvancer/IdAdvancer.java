@@ -35,15 +35,6 @@ public class IdAdvancer extends Item implements IOutlineDrawer{
 	}
 	
 	@Override
-	public void onUpdate(ItemStack itemstack, World world, Entity entity, int metadata, boolean bool){
-		EntityPlayer player = (EntityPlayer) entity;
-		
-		if(player.getCurrentEquippedItem() == itemstack){
-			BuildingTools.proxy.setExtraReach(player, 200);
-		}
-	}
-	
-	@Override
 	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
     {
 		//if(playerIn.isSneaking()){

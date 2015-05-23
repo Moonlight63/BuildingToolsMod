@@ -13,13 +13,14 @@ import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.helpers.RenderHelper;
 import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
+import com.moonlight.buildingtools.items.tools.IToolOverrideHitDistance;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.IOutlineDrawer;
 import com.moonlight.buildingtools.utils.RGBA;
 
-public class SelectionTool extends Item implements IOutlineDrawer, IGetGuiButtonPressed{
+public class SelectionTool extends Item implements IOutlineDrawer, IGetGuiButtonPressed, IToolOverrideHitDistance{
 	
 	public static BlockPos targetBlock;
 	public World world;
@@ -61,19 +62,13 @@ public class SelectionTool extends Item implements IOutlineDrawer, IGetGuiButton
 
 	
 	@Override
-	public void onUpdate(ItemStack itemstack, World world, Entity entity, int metadata, boolean bool){
-		EntityPlayer player = (EntityPlayer) entity;
-		
+	public void onUpdate(ItemStack itemstack, World world, Entity entity, int metadata, boolean bool){		
 		if(thisStack == null){
 			thisStack = itemstack;
 		}
 		
 		if(this.world == null){
 			this.world = world;
-		}
-		
-		if(player.getCurrentEquippedItem() == itemstack){
-			BuildingTools.proxy.setExtraReach(player, 200);
 		}
 	}
 	

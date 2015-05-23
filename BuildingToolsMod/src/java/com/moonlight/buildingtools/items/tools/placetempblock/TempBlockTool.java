@@ -10,8 +10,9 @@ import net.minecraft.world.World;
 
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.helpers.loaders.BlockLoader;
+import com.moonlight.buildingtools.items.tools.IToolOverrideHitDistance;
 
-public class TempBlockTool extends Item{
+public class TempBlockTool extends Item implements IToolOverrideHitDistance{
 	
 	public static BlockPos targetBlock;
 	public static World world;
@@ -22,15 +23,6 @@ public class TempBlockTool extends Item{
 		super();
 		setUnlocalizedName("tempblockplacer");
 		setCreativeTab(BuildingTools.tabBT);
-	}
-	
-	@Override
-	public void onUpdate(ItemStack itemstack, World world, Entity entity, int metadata, boolean bool){
-		EntityPlayer player = (EntityPlayer) entity;
-		
-		if(player.getCurrentEquippedItem() == itemstack){
-			BuildingTools.proxy.setExtraReach(player, 200);
-		}
 	}
 	
 	@Override

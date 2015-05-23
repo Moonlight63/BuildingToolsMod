@@ -7,9 +7,11 @@ import java.util.List;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 import com.google.common.base.Optional;
 import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.items.tools.IToolOverrideHitDistance;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
 public class WorldEventHandler{
@@ -64,6 +66,42 @@ public class WorldEventHandler{
 		//System.out.println("WorldEventHandler.onTick()\n");
         
     }
+	
+	private boolean checkflag = true;
+	@SubscribeEvent
+	public void onPlayerTick(TickEvent.PlayerTickEvent event){
+		if(event.phase == TickEvent.Phase.START){
+			if(checkflag){
+				if(event.player.getCurrentEquippedItem()!=null){
+					if(event.player.getCurrentEquippedItem().getItem() instanceof IToolOverrideHitDistance){
+						System.out.println("CurrentItemIsTool");
+						System.out.println(event.side);
+						if(event.side == Side.SERVER)
+							checkflag = false;
+						BuildingTools.proxy.setExtraReach(event.player, 200);
+					}
+				}
+			}
+			else{
+				if(event.player.getCurrentEquippedItem()!=null){
+					if(!(event.player.getCurrentEquippedItem().getItem() instanceof IToolOverrideHitDistance)){
+						System.out.println("NoToolFound");
+						System.out.println(event.side);
+						if(event.side == Side.SERVER)
+							checkflag = true;
+						BuildingTools.proxy.setExtraReach(event.player, 0);
+					}
+				}
+				else{
+					System.out.println("NoItem");
+						System.out.println(event.side);
+						if(event.side == Side.SERVER)
+							checkflag = true;
+						BuildingTools.proxy.setExtraReach(event.player, 0);
+				}
+			}
+		}
+	}
 		
 	public static
 	<T extends Comparable<? super T>> List<T> asSortedList(Collection<T> c) {

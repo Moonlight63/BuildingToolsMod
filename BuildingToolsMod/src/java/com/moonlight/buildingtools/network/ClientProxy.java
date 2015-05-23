@@ -59,7 +59,7 @@ public class ClientProxy extends CommonProxy {
 				mc.playerController = controller;
 			}
 
-			((IExtendedPlayerController) mc.playerController).setReachDistanceExtension(Math.max(0, reach));
+			((IExtendedPlayerController) mc.playerController).setReachDistanceExtension(reach);
 		
 			//((IExtendedPlayerController) mc.playerController).setReachDistanceExtension(Math.max(0, ((IExtendedPlayerController) mc.playerController).getReachDistanceExtension() + reach));
 		}

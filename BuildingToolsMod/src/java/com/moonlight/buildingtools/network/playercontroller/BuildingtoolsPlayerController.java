@@ -23,7 +23,7 @@ public class BuildingtoolsPlayerController extends PlayerControllerMP implements
 
 	@Override
 	public float getBlockReachDistance() {
-		return distance;
+		return (this.isInCreativeMode() ? 5.0F : 4.5F) + distance;
 	}
 
 	@Override

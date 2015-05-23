@@ -14,13 +14,14 @@ import net.minecraft.world.World;
 
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
+import com.moonlight.buildingtools.items.tools.IToolOverrideHitDistance;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.IKeyHandler;
 import com.moonlight.buildingtools.utils.Key;
 
-public class BlockSmoother extends Item implements IKeyHandler, IGetGuiButtonPressed{
+public class BlockSmoother extends Item implements IKeyHandler, IGetGuiButtonPressed, IToolOverrideHitDistance{
 	
 	private static Set<Key.KeyCode> handledKeys;
 	
@@ -47,17 +48,6 @@ public class BlockSmoother extends Item implements IKeyHandler, IGetGuiButtonPre
 	    return stack.getTagCompound();	    
 	}
 	
-	@Override
-	public void onUpdate(ItemStack itemstack, World world, Entity entity, int metadata, boolean bool)
-	{
-		EntityPlayer player = (EntityPlayer) entity;
-		if(player.getCurrentEquippedItem() == itemstack){
-			BuildingTools.proxy.setExtraReach(player, 200);
-		}
-//		else{
-//			BuildingTools.proxy.setExtraReach(player, 5);
-//		}
-	}
 	
 	@Override
 	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)

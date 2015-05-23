@@ -45,7 +45,7 @@ public class CommonProxy {
 	
 	public void setExtraReach(EntityLivingBase entity, float reach) {
 		if(entity instanceof EntityPlayerMP)
-			((EntityPlayerMP) entity).theItemInWorldManager.setBlockReachDistance(Math.max(5, reach));
+			((EntityPlayerMP) entity).theItemInWorldManager.setBlockReachDistance(Math.max(5, 5+reach));
 			//((EntityPlayerMP) entity).theItemInWorldManager.setBlockReachDistance(Math.max(5, ((EntityPlayerMP) entity).theItemInWorldManager.getBlockReachDistance() + reach));
 	}
 	

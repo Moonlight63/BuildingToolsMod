@@ -83,6 +83,22 @@ public class RegoinCopyThread implements BlockChangeBase{
 		
 	}
 	
+	public RegoinCopyThread(World world, EntityPlayer player, Set<ChangeBlockToThis> selection, Set<Entity> entities){
+		
+		this.world = world;
+		this.entity = player;
+		
+		selectionSet.addAll(selection);
+		entitySet.addAll(entities);
+		
+		this.copyToPos = new BlockPos(0, 0, 0);		
+		this.rotation = 0;
+		this.flipX = false;
+		this.flipY = false;
+		this.flipZ = false;
+		
+	}
+	
 	public EnumFacing getAdjustedRotation(EnumFacing facing){
 		
 		switch (this.rotation){
@@ -364,7 +380,7 @@ public class RegoinCopyThread implements BlockChangeBase{
 				IProperty quartzPillerProperty = PropertyEnum.create("variant", BlockQuartz.EnumType.class);
 				IProperty bannerStandingRotation = PropertyInteger.create("rotation", 0, 15);
 				
-				BlockPos normalizedPos = bpos.getBlockPos();//.subtract(new BlockPos(structureBoundingBox.minX, structureBoundingBox.minY, structureBoundingBox.minZ));
+				BlockPos normalizedPos = bpos.getBlockPos();
 				BlockPos adjustedPos = getAdjustedBlockPos(normalizedPos);
 				BlockPos newPos = adjustedPos.add(copyToPos);				
 				
