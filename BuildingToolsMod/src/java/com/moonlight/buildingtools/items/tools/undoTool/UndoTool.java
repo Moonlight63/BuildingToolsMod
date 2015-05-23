@@ -47,8 +47,8 @@ public class UndoTool extends Item{
             //list.add(EnumChatFormatting.AQUA + "" + EnumChatFormatting.ITALIC + /*LocalisationHelper.localiseString*/("info.exchanger.shift_to_select_source") + EnumChatFormatting.RESET);
         }
         else{
-            list.add("Hold SHIFT for details");
-            list.add(player.getDisplayNameString());
+            //list.add("Hold SHIFT for details");
+            //list.add(player.getDisplayNameString());
         }
     }
 	

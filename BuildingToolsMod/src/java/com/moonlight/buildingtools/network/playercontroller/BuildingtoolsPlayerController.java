@@ -14,12 +14,6 @@ public class BuildingtoolsPlayerController extends PlayerControllerMP implements
 	public BuildingtoolsPlayerController(Minecraft p_i45062_1_, NetHandlerPlayClient p_i45062_2_) {
 		super(p_i45062_1_, p_i45062_2_);
 	}
-	
-	@Override
-	public boolean shouldDrawHUD()
-    {
-        return true;
-    }
 
 	@Override
 	public float getBlockReachDistance() {

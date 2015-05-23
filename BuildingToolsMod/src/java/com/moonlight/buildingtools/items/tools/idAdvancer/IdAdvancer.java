@@ -31,7 +31,7 @@ public class IdAdvancer extends Item implements IOutlineDrawer{
 	public IdAdvancer(){
 		super();
 		setUnlocalizedName("idadvancer");
-		setCreativeTab(BuildingTools.tabBT);
+		//setCreativeTab(BuildingTools.tabBT);
 	}
 	
 	@Override

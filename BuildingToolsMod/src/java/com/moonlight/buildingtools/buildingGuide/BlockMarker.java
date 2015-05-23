@@ -18,7 +18,7 @@ public class BlockMarker extends Block {
 
 	public BlockMarker() {
 		super(Material.rock);
-		setCreativeTab(BuildingTools.tabBT);
+		//setCreativeTab(BuildingTools.tabBT);
 		setUnlocalizedName("markerBlock");
 		//lightValue = 15;
 		// TODO Auto-generated constructor stub

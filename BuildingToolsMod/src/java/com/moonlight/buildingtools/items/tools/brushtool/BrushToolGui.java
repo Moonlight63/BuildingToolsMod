@@ -64,7 +64,7 @@ public class BrushToolGui extends GuiScreen{
 		NBTTagCompound heldnbt = BrushTool.getNBT(player.getHeldItem());
 		Shapes gen = Shapes.VALUES[heldnbt.getInteger("generator")];
 		
-		buttonList.add(new GuiButton(1, this.width / 2 - 170 / 2, this.height / 2 -10 - 80, 170, 20, gen.unlocalizedName));
+		buttonList.add(new GuiButton(1, this.width / 2 - 170 / 2, this.height / 2 -10 - 80, 170, 20, gen.getLocalizedName()));
 		buttonList.add(new GuiButton(2, this.width / 2 - 170 / 2, this.height / 2 -10 - 60, 170, 20, (gen.fixedRatio ? "Radius: " : "Radius X: ") + heldnbt.getInteger("radiusX")));
 		buttonList.add(new GuiButton(3, this.width / 2 - 170 / 2, this.height / 2 -10 - 40, 170, 20, "Radius Y: " + heldnbt.getInteger("radiusY")));
 		

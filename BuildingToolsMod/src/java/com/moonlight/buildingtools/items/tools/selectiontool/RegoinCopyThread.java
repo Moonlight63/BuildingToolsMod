@@ -32,6 +32,7 @@ import net.minecraft.item.ItemDoor;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
@@ -708,6 +709,7 @@ public class RegoinCopyThread implements BlockChangeBase{
 		if(!currentlyCalculating){
 			//System.out.println("Starting Paste");
 			if(!selectionSet.isEmpty()){
+				entity.addChatComponentMessage(new ChatComponentText("Pasting Phase 1"));
 				System.out.println("Running First Pass");
 				BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue = new BlockChangeQueue(RunFirstPass(), world, true);
 				if(saveUndo)
@@ -718,6 +720,7 @@ public class RegoinCopyThread implements BlockChangeBase{
 			}
 			else{
 				if(!secondPassSet.isEmpty()){
+					entity.addChatComponentMessage(new ChatComponentText("Pasting Phase 2"));
 					System.out.println("Running Second Pass");
 					BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue = new BlockChangeQueue(RunSecondPass(), world, true);
 					if(saveUndo)
@@ -728,6 +731,7 @@ public class RegoinCopyThread implements BlockChangeBase{
 				}
 				else{
 					if(!entityPassSet.isEmpty()){
+						entity.addChatComponentMessage(new ChatComponentText("Pasting Entities"));
 						System.out.println("Running Entity Pass");
 						RunEntityPass();
 						currentlyCalculating = false;
@@ -737,6 +741,7 @@ public class RegoinCopyThread implements BlockChangeBase{
 						if(saveUndo)
 							if(BuildingTools.getPlayerRegistry().getPlayer(entity).get().undolist.add(new LinkedHashSet<ChangeBlockToThis>((BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList))))
 								BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.clear();
+						entity.addChatComponentMessage(new ChatComponentText("Finished!"));
 						System.out.println("Finished");
 						isFinished = true;
 					}

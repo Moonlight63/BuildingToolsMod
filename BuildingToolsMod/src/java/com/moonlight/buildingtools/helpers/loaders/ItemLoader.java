@@ -11,6 +11,7 @@ import com.moonlight.buildingtools.items.tools.idAdvancer.IdAdvancer;
 import com.moonlight.buildingtools.items.tools.placetempblock.TempBlockTool;
 import com.moonlight.buildingtools.items.tools.selectiontool.SelectionTool;
 import com.moonlight.buildingtools.items.tools.smoothtool.BlockSmoother;
+import com.moonlight.buildingtools.items.tools.tapeMeasure.TapeMeasure;
 import com.moonlight.buildingtools.items.tools.undoTool.UndoTool;
 
 import net.minecraft.item.Item;
@@ -26,6 +27,7 @@ public class ItemLoader {
 	public static Item idAdvancer;
 	public static ItemBow autobow;
 	public static Item undoTool;
+	public static Item tapeMeasure;
 	
 	public static Set<Item> itemsToRegister;
 	
@@ -57,6 +59,9 @@ public class ItemLoader {
 		undoTool = new UndoTool();
 		RegisterHelper.registerItem(undoTool);
 		
+		tapeMeasure = new TapeMeasure();
+		RegisterHelper.registerItem(tapeMeasure);
+		
 		
 		itemsToRegister = Sets.newHashSet();
 		itemsToRegister.add(brushTool);
@@ -67,5 +72,6 @@ public class ItemLoader {
 		itemsToRegister.add(filterTool);
 		itemsToRegister.add(idAdvancer);
 		itemsToRegister.add(undoTool);
+		itemsToRegister.add(tapeMeasure);
 	}
 }

@@ -1,6 +1,8 @@
 package com.moonlight.buildingtools.helpers;
 
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.util.StatCollector;
+
 import org.lwjgl.opengl.GL11;
 
 public class FontHelper
@@ -33,5 +35,9 @@ public class FontHelper
     	fontRenderer.drawStringWithShadow(text, 0, 0, 0xFFFFFF);
     	GL11.glPopMatrix();
     	GL11.glEnable(GL11.GL_DEPTH_TEST);
+    }
+    
+    public static String localizeString(String key){
+    	return StatCollector.translateToLocal(key);
     }
 }

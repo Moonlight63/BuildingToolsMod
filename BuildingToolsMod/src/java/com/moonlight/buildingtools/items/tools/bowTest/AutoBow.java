@@ -18,6 +18,7 @@ public class AutoBow extends ItemBow{
 
     public AutoBow()
     {
+    	this.setUnlocalizedName("autoBow");
         this.maxStackSize = 1;
         this.setMaxDamage(384);
         this.setCreativeTab(CreativeTabs.tabCombat);

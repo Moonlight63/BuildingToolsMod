@@ -24,7 +24,7 @@ public enum Shapes {
 	public final IShapeGenerator generator;
 
 	private Shapes(boolean fixedRatio, IShapeGenerator generator, String name) {
-		this.unlocalizedName = "openblocks.misc.shape." + name;
+		this.unlocalizedName = "info.shape." + name;
 		this.fixedRatio = fixedRatio;
 		this.generator = generator;
 	}

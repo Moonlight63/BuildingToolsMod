@@ -92,9 +92,9 @@ public class FilterTool extends Item implements IKeyHandler, IOutlineDrawer, IIt
             //list.add(EnumChatFormatting.AQUA + "" + EnumChatFormatting.ITALIC + /*LocalisationHelper.localiseString*/("info.exchanger.shift_to_select_source") + EnumChatFormatting.RESET);
         } else
         {
-            list.add("Hold SHIFT for details");
+            //list.add("Hold SHIFT for details");
             
-            list.add(player.getDisplayNameString());
+            //list.add(player.getDisplayNameString());
         }
     }
 	

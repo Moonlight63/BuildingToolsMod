@@ -85,9 +85,9 @@ public class BuildingTool extends Item implements IKeyHandler, IOutlineDrawer, I
 
         } else
         {
-            list.add("Hold SHIFT for details");
+            //list.add("Hold SHIFT for details");
             
-            list.add(player.getDisplayNameString());
+            //list.add(player.getDisplayNameString());
         }
     }
 	

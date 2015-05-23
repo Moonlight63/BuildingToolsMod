@@ -12,6 +12,8 @@ import org.lwjgl.opengl.GL11;
 
 import com.moonlight.buildingtools.helpers.FontHelper;
 import com.moonlight.buildingtools.items.tools.brushtool.BrushTool;
+import com.moonlight.buildingtools.items.tools.buildingtool.BuildingTool;
+import com.moonlight.buildingtools.items.tools.filtertool.FilterTool;
 import com.moonlight.buildingtools.items.tools.smoothtool.BlockSmoother;
 
 public class BlockChangerGuiHelper extends Gui
@@ -45,37 +47,39 @@ public class BlockChangerGuiHelper extends Gui
         
         
         if ((player.inventory.getCurrentItem().getItem() instanceof BrushTool)){
-        	ItemStack exchangerStack = player.inventory.getCurrentItem();
-        	ItemStack source = ItemStack.loadItemStackFromNBT(BrushTool.getNBT(exchangerStack).getCompoundTag("sourceblock"));//exchanger.getSourceItemStack(exchangerStack);
+        	ItemStack currItem = player.inventory.getCurrentItem();
+        	ItemStack source = ItemStack.loadItemStackFromNBT(BrushTool.getNBT(currItem).getCompoundTag("sourceblock"));
         	
         	// Null check prevents NPEs in vanilla renderItemAndEffectIntoGUI for items which drop the wrong thing
             net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
             GL11.glEnable(32826 /* GL_RESCALE_NORMAL_EXT */);
-            ri.renderItemAndEffectIntoGUI(source, 2, 2);
+            ri.renderItemAndEffectIntoGUI(source, 4, 4);
             net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
             String am = "";
 	        
 	        if(source != null){
-	        	//am = "Block";
 	        	am = source.getDisplayName();
 	        }else{
 	        	am = "no block";
 	        }
 
-	        FontHelper.drawItemQuantity(mc.fontRendererObj, 3, 3, am);
-	        //FontHelper.renderText(mc.fontRendererObj, 2 + 16 + 2, 3, 1.0, "Radius: " + exchanger.getTargetRadius(exchangerStack));
+	        FontHelper.drawItemQuantity(mc.fontRendererObj, 5, 5, am);
+	        FontHelper.renderText(mc.fontRendererObj, 25, 8, 1.0, "Radius: " + BrushTool.getNBT(currItem).getInteger("radiusX") + ",  " + BrushTool.getNBT(currItem).getInteger("radiusY") + ",  " + BrushTool.getNBT(currItem).getInteger("radiusZ"));
+        }
+        
+        else if ((player.inventory.getCurrentItem().getItem() instanceof BuildingTool)){
+        	ItemStack currItem = player.inventory.getCurrentItem();
+        	FontHelper.renderText(mc.fontRendererObj, 25, 8, 1.0, "Radius: " + BuildingTool.getNBT(currItem).getInteger("radiusX") + ",  " + BuildingTool.getNBT(currItem).getInteger("radiusZ"));
+        }
+        
+        else if ((player.inventory.getCurrentItem().getItem() instanceof FilterTool)){
+        	ItemStack currItem = player.inventory.getCurrentItem();
+        	FontHelper.renderText(mc.fontRendererObj, 25, 8, 1.0, "Radius: " + FilterTool.getNBT(currItem).getInteger("radiusX") + ",  " + FilterTool.getNBT(currItem).getInteger("radiusY") + ",  " + FilterTool.getNBT(currItem).getInteger("radiusZ") + ", Depth: " +  FilterTool.getNBT(currItem).getInteger("topsoildepth"));
         }
         
         else if ((player.inventory.getCurrentItem().getItem() instanceof BlockSmoother)){
-        	BlockSmoother exchanger = (BlockSmoother) player.inventory.getCurrentItem().getItem();
-	        ItemStack exchangerStack = player.inventory.getCurrentItem();
-	        
-	     // Null check prevents NPEs in vanilla renderItemAndEffectIntoGUI for items which drop the wrong thing
-            net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
-            GL11.glEnable(32826 /* GL_RESCALE_NORMAL_EXT */);
-            net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
-            
-	        FontHelper.renderText(mc.fontRendererObj, 2 + 16 + 2, 3, 1.0, "Radius: " + exchanger.getTargetRadius(exchangerStack));
+        	ItemStack currItem = player.inventory.getCurrentItem();
+	        FontHelper.renderText(mc.fontRendererObj, 25, 8, 1.0, "Radius: " + ((BlockSmoother)currItem.getItem()).getTargetRadius(currItem));
         }
         
         else{
