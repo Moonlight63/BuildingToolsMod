@@ -23,10 +23,6 @@ public class FilterToolGui extends GuiScreen{
 
 	public static final int GUI_ID = 4;
 	
-	private static final ResourceLocation bgTexture = new ResourceLocation(Reference.MODID.toLowerCase(), "textures/gui/basicGui.png");
-	public final int xSizeOfTexture = 176;
-	public final int ySizeOfTexture = 88;
-	
 	//private GuiTextField radiusText;
 	//private GuiTextField iterationsText;
 	//private GuiTextField sigmaText;
@@ -47,12 +43,6 @@ public class FilterToolGui extends GuiScreen{
 		this.drawDefaultBackground();
 		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.mc.renderEngine.bindTexture(bgTexture);
-
-		int posX = (this.width - xSizeOfTexture) / 2;
-		int posY = (this.height - ySizeOfTexture) / 2;
-		
-		drawTexturedModalRect(posX, posY, 0, 0, xSizeOfTexture, ySizeOfTexture);
 		
 		//radiusText.drawTextBox();
 		//iterationsText.drawTextBox();
@@ -80,16 +70,16 @@ public class FilterToolGui extends GuiScreen{
 		
 		buttonList.clear();
 		
-		int posX = (this.width - xSizeOfTexture) / 2;
-		int posY = (this.height - ySizeOfTexture) / 2;
+		int posX = (this.width) / 2;
+		int posY = (this.height) / 2 - 80;
 		
 		NBTTagCompound heldnbt = FilterTool.getNBT(player.getHeldItem());
 		Shapes gen = Shapes.VALUES[heldnbt.getInteger("generator")];
 		
-		buttonList.add(new GuiButton(1, posX, posY, xSizeOfTexture, 20, "Radius X: " + heldnbt.getInteger("radiusX")));
-		buttonList.add(new GuiButton(2, posX, posY+25, xSizeOfTexture, 20, (gen.fixedRatio ? "Fixed Ratio: " : "Radius Y: ") + heldnbt.getInteger("radiusY")));
-		buttonList.add(new GuiButton(3, posX, posY+50, xSizeOfTexture, 20, (gen.fixedRatio ? "Fixed Ratio: " : "Radius Z: ") + heldnbt.getInteger("radiusZ")));
-		buttonList.add(new GuiButton(4, posX, posY+75, xSizeOfTexture, 20, "Depth: " + heldnbt.getInteger("topsoildepth")));
+		buttonList.add(new GuiButton(1, posX - (170/2), posY, 170, 20, "Radius X: " + heldnbt.getInteger("radiusX")));
+		buttonList.add(new GuiButton(2, posX - (170/2), posY+25, 170, 20, (gen.fixedRatio ? "Fixed Ratio: " : "Radius Y: ") + heldnbt.getInteger("radiusY")));
+		buttonList.add(new GuiButton(3, posX - (170/2), posY+50, 170, 20, (gen.fixedRatio ? "Fixed Ratio: " : "Radius Z: ") + heldnbt.getInteger("radiusZ")));
+		buttonList.add(new GuiButton(4, posX - (170/2), posY+75, 170, 20, "Depth: " + heldnbt.getInteger("topsoildepth")));
 		
 		
 	}

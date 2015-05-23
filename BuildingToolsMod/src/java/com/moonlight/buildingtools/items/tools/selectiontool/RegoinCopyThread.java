@@ -66,6 +66,8 @@ public class RegoinCopyThread implements BlockChangeBase{
 	protected boolean flipY;
 	protected boolean flipZ;
 	
+	protected boolean saveUndo = true;
+	
 	public RegoinCopyThread(World world, EntityPlayer player, BlockPos copyTo, int rot, boolean flipx, boolean flipy, boolean flipz){
 		
 		this.world = world;
@@ -96,6 +98,7 @@ public class RegoinCopyThread implements BlockChangeBase{
 		this.flipX = false;
 		this.flipY = false;
 		this.flipZ = false;
+		this.saveUndo = false;
 		
 	}
 	
@@ -707,8 +710,9 @@ public class RegoinCopyThread implements BlockChangeBase{
 			if(!selectionSet.isEmpty()){
 				System.out.println("Running First Pass");
 				BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue = new BlockChangeQueue(RunFirstPass(), world, true);
-				BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(CalcUndoList(
-						BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.blockpos));
+				if(saveUndo)
+					BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(CalcUndoList(
+							BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.blockpos));
 				currentlyCalculating = false;
 				System.out.println("First Pass Done");
 			}
@@ -716,8 +720,9 @@ public class RegoinCopyThread implements BlockChangeBase{
 				if(!secondPassSet.isEmpty()){
 					System.out.println("Running Second Pass");
 					BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue = new BlockChangeQueue(RunSecondPass(), world, true);
-					BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(CalcUndoList(
-							BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.blockpos));
+					if(saveUndo)
+						BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(CalcUndoList(
+								BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.blockpos));
 					currentlyCalculating = false;
 					System.out.println("Second Pass Done");
 				}
@@ -729,8 +734,9 @@ public class RegoinCopyThread implements BlockChangeBase{
 						System.out.println("Entity Pass Done");
 					}
 					else{
-						if(BuildingTools.getPlayerRegistry().getPlayer(entity).get().undolist.add(new LinkedHashSet<ChangeBlockToThis>((BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList))))
-							BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.clear();
+						if(saveUndo)
+							if(BuildingTools.getPlayerRegistry().getPlayer(entity).get().undolist.add(new LinkedHashSet<ChangeBlockToThis>((BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList))))
+								BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.clear();
 						System.out.println("Finished");
 						isFinished = true;
 					}

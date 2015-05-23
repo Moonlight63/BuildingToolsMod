@@ -22,10 +22,6 @@ public class BlockSmootherGui extends GuiScreen{
 
 	public static final int GUI_ID = 1;
 	
-	private static final ResourceLocation bgTexture = new ResourceLocation(Reference.MODID.toLowerCase(), "textures/gui/basicGui.png");
-	public final int xSizeOfTexture = 176;
-	public final int ySizeOfTexture = 88;
-	
 	private GuiTextField radiusText;
 	private GuiTextField iterationsText;
 	private GuiTextField sigmaText;
@@ -39,12 +35,6 @@ public class BlockSmootherGui extends GuiScreen{
 		this.drawDefaultBackground();
 		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.mc.renderEngine.bindTexture(bgTexture);
-
-		int posX = (this.width - xSizeOfTexture) / 2;
-		int posY = (this.height - ySizeOfTexture) / 2;
-		
-		drawTexturedModalRect(posX, posY, 0, 0, xSizeOfTexture, ySizeOfTexture);
 		
 		radiusText.drawTextBox();
 		iterationsText.drawTextBox();
@@ -76,25 +66,25 @@ public class BlockSmootherGui extends GuiScreen{
 		
 		buttonList.clear();
 		
-		int posX = (this.width - xSizeOfTexture) / 2;
-		int posY = (this.height - ySizeOfTexture) / 2;
+		int posX = (this.width) / 2;
+		int posY = (this.height) / 2;
 		
 		/*buttonList.add(new GuiButton(1, this.width / 2 - 12 - 29, posY + 4, 24, 20, "-"));
 		radiusText = new GuiTextField(0, fontRendererObj, this.width / 2 - 12, posY + 5, 24, 18);
 		radiusText.setText("" + ((BlockSmoother)player.getHeldItem().getItem()).getNBT(player.getHeldItem()).getInteger("radius"));
 		buttonList.add(new GuiButton(0, this.width / 2 - 12 + 29, posY + 4, 24, 20, "+"));*/
 		
-		buttonList.add(new GuiButton(0, posX + 5, posY + 4, 24, 20, "-"));
-		radiusText = new GuiTextField(0, fontRendererObj, posX + 34, posY + 5, 108, 18);
-		buttonList.add(new GuiButton(1, posX + 147, posY + 4, 24, 20, "+"));
+		buttonList.add(new GuiButton(0, posX - 108/2 - 24 - 2, posY - 80, 24, 20, "-"));
+		radiusText = new GuiTextField(0, fontRendererObj, posX - 108/2, posY - 79, 108, 18);
+		buttonList.add(new GuiButton(1, posX + 108/2 + 2, posY - 80, 24, 20, "+"));
 		
-		buttonList.add(new GuiButton(2, posX + 5, posY + 28, 24, 20, "-"));
-		iterationsText = new GuiTextField(0, fontRendererObj, posX + 34, posY + 29, 108, 18);
-		buttonList.add(new GuiButton(3, posX + 147, posY + 28, 24, 20, "+"));
+		buttonList.add(new GuiButton(2, posX - 108/2 - 24 - 2, posY - 55, 24, 20, "-"));
+		iterationsText = new GuiTextField(0, fontRendererObj, posX - 108/2, posY - 54, 108, 18);
+		buttonList.add(new GuiButton(3, posX + 108/2 + 2, posY - 55, 24, 20, "+"));
 		
-		buttonList.add(new GuiButton(4, posX + 5, posY + 52, 24, 20, "-"));
-		sigmaText = new GuiTextField(0, fontRendererObj, posX + 34, posY + 53, 108, 18);
-		buttonList.add(new GuiButton(5, posX + 147, posY + 52, 24, 20, "+"));
+		buttonList.add(new GuiButton(4, posX - 108/2 - 24 - 2, posY - 30, 24, 20, "-"));
+		sigmaText = new GuiTextField(0, fontRendererObj, posX - 108/2, posY - 29, 108, 18);
+		buttonList.add(new GuiButton(5, posX + 108/2 + 2, posY - 30, 24, 20, "+"));
 	}
 	
 	@Override

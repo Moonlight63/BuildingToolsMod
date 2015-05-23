@@ -115,19 +115,25 @@ public class FilterTool extends Item implements IKeyHandler, IOutlineDrawer, IIt
             float hitY,
             float hitZ){
 		
-		if(!worldIn.isRemote){
-			this.world = worldIn;
-			
-			outlineing = false;
-			PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
-			
-			System.out.println("FilterToolUsed");
-			//player.addPending(new PlaceTreeThread(worldIn, pos, playerIn));
-			
-			player.addPending(new TopSoilThread(worldIn, pos, getNBT(stack).getInteger("radiusX"),	getNBT(stack).getInteger("radiusY"), getNBT(stack).getInteger("radiusZ"), getNBT(stack).getInteger("topsoildepth"), side, playerIn));
-			
-			outlineing = true;
-			return true;
+		if(playerIn.isSneaking())
+			playerIn.openGui(BuildingTools.instance, 4, worldIn, 0, 0, 0);
+		else{
+		
+			if(!worldIn.isRemote){
+				this.world = worldIn;
+				
+				outlineing = false;
+				PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
+				
+				System.out.println("FilterToolUsed");
+				//player.addPending(new PlaceTreeThread(worldIn, pos, playerIn));
+				
+				player.addPending(new TopSoilThread(worldIn, pos, getNBT(stack).getInteger("radiusX"),	getNBT(stack).getInteger("radiusY"), getNBT(stack).getInteger("radiusZ"), getNBT(stack).getInteger("topsoildepth"), side, playerIn));
+				
+				outlineing = true;
+				return true;
+			}
+		
 		}
 		
 		return true;

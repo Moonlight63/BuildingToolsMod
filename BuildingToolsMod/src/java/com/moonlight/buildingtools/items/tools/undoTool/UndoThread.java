@@ -13,6 +13,7 @@ import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
 import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
+@Deprecated
 public class UndoThread implements BlockChangeBase {
 	
 	protected World world;
@@ -22,6 +23,7 @@ public class UndoThread implements BlockChangeBase {
 	protected Set<ChangeBlockToThis> undoSet = new CopyOnWriteArraySet<ChangeBlockToThis>();
 	protected boolean currentlyCalculating = false;
 	
+	@Deprecated
 	public UndoThread(World world, EntityPlayer entity){
 		this.world = world;
 		this.entity = entity;

@@ -66,9 +66,13 @@ public class BlockSmoother extends Item implements IKeyHandler, IGetGuiButtonPre
             float hitY,
             float hitZ){
 		
-		if(!worldIn.isRemote){
-			PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
-			player.addPending(new SmoothToolThread(worldIn, pos, getTargetRadius(stack), stack, playerIn));
+		if(playerIn.isSneaking())
+			playerIn.openGui(BuildingTools.instance, 1, worldIn, 0, 0, 0);
+		else{
+			if(!worldIn.isRemote){
+				PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
+				player.addPending(new SmoothToolThread(worldIn, pos, getTargetRadius(stack), stack, playerIn));
+			}
 		}
 		return true;
 	}

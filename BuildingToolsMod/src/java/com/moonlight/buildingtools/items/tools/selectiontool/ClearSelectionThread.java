@@ -10,6 +10,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 
+import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.helpers.shapes.GeometryUtils;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 import com.moonlight.buildingtools.items.tools.BlockChangeBase;

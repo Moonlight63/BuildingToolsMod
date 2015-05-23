@@ -17,7 +17,7 @@ public class BlockTemporary extends Block {
 
 	public BlockTemporary() {
 		super(Material.rock);
-		setCreativeTab(BuildingTools.tabBT);
+		//setCreativeTab(BuildingTools.tabBT);
 		setUnlocalizedName("tempBlock");
 	}
 	@Override
