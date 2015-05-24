@@ -108,16 +108,21 @@ public class BuildingTool extends Item implements IKeyHandler, IOutlineDrawer, I
             float hitY,
             float hitZ){
 		
-		if(!worldIn.isRemote){
-			this.world = worldIn;			
-			
-			outlineing = false;
-			PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
-			
-			player.addPending(new BuildingToolThread(worldIn, pos, getNBT(stack).getInteger("radiusX"),	getNBT(stack).getBoolean("placeAll"), getNBT(stack).getInteger("radiusZ"), side, playerIn));
-			
-			outlineing = true;
-			return true;
+		if(playerIn.isSneaking()){
+			playerIn.openGui(BuildingTools.instance, 3, worldIn, 0, 0, 0);
+		}
+		else{
+			if(!worldIn.isRemote){
+				this.world = worldIn;			
+				
+				outlineing = false;
+				PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
+				
+				player.addPending(new BuildingToolThread(worldIn, pos, getNBT(stack).getInteger("radiusX"),	getNBT(stack).getBoolean("placeAll"), getNBT(stack).getInteger("radiusZ"), side, playerIn));
+				
+				outlineing = true;
+				return true;
+			}
 		}
 		
 		return true;

@@ -23,10 +23,6 @@ public class BuildingToolGui extends GuiScreen{
 
 	public static final int GUI_ID = 3;
 	
-	private static final ResourceLocation bgTexture = new ResourceLocation(Reference.MODID.toLowerCase(), "textures/gui/basicGui.png");
-	public final int xSizeOfTexture = 176;
-	public final int ySizeOfTexture = 88;
-	
 	//private GuiTextField radiusText;
 	//private GuiTextField iterationsText;
 	//private GuiTextField sigmaText;
@@ -38,14 +34,6 @@ public class BuildingToolGui extends GuiScreen{
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks){
 		this.drawDefaultBackground();
-		
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.mc.renderEngine.bindTexture(bgTexture);
-
-		int posX = (this.width - xSizeOfTexture) / 2;
-		int posY = (this.height - ySizeOfTexture) / 2;
-		
-		drawTexturedModalRect(posX, posY, 0, 0, xSizeOfTexture, ySizeOfTexture);
 		
 		//radiusText.drawTextBox();
 		//iterationsText.drawTextBox();
@@ -80,16 +68,16 @@ public class BuildingToolGui extends GuiScreen{
 		
 		buttonList.clear();
 		
-		int posX = (this.width - xSizeOfTexture) / 2;
-		int posY = (this.height - ySizeOfTexture) / 2;
+		int posX = (this.width - 170) / 2;
+		int posY = (this.height - 80) / 2;
 		
 		NBTTagCompound heldnbt = BuildingTool.getNBT(player.getHeldItem());
 		Shapes gen = Shapes.VALUES[heldnbt.getInteger("generator")];
 		
-		buttonList.add(new GuiButton(1, posX, posY, xSizeOfTexture, 20, (gen.fixedRatio ? "Radius: " : "Radius X: ") + heldnbt.getInteger("radiusX")));
-		buttonList.add(new GuiButton(2, posX, posY+25, xSizeOfTexture, 20, (gen.fixedRatio ? "Fixed Ratio: " : "Radius Z: ") + heldnbt.getInteger("radiusZ")));
+		buttonList.add(new GuiButton(1, posX, posY, 170, 20, (gen.fixedRatio ? "Radius: " : "Radius X: ") + heldnbt.getInteger("radiusX")));
+		buttonList.add(new GuiButton(2, posX, posY+25, 170, 20, (gen.fixedRatio ? "Fixed Ratio: " : "Radius Z: ") + heldnbt.getInteger("radiusZ")));
 		
-		buttonList.add(new GuiButton(3, posX, posY+50, xSizeOfTexture, 20, "Copy All Blocks? : " + heldnbt.getBoolean("placeAll")));
+		buttonList.add(new GuiButton(3, posX, posY+50, 170, 20, "Copy All Blocks? : " + heldnbt.getBoolean("placeAll")));
 		
 	}
 	

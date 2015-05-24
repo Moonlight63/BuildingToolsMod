@@ -13,8 +13,6 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import com.moonlight.buildingtools.BuildingTools;
-
 public class BlockGuide extends BlockContainer{
 	
 	public World world;
