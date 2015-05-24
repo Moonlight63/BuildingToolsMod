@@ -74,7 +74,7 @@ public class SelectionToolGui extends GuiScreen{
 		buttonList.add(new GuiButton(8, this.width / 2 - 170 - 1, this.height / 2 -10 + 60, 170, 20, "Clear selection"));
 		
 		
-		buttonList.add(new GuiButton(9, this.width / 2 + 1, this.height / 2 -10 - 0, 170, 20, "Repeatitions:  " + heldnbt.getInteger("repeat")));
+		buttonList.add(new GuiButton(9, this.width / 2 + 1, this.height / 2 -10 - 0, 170, 20, "Repetitions:  " + heldnbt.getInteger("repeat")));
 		buttonList.add(new GuiButton(10, this.width / 2 + 1, this.height / 2 -10 + 20, 170, 20, "X Movment: " + heldnbt.getInteger("repeatMovmentX")));
 		buttonList.add(new GuiButton(11, this.width / 2 + 1, this.height / 2 -10 + 40, 170, 20, "Y Movment: " + heldnbt.getInteger("repeatMovmentY")));
 		buttonList.add(new GuiButton(12, this.width / 2 + 1, this.height / 2 -10 + 60, 170, 20, "Z Movment: " + heldnbt.getInteger("repeatMovmentZ")));
