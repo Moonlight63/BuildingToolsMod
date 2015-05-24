@@ -17,3 +17,4 @@ item.selectionTool.name=Selection Tool
 item.smoothTool.name=Terrain Smooth Tool
 item.undoTool.name=Undo Tool
 item.tape.name=Measuring Tape
+key.buildingTools.tools=Building Tools Controls
