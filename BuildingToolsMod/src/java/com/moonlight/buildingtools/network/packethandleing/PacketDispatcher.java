@@ -1,6 +1,7 @@
 package com.moonlight.buildingtools.network.packethandleing;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -116,6 +117,7 @@ public class PacketDispatcher
 	 * See {@link SimpleNetworkWrapper#sendToServer(IMessage)}
 	 */
 	 public static final void sendToServer(IMessage message) {
-		 PacketDispatcher.dispatcher.sendToServer(message);
+		 if(FMLCommonHandler.instance().getSide().isClient())
+			 PacketDispatcher.dispatcher.sendToServer(message);
 	 }
 }

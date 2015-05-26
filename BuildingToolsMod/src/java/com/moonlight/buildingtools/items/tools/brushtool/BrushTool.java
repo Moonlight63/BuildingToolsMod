@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 //import java.util.Optional;
 import java.util.Set;
+import java.util.Vector;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -13,10 +14,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import com.google.common.collect.Sets;
 import com.moonlight.buildingtools.BuildingTools;
@@ -65,6 +66,17 @@ public class BrushTool extends Item implements IKeyHandler, IOutlineDrawer, IIte
 		setCreativeTab(BuildingTools.tabBT);
 	}
 	
+	@Override
+	public void onUpdate(ItemStack itemstack, World world, Entity entity, int metadata, boolean bool){		
+		if(thisStack == null){
+			thisStack = itemstack;
+		}
+		
+		if(this.world == null){
+			this.world = world;
+		}
+	}
+	
 	public static NBTTagCompound getNBT(ItemStack stack) {
 	    if (stack.getTagCompound() == null) {
 	        stack.setTagCompound(new NBTTagCompound());
@@ -76,11 +88,11 @@ public class BrushTool extends Item implements IKeyHandler, IOutlineDrawer, IIte
 	        stack.getTagCompound().setBoolean("fillmode", true);
 	        stack.getTagCompound().setInteger("replacemode", 1);
 	        stack.getTagCompound().setTag("sourceblock", new ItemStack(Blocks.stone).writeToNBT(new NBTTagCompound()));
+	        stack.getTagCompound().setIntArray("targetBlockPos", new int[]{0,0,0});
 	    }
 	    return stack.getTagCompound();	    
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
     public void addInformation(ItemStack stack, EntityPlayer player, @SuppressWarnings("rawtypes") List list, boolean check)
     {
@@ -92,8 +104,7 @@ public class BrushTool extends Item implements IKeyHandler, IOutlineDrawer, IIte
             {
                 //setDefaultTag(stack, 0);
             }
-
-
+            
             //ItemStack pb = ItemStack.loadItemStackFromNBT(getNBT(stack).getCompoundTag("sourceblock"));
             //list.add(EnumChatFormatting.GREEN + /*LocalisationHelper.localiseString*/("info.exchanger.source " + pb.getDisplayName()) + EnumChatFormatting.RESET);
 
@@ -126,6 +137,10 @@ public class BrushTool extends Item implements IKeyHandler, IOutlineDrawer, IIte
             float hitX,
             float hitY,
             float hitZ){
+		
+		getNBT(stack).setIntArray("targetBlockPos", new int[]{pos.getX(), pos.getY(), pos.getZ()});
+		PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(stack)));
+		targetBlock = pos;
 		
 		if(playerIn.isSneaking()){
 			//getNBT(stack).setTag("sourceblock", new ItemStack(worldIn.getBlockState(pos).getBlock(), 1, worldIn.getBlockState(pos).getBlock().getMetaFromState(worldIn.getBlockState(pos))).writeToNBT(new NBTTagCompound()));
@@ -471,6 +486,10 @@ public class BrushTool extends Item implements IKeyHandler, IOutlineDrawer, IIte
 			break;
 			
 		case 8:
+			targetBlock = new BlockPos(getNBT(stack).getIntArray("targetBlockPos")[0], getNBT(stack).getIntArray("targetBlockPos")[1], getNBT(stack).getIntArray("targetBlockPos")[2]);
+			System.out.println(world);
+			System.out.println(targetBlock);
+			System.out.println(stack);
 			getNBT(stack).setTag("sourceblock", new ItemStack(world.getBlockState(targetBlock).getBlock(), 1, world.getBlockState(targetBlock).getBlock().getMetaFromState(world.getBlockState(targetBlock))).writeToNBT(new NBTTagCompound()));
 			
 			break;

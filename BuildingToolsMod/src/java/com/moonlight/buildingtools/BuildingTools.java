@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 import com.moonlight.buildingtools.creativetab.CreativeTabMain;
 import com.moonlight.buildingtools.helpers.DrawBlockHighlightEventHandler;
@@ -46,9 +47,9 @@ public class BuildingTools
     	ItemLoader.loadItems();
     	BlockLoader.loadBlocks();
     	
-    	MinecraftForge.EVENT_BUS.register(new DrawBlockHighlightEventHandler());
-    	FMLCommonHandler.instance().bus().register(new KeyBindsHandler());
     	if (FMLCommonHandler.instance().getSide().isClient()){
+    		FMLCommonHandler.instance().bus().register(new KeyBindsHandler());
+    		MinecraftForge.EVENT_BUS.register(new DrawBlockHighlightEventHandler());
             KeyBindsHandler.init();
         }
     	

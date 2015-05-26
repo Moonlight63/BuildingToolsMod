@@ -1,5 +1,8 @@
 package com.moonlight.buildingtools.items.tools.tasks;
 
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
@@ -19,7 +22,8 @@ public class ChangeQueueTask implements Runnable{
                 			p.clearNextPending();
                 		}
                 		else{
-                			p.getNextPendingChange().get().perform();
+                			//if(FMLCommonHandler.instance().getSide().isClient())
+                				p.getNextPendingChange().get().perform();
                 		}
                 	}
                 }

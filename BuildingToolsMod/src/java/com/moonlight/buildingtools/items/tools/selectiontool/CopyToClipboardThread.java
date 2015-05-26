@@ -77,7 +77,7 @@ public class CopyToClipboardThread implements BlockChangeBase, IShapeable{
 		System.out.println(world);
 		if(bpos.getY() > 0 && bpos.getY() < 256 && !world.isAirBlock(bpos)){
 			currentlyCalculating = true;
-			selectionSet.add(addBlockWithNBT(bpos, world.getBlockState(bpos), bpos.subtract(new BlockPos(structureBoundingBox.minX, structureBoundingBox.minY, structureBoundingBox.minZ))));
+			selectionSet.add(addBlockWithNBT(bpos, world.getBlockState(bpos), bpos.add(new BlockPos(-structureBoundingBox.minX, -structureBoundingBox.minY, -structureBoundingBox.minZ))));
 		}
 		
 		
@@ -129,7 +129,7 @@ public class CopyToClipboardThread implements BlockChangeBase, IShapeable{
 				player.currentCopyClipboard.clear();
 				player.currentCopyClipboard = selectionSet;
 				player.currentClipboardEntities = entitySet;
-				player.clipboardMaxPos = new BlockPos(structureBoundingBox.maxX, structureBoundingBox.maxY, structureBoundingBox.maxZ).subtract(new BlockPos(structureBoundingBox.minX, structureBoundingBox.minY, structureBoundingBox.minZ));
+				player.clipboardMaxPos = new BlockPos(structureBoundingBox.maxX, structureBoundingBox.maxY, structureBoundingBox.maxZ).add(new BlockPos(-structureBoundingBox.minX, -structureBoundingBox.minY, -structureBoundingBox.minZ));
 				
 				currentlyCalculating = false;
 				
