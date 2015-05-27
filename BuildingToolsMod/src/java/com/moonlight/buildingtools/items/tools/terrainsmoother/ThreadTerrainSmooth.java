@@ -1,4 +1,4 @@
-package com.moonlight.buildingtools.items.tools.smoothtool;
+package com.moonlight.buildingtools.items.tools.terrainsmoother;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -23,7 +23,7 @@ import com.moonlight.buildingtools.items.tools.BlockChangeBase;
 import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
 import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
 
-public class SmoothToolThread implements BlockChangeBase {
+public class ThreadTerrainSmooth implements BlockChangeBase {
 	
 	protected World world;
 	protected BlockPos origin;
@@ -43,7 +43,7 @@ public class SmoothToolThread implements BlockChangeBase {
     private int width;
     private int height;
 	
-	public SmoothToolThread(World world, BlockPos origin, int radius, ItemStack stack, EntityPlayer player){
+	public ThreadTerrainSmooth(World world, BlockPos origin, int radius, ItemStack stack, EntityPlayer player){
 		this.world = world;
 		this.origin = origin;
 		this.raduis = radius;
@@ -72,11 +72,11 @@ public class SmoothToolThread implements BlockChangeBase {
 	public void Calculate(){
 		currentlyCalculating = true;
 		
-		BlockPos min = origin.subtract(new Vec3i(raduis, 0, raduis));
+		BlockPos min = origin.add(new Vec3i(-raduis, 0, -raduis));
     	BlockPos max = origin.add(raduis, 256 - origin.getY(), raduis);
     	
     	HeightMap(false, min, max, world);
-    	HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(BlockSmoother.getNBT(stack).getInteger("iterations"), BlockSmoother.getNBT(stack).getDouble("sigma")));
+    	HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(ToolTerrainSmooth.getNBT(stack).getInteger("iterations"), ToolTerrainSmooth.getNBT(stack).getDouble("sigma")));
     	if(data != null){
     		System.out.print(data);
     		applyFilter(filter, 3, min, max, world);

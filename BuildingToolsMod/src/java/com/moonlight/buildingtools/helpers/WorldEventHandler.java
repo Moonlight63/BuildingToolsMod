@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -11,10 +12,17 @@ import net.minecraftforge.fml.relauncher.Side;
 
 import com.google.common.base.Optional;
 import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.UpdateHandler;
 import com.moonlight.buildingtools.items.tools.IToolOverrideHitDistance;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
 public class WorldEventHandler{
+	
+	
+	@SubscribeEvent
+	public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event){
+		event.player.addChatMessage(new ChatComponentText(UpdateHandler.updateStatus));
+	}
 	
 	@SubscribeEvent
     public void onSpawn(PlayerEvent.PlayerLoggedInEvent event)

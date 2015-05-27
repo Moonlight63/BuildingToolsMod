@@ -1,4 +1,4 @@
-package com.moonlight.buildingtools.items.tools.smoothtool;
+package com.moonlight.buildingtools.items.tools.terrainsmoother;
 
 import java.awt.image.Kernel;
 import static com.google.common.base.Preconditions.checkNotNull;

@@ -1,6 +1,8 @@
 package com.moonlight.buildingtools.items.tools.buildingtool;
 
 import java.io.IOException;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -14,34 +16,27 @@ import org.lwjgl.opengl.GL11;
 
 import com.moonlight.buildingtools.Reference;
 import com.moonlight.buildingtools.helpers.Shapes;
+import com.moonlight.buildingtools.items.tools.selectiontool.ToolSelection;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendGuiButtonPressedToItemMessage;
 
-public class BuildingToolGui extends GuiScreen{
+public class GUIBuildersTool extends GuiScreen{
 	
 	private EntityPlayer player;
+	
+	private Set<GuiButton> buttons = new LinkedHashSet<GuiButton>();
+	public static final GuiButton radiusx = 		new GuiButton(1, 0, 0, 160, 20, "");
+	public static final GuiButton radiusz = 		new GuiButton(2, 0, 0, 160, 20, "");
+	public static final GuiButton allblocks = 		new GuiButton(3, 0, 0, 160, 20, "");
 
-	public static final int GUI_ID = 3;
 	
-	//private GuiTextField radiusText;
-	//private GuiTextField iterationsText;
-	//private GuiTextField sigmaText;
-	
-	public BuildingToolGui(EntityPlayer player){
+	public GUIBuildersTool(EntityPlayer player){
 		this.player = player;
 	}
 	
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks){
 		this.drawDefaultBackground();
-		
-		//radiusText.drawTextBox();
-		//iterationsText.drawTextBox();
-		//sigmaText.drawTextBox();
-		
-		//radiusText.setText("Radius: " + ((BrushTool)player.getHeldItem().getItem()).getNBT(player.getHeldItem()).getInteger("radius"));
-		//iterationsText.setText("Iterations: " + ((BrushTool)player.getHeldItem().getItem()).getNBT(player.getHeldItem()).getInteger("iterations"));
-		//sigmaText.setText("Sigma: " + ((BrushTool)player.getHeldItem().getItem()).getNBT(player.getHeldItem()).getInteger("sigma"));
 		
 		this.buttonList.clear();
         this.initGui();
@@ -67,17 +62,23 @@ public class BuildingToolGui extends GuiScreen{
 	public void initGui(){
 		
 		buttonList.clear();
+		buttons.clear();
 		
-		int posX = (this.width - 170) / 2;
-		int posY = (this.height - 80) / 2;
+		NBTTagCompound heldnbt = ToolBuilding.getNBT(player.getHeldItem());
 		
-		NBTTagCompound heldnbt = BuildingTool.getNBT(player.getHeldItem());
-		Shapes gen = Shapes.VALUES[heldnbt.getInteger("generator")];
+		radiusx.displayString = "Radius X: " + heldnbt.getInteger("radiusX");
+		radiusz.displayString = "Radius Z: " + heldnbt.getInteger("radiusZ");
+		allblocks.displayString = "Copy All Blocks? : " + heldnbt.getBoolean("placeAll");
 		
-		buttonList.add(new GuiButton(1, posX, posY, 170, 20, (gen.fixedRatio ? "Radius: " : "Radius X: ") + heldnbt.getInteger("radiusX")));
-		buttonList.add(new GuiButton(2, posX, posY+25, 170, 20, (gen.fixedRatio ? "Fixed Ratio: " : "Radius Z: ") + heldnbt.getInteger("radiusZ")));
+		buttons.add(radiusx);
+		buttons.add(radiusz);
+		buttons.add(allblocks);
 		
-		buttonList.add(new GuiButton(3, posX, posY+50, 170, 20, "Copy All Blocks? : " + heldnbt.getBoolean("placeAll")));
+		for (GuiButton btn : buttons){
+			btn.xPosition = this.width / 2 - (160 / 2);
+			btn.yPosition = ((this.height / 2) - 111) + (22 * btn.id);
+			buttonList.add(btn);
+		}
 		
 	}
 	

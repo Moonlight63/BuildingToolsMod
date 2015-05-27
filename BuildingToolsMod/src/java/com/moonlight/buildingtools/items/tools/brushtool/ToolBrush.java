@@ -27,6 +27,7 @@ import com.moonlight.buildingtools.helpers.loaders.BlockLoader;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
 import com.moonlight.buildingtools.items.tools.IToolOverrideHitDistance;
+import com.moonlight.buildingtools.network.GuiHandler;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
@@ -38,7 +39,7 @@ import com.moonlight.buildingtools.utils.KeyHelper;
 import com.moonlight.buildingtools.utils.RGBA;
 //import com.moonlight.buildingtools.utils.KeyBindsHandler.ETKeyBinding;
 
-public class BrushTool extends Item implements IKeyHandler, IOutlineDrawer, IItemBlockAffector, IShapeable, IGetGuiButtonPressed, IToolOverrideHitDistance{
+public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IItemBlockAffector, IShapeable, IGetGuiButtonPressed, IToolOverrideHitDistance{
 	
 	private static Set<Key.KeyCode> handledKeys;
 	
@@ -60,7 +61,7 @@ public class BrushTool extends Item implements IKeyHandler, IOutlineDrawer, IIte
     }
 	
 	
-	public BrushTool(){
+	public ToolBrush(){
 		super();
 		setUnlocalizedName("brushTool");
 		setCreativeTab(BuildingTools.tabBT);
@@ -124,7 +125,7 @@ public class BrushTool extends Item implements IKeyHandler, IOutlineDrawer, IIte
     {
 		targetBlock = null;
 		if(playerIn.isSneaking())
-			playerIn.openGui(BuildingTools.instance, 2, worldIn, 0, 0, 0);
+			playerIn.openGui(BuildingTools.instance, GuiHandler.GUIBrushTool, worldIn, 0, 0, 0);
 		//System.out.println(targetBlock);
         return itemStackIn;
     }
@@ -144,7 +145,7 @@ public class BrushTool extends Item implements IKeyHandler, IOutlineDrawer, IIte
 		
 		if(playerIn.isSneaking()){
 			//getNBT(stack).setTag("sourceblock", new ItemStack(worldIn.getBlockState(pos).getBlock(), 1, worldIn.getBlockState(pos).getBlock().getMetaFromState(worldIn.getBlockState(pos))).writeToNBT(new NBTTagCompound()));
-			playerIn.openGui(BuildingTools.instance, 2, worldIn, 0, 0, 0);
+			playerIn.openGui(BuildingTools.instance, GuiHandler.GUIBrushTool, worldIn, 0, 0, 0);
 			return false;
 		}
 		
@@ -160,7 +161,7 @@ public class BrushTool extends Item implements IKeyHandler, IOutlineDrawer, IIte
 			PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
 			
 			if(getNBT(stack).getInteger("replacemode") == 1){
-				player.addPending(new BlockShapeThread(worldIn, pos,					
+				player.addPending(new ThreadPaintShape(worldIn, pos,					
 						getNBT(stack).getInteger("radiusX"),
 						getNBT(stack).getInteger("radiusY"), 
 						getNBT(stack).getInteger("radiusZ"), 
@@ -173,7 +174,7 @@ public class BrushTool extends Item implements IKeyHandler, IOutlineDrawer, IIte
 						));
 			}
 			else if(getNBT(stack).getInteger("replacemode") == 2){
-				player.addPending(new BlockShapeThread(worldIn, pos,					
+				player.addPending(new ThreadPaintShape(worldIn, pos,					
 						getNBT(stack).getInteger("radiusX"),
 						getNBT(stack).getInteger("radiusY"), 
 						getNBT(stack).getInteger("radiusZ"), 
@@ -187,7 +188,7 @@ public class BrushTool extends Item implements IKeyHandler, IOutlineDrawer, IIte
 						));
 			}
 			else if(getNBT(stack).getInteger("replacemode") == 3){
-				player.addPending(new BlockShapeThread(worldIn, pos,					
+				player.addPending(new ThreadPaintShape(worldIn, pos,					
 						getNBT(stack).getInteger("radiusX"),
 						getNBT(stack).getInteger("radiusY"), 
 						getNBT(stack).getInteger("radiusZ"), 
@@ -289,7 +290,7 @@ public class BrushTool extends Item implements IKeyHandler, IOutlineDrawer, IIte
     @Override
     public Set<Key.KeyCode> getHandledKeys()
     {
-        return BrushTool.handledKeys;
+        return ToolBrush.handledKeys;
     }
 	
 	@Override
@@ -322,7 +323,7 @@ public class BrushTool extends Item implements IKeyHandler, IOutlineDrawer, IIte
 	@Override
     public Set<BlockPos> blocksAffected(ItemStack item, World world, BlockPos origin, EnumFacing side, int radius, boolean fill)
     {
-        if (!(item.getItem() instanceof BrushTool)) return null;
+        if (!(item.getItem() instanceof ToolBrush)) return null;
         
         targetBlock = origin;        
         
@@ -406,9 +407,7 @@ public class BrushTool extends Item implements IKeyHandler, IOutlineDrawer, IIte
 			ItemStack stack) {
 		
 		
-		//System.out.println("Got To GetGuiButtonPressed");
-		switch (buttonID) {
-		case 1:
+		if (buttonID == 1) {
 			if(mouseButton == 0){
 				if(getNBT(stack).getInteger("generator") < Shapes.VALUES.length - 1)
 					getNBT(stack).setInteger("generator", getNBT(stack).getInteger("generator") + 1);
@@ -421,58 +420,46 @@ public class BrushTool extends Item implements IKeyHandler, IOutlineDrawer, IIte
 				else
 					getNBT(stack).setInteger("generator", Shapes.VALUES.length - 1);
 			}
-			
-			//System.out.println(getNBT(stack).getInteger("generator"));
-			break;
-			
-		case 2:
+		} else if (buttonID == 2) {
 			int radiusx = getNBT(stack).getInteger("radiusX");
-	        if (mouseButton == 0){
+			if (mouseButton == 0){
 	                radiusx++;
 	        } else if (mouseButton == 1){
 	                radiusx--;
 	        }
-
-	        if (radiusx < 1){radiusx = 1;}
-
-	        getNBT(stack).setInteger("radiusX", radiusx);
-			break;
-			
-		case 3:
+			if (radiusx < 1){radiusx = 1;}
+			getNBT(stack).setInteger("radiusX", radiusx);
+		} else if (buttonID == 3) {
 			int radiusy = getNBT(stack).getInteger("radiusY");
-	        if (mouseButton == 0){
+			if (mouseButton == 0){
 	                radiusy++;
 	        } else if (mouseButton == 1){
 	                radiusy--;
 	        }
-
-	        if (radiusy < 1){radiusy = 1;}
-
-	        getNBT(stack).setInteger("radiusY", radiusy);
-			break;
-			
-		case 4:
+			if (radiusy < 1){radiusy = 1;}
+			getNBT(stack).setInteger("radiusY", radiusy);
+		} else if (buttonID == 4) {
 			int radiusz = getNBT(stack).getInteger("radiusZ");
-	        if (mouseButton == 0){
+			if (mouseButton == 0){
 	                radiusz++;
 	        } else if (mouseButton == 1){
 	                radiusz--;
 	        }
-
-	        if (radiusz < 1){radiusz = 1;}
-
-	        getNBT(stack).setInteger("radiusZ", radiusz);
-			break;
-			
-		case 5:
+			if (radiusz < 1){radiusz = 1;}
+			getNBT(stack).setInteger("radiusZ", radiusz);
+		} else if (buttonID == 5) {
+			targetBlock = new BlockPos(getNBT(stack).getIntArray("targetBlockPos")[0], getNBT(stack).getIntArray("targetBlockPos")[1], getNBT(stack).getIntArray("targetBlockPos")[2]);
+			System.out.println(world);
+			System.out.println(targetBlock);
+			System.out.println(stack);
+			getNBT(stack).setTag("sourceblock", new ItemStack(world.getBlockState(targetBlock).getBlock(), 1, world.getBlockState(targetBlock).getBlock().getMetaFromState(world.getBlockState(targetBlock))).writeToNBT(new NBTTagCompound()));
+		} else if (buttonID == 6) {
+			getNBT(stack).setTag("sourceblock", new ItemStack(BlockLoader.tempBlock, 1, BlockLoader.tempBlock.getMetaFromState(BlockLoader.tempBlock.getDefaultState())).writeToNBT(new NBTTagCompound()));
+		} else if (buttonID == 7) {
 			getNBT(stack).setBoolean("fillmode", !getNBT(stack).getBoolean("fillmode"));
-			break;
-			
-		case 6:
+		} else if (buttonID == 8) {
 			getNBT(stack).setBoolean("forcefall", !getNBT(stack).getBoolean("forcefall"));
-			break;
-			
-		case 7:
+		} else if (buttonID == 9) {
 			if(getNBT(stack).getInteger("replacemode") == 1){
 				getNBT(stack).setInteger("replacemode", 2);
 			}
@@ -482,25 +469,7 @@ public class BrushTool extends Item implements IKeyHandler, IOutlineDrawer, IIte
 			else if(getNBT(stack).getInteger("replacemode") == 3){
 				getNBT(stack).setInteger("replacemode", 1);
 			}
-			
-			break;
-			
-		case 8:
-			targetBlock = new BlockPos(getNBT(stack).getIntArray("targetBlockPos")[0], getNBT(stack).getIntArray("targetBlockPos")[1], getNBT(stack).getIntArray("targetBlockPos")[2]);
-			System.out.println(world);
-			System.out.println(targetBlock);
-			System.out.println(stack);
-			getNBT(stack).setTag("sourceblock", new ItemStack(world.getBlockState(targetBlock).getBlock(), 1, world.getBlockState(targetBlock).getBlock().getMetaFromState(world.getBlockState(targetBlock))).writeToNBT(new NBTTagCompound()));
-			
-			break;
-			
-		case 9:
-			getNBT(stack).setTag("sourceblock", new ItemStack(BlockLoader.tempBlock, 1, BlockLoader.tempBlock.getMetaFromState(BlockLoader.tempBlock.getDefaultState())).writeToNBT(new NBTTagCompound()));
-			
-			break;
-
-		default:
-			break;
+		}  else {
 		}
 		
 		//System.out.println(getNBT(stack).getInteger("generator"));

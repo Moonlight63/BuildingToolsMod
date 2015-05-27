@@ -1,6 +1,8 @@
 package com.moonlight.buildingtools.items.tools.filtertool;
 
 import java.io.IOException;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -14,20 +16,23 @@ import org.lwjgl.opengl.GL11;
 
 import com.moonlight.buildingtools.Reference;
 import com.moonlight.buildingtools.helpers.Shapes;
+import com.moonlight.buildingtools.items.tools.selectiontool.ToolSelection;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendGuiButtonPressedToItemMessage;
 
-public class FilterToolGui extends GuiScreen{
+public class GUIToolFilter extends GuiScreen{
 	
 	private EntityPlayer player;
 
-	public static final int GUI_ID = 4;
+	private Set<GuiButton> buttons = new LinkedHashSet<GuiButton>();
+	public static final GuiButton filter = 		new GuiButton(1, 0, 0, 160, 20, "TopSoil");
+	public static final GuiButton radx = 		new GuiButton(2, 0, 0, 160, 20, "");
+	public static final GuiButton rady = 		new GuiButton(3, 0, 0, 160, 20, "");
+	public static final GuiButton radz = 		new GuiButton(4, 0, 0, 160, 20, "");
+	public static final GuiButton depth = 		new GuiButton(5, 0, 0, 160, 20, "");
 	
-	//private GuiTextField radiusText;
-	//private GuiTextField iterationsText;
-	//private GuiTextField sigmaText;
 	
-	public FilterToolGui(EntityPlayer player){
+	public GUIToolFilter(EntityPlayer player){
 		this.player = player;
 	}
 	
@@ -43,14 +48,6 @@ public class FilterToolGui extends GuiScreen{
 		this.drawDefaultBackground();
 		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		
-		//radiusText.drawTextBox();
-		//iterationsText.drawTextBox();
-		//sigmaText.drawTextBox();
-		
-		//radiusText.setText("Radius: " + ((BrushTool)player.getHeldItem().getItem()).getNBT(player.getHeldItem()).getInteger("radius"));
-		//iterationsText.setText("Iterations: " + ((BrushTool)player.getHeldItem().getItem()).getNBT(player.getHeldItem()).getInteger("iterations"));
-		//sigmaText.setText("Sigma: " + ((BrushTool)player.getHeldItem().getItem()).getNBT(player.getHeldItem()).getInteger("sigma"));
 		
 		this.buttonList.clear();
         this.initGui();
@@ -69,19 +66,30 @@ public class FilterToolGui extends GuiScreen{
 	public void initGui(){
 		
 		buttonList.clear();
+		buttons.clear();
 		
-		int posX = (this.width) / 2;
-		int posY = (this.height) / 2 - 80;
 		
-		NBTTagCompound heldnbt = FilterTool.getNBT(player.getHeldItem());
+		NBTTagCompound heldnbt = ToolFilter.getNBT(player.getHeldItem());
 		Shapes gen = Shapes.VALUES[heldnbt.getInteger("generator")];
 		
-		buttonList.add(new GuiButton(1, posX - (170/2), posY, 170, 20, "Radius X: " + heldnbt.getInteger("radiusX")));
-		buttonList.add(new GuiButton(2, posX - (170/2), posY+25, 170, 20, (gen.fixedRatio ? "Fixed Ratio: " : "Radius Y: ") + heldnbt.getInteger("radiusY")));
-		buttonList.add(new GuiButton(3, posX - (170/2), posY+50, 170, 20, (gen.fixedRatio ? "Fixed Ratio: " : "Radius Z: ") + heldnbt.getInteger("radiusZ")));
-		buttonList.add(new GuiButton(4, posX - (170/2), posY+75, 170, 20, "Depth: " + heldnbt.getInteger("topsoildepth")));
+		filter.enabled = false;
+		radx.displayString = "Radius X: " + heldnbt.getInteger("radiusX");
+		rady.displayString = (gen.fixedRatio ? "Fixed Ratio: " : "Radius Y: ") + heldnbt.getInteger("radiusY");
+		radz.displayString = (gen.fixedRatio ? "Fixed Ratio: " : "Radius Z: ") + heldnbt.getInteger("radiusZ");
+		depth.displayString = "Depth: " + heldnbt.getInteger("topsoildepth");
 		
+		buttons.add(filter);
+		buttons.add(radx);
+		buttons.add(rady);
+		buttons.add(radz);
+		buttons.add(depth);
 		
+		for (GuiButton btn : buttons){
+			btn.xPosition = this.width / 2 - (160 / 2);
+			btn.yPosition = ((this.height / 2) - 111) + (22 * btn.id);
+			buttonList.add(btn);
+		}
+				
 	}
 	
 	@Override

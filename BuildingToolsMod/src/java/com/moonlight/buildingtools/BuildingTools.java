@@ -10,7 +10,6 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.relauncher.Side;
 
 import com.moonlight.buildingtools.creativetab.CreativeTabMain;
 import com.moonlight.buildingtools.helpers.DrawBlockHighlightEventHandler;
@@ -43,6 +42,8 @@ public class BuildingTools
     public void preInit(FMLPreInitializationEvent event){
     	
     	proxy.preinit(event);
+    	
+    	UpdateHandler.init();
     	
     	ItemLoader.loadItems();
     	BlockLoader.loadBlocks();

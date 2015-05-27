@@ -4,51 +4,54 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 import com.moonlight.buildingtools.items.tools.bowTest.AutoBow;
-import com.moonlight.buildingtools.items.tools.brushtool.BrushTool;
-import com.moonlight.buildingtools.items.tools.buildingtool.BuildingTool;
-import com.moonlight.buildingtools.items.tools.filtertool.FilterTool;
+import com.moonlight.buildingtools.items.tools.brushtool.ToolBrush;
+import com.moonlight.buildingtools.items.tools.buildingtool.ToolBuilding;
+import com.moonlight.buildingtools.items.tools.erosionTool.ToolErosion;
+import com.moonlight.buildingtools.items.tools.filtertool.ToolFilter;
 import com.moonlight.buildingtools.items.tools.idAdvancer.IdAdvancer;
-import com.moonlight.buildingtools.items.tools.placetempblock.TempBlockTool;
-import com.moonlight.buildingtools.items.tools.selectiontool.SelectionTool;
-import com.moonlight.buildingtools.items.tools.smoothtool.BlockSmoother;
-import com.moonlight.buildingtools.items.tools.tapeMeasure.TapeMeasure;
-import com.moonlight.buildingtools.items.tools.undoTool.UndoTool;
+import com.moonlight.buildingtools.items.tools.placetempblock.ToolPlaceTempBlock;
+import com.moonlight.buildingtools.items.tools.selectiontool.ToolSelection;
+import com.moonlight.buildingtools.items.tools.tapeMeasure.ToolTapeMeasure;
+import com.moonlight.buildingtools.items.tools.terrainsmoother.ToolTerrainSmooth;
+import com.moonlight.buildingtools.items.tools.undoTool.ToolUndo;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBow;
 
 public class ItemLoader {
-	public static Item brushTool;
-	public static Item blockSmoother;
-	public static Item selectionTool;
-	public static Item buildingTool;
-	public static Item tempblockplacer;
-	public static Item filterTool;
+	public static Item toolBrush;
+	public static Item toolTerrainSmoother;
+	public static Item toolSelection;
+	public static Item toolBuilding;
+	public static Item toolTempBlockPlacer;
+	public static Item toolFilter;
+	public static Item toolUndo;
+	public static Item toolTapeMeasure;
+	public static Item toolErosion;
+	
 	public static Item idAdvancer;
 	public static ItemBow autobow;
-	public static Item undoTool;
-	public static Item tapeMeasure;
 	
 	public static Set<Item> itemsToRegister;
 	
 	public static void loadItems(){
-		brushTool = new BrushTool();
-		RegisterHelper.registerItem(brushTool);
+		toolBrush = new ToolBrush();
+		RegisterHelper.registerItem(toolBrush);
 		
-		blockSmoother = new BlockSmoother();
-		RegisterHelper.registerItem(blockSmoother);
+		toolTerrainSmoother = new ToolTerrainSmooth();
+		RegisterHelper.registerItem(toolTerrainSmoother);
 		
-		selectionTool = new SelectionTool();
-		RegisterHelper.registerItem(selectionTool);
+		toolSelection = new ToolSelection();
+		RegisterHelper.registerItem(toolSelection);
 		
-		buildingTool = new BuildingTool();
-		RegisterHelper.registerItem(buildingTool);
+		toolBuilding = new ToolBuilding();
+		RegisterHelper.registerItem(toolBuilding);
 		
-		tempblockplacer = new TempBlockTool();
-		RegisterHelper.registerItem(tempblockplacer);
+		toolTempBlockPlacer = new ToolPlaceTempBlock();
+		RegisterHelper.registerItem(toolTempBlockPlacer);
 		
-		filterTool = new FilterTool();
-		RegisterHelper.registerItem(filterTool);
+		toolFilter = new ToolFilter();
+		RegisterHelper.registerItem(toolFilter);
 		
 		idAdvancer = new IdAdvancer();
 		RegisterHelper.registerItem(idAdvancer);
@@ -56,22 +59,25 @@ public class ItemLoader {
 		autobow = new AutoBow();
 		RegisterHelper.registerItem(autobow);
 		
-		undoTool = new UndoTool();
-		RegisterHelper.registerItem(undoTool);
+		toolUndo = new ToolUndo();
+		RegisterHelper.registerItem(toolUndo);
 		
-		tapeMeasure = new TapeMeasure();
-		RegisterHelper.registerItem(tapeMeasure);
+		toolTapeMeasure = new ToolTapeMeasure();
+		RegisterHelper.registerItem(toolTapeMeasure);
 		
+		toolErosion = new ToolErosion();
+		RegisterHelper.registerItem(toolErosion);
 		
 		itemsToRegister = Sets.newHashSet();
-		itemsToRegister.add(brushTool);
-		itemsToRegister.add(blockSmoother);
-		itemsToRegister.add(selectionTool);
-		itemsToRegister.add(buildingTool);
-		itemsToRegister.add(tempblockplacer);
-		itemsToRegister.add(filterTool);
+		itemsToRegister.add(toolBrush);
+		itemsToRegister.add(toolTerrainSmoother);
+		itemsToRegister.add(toolSelection);
+		itemsToRegister.add(toolBuilding);
+		itemsToRegister.add(toolTempBlockPlacer);
+		itemsToRegister.add(toolFilter);
 		itemsToRegister.add(idAdvancer);
-		itemsToRegister.add(undoTool);
-		itemsToRegister.add(tapeMeasure);
+		itemsToRegister.add(toolUndo);
+		itemsToRegister.add(toolTapeMeasure);
+		itemsToRegister.add(toolErosion);
 	}
 }

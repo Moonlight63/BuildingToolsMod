@@ -22,6 +22,7 @@ import com.moonlight.buildingtools.helpers.Shapes;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
 import com.moonlight.buildingtools.items.tools.IToolOverrideHitDistance;
+import com.moonlight.buildingtools.network.GuiHandler;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
@@ -33,7 +34,7 @@ import com.moonlight.buildingtools.utils.KeyHelper;
 import com.moonlight.buildingtools.utils.RGBA;
 //import com.moonlight.buildingtools.utils.KeyBindsHandler.ETKeyBinding;
 
-public class BuildingTool extends Item implements IKeyHandler, IOutlineDrawer, IItemBlockAffector, IShapeable, IGetGuiButtonPressed, IToolOverrideHitDistance{
+public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, IItemBlockAffector, IShapeable, IGetGuiButtonPressed, IToolOverrideHitDistance{
 	
 	private static Set<Key.KeyCode> handledKeys;
 	
@@ -54,7 +55,7 @@ public class BuildingTool extends Item implements IKeyHandler, IOutlineDrawer, I
         handledKeys.add(Key.KeyCode.TOOL_DECREASE);
     }
 	
-	public BuildingTool(){
+	public ToolBuilding(){
 		super();
 		setUnlocalizedName("buildingTool");
 		setCreativeTab(BuildingTools.tabBT);
@@ -95,7 +96,7 @@ public class BuildingTool extends Item implements IKeyHandler, IOutlineDrawer, I
 	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
     {
 		if(playerIn.isSneaking())
-			playerIn.openGui(BuildingTools.instance, 3, worldIn, 0, 0, 0);
+			playerIn.openGui(BuildingTools.instance, GuiHandler.GUIBuildingTool, worldIn, 0, 0, 0);
         return itemStackIn;
     }
 		
@@ -109,7 +110,7 @@ public class BuildingTool extends Item implements IKeyHandler, IOutlineDrawer, I
             float hitZ){
 		
 		if(playerIn.isSneaking()){
-			playerIn.openGui(BuildingTools.instance, 3, worldIn, 0, 0, 0);
+			playerIn.openGui(BuildingTools.instance, GuiHandler.GUIBuildingTool, worldIn, 0, 0, 0);
 		}
 		else{
 			if(!worldIn.isRemote){
@@ -118,7 +119,7 @@ public class BuildingTool extends Item implements IKeyHandler, IOutlineDrawer, I
 				outlineing = false;
 				PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
 				
-				player.addPending(new BuildingToolThread(worldIn, pos, getNBT(stack).getInteger("radiusX"),	getNBT(stack).getBoolean("placeAll"), getNBT(stack).getInteger("radiusZ"), side, playerIn));
+				player.addPending(new ThreadBuildersTool(worldIn, pos, getNBT(stack).getInteger("radiusX"),	getNBT(stack).getBoolean("placeAll"), getNBT(stack).getInteger("radiusZ"), side, playerIn));
 				
 				outlineing = true;
 				return true;
@@ -190,7 +191,7 @@ public class BuildingTool extends Item implements IKeyHandler, IOutlineDrawer, I
     @Override
     public Set<Key.KeyCode> getHandledKeys()
     {
-        return BuildingTool.handledKeys;
+        return ToolBuilding.handledKeys;
     }
 	
 	@Override
@@ -223,7 +224,7 @@ public class BuildingTool extends Item implements IKeyHandler, IOutlineDrawer, I
 	@Override
     public Set<BlockPos> blocksAffected(ItemStack item, World world, BlockPos origin, EnumFacing side, int radius, boolean fill)
     {
-        if (!(item.getItem() instanceof BuildingTool)) return null;
+        if (!(item.getItem() instanceof ToolBuilding)) return null;
         
         targetBlock = origin;        
         
@@ -297,40 +298,27 @@ public class BuildingTool extends Item implements IKeyHandler, IOutlineDrawer, I
 			ItemStack stack) {
 		
 		
-		//System.out.println("Got To GetGuiButtonPressed");
-		switch (buttonID) {			
-		case 1:
+		if (buttonID == 1) {
 			int radiusx = getNBT(stack).getInteger("radiusX");
-	        if (mouseButton == 0){
+			if (mouseButton == 0){
 	                radiusx++;
 	        } else if (mouseButton == 1){
 	                radiusx--;
 	        }
-
-	        if (radiusx < 1){radiusx = 1;}
-
-	        getNBT(stack).setInteger("radiusX", radiusx);
-			break;
-			
-		case 2:
+			if (radiusx < 1){radiusx = 1;}
+			getNBT(stack).setInteger("radiusX", radiusx);
+		} else if (buttonID == 2) {
 			int radiusz = getNBT(stack).getInteger("radiusZ");
-	        if (mouseButton == 0){
+			if (mouseButton == 0){
 	                radiusz++;
 	        } else if (mouseButton == 1){
 	                radiusz--;
 	        }
-
-	        if (radiusz < 1){radiusz = 1;}
-
-	        getNBT(stack).setInteger("radiusZ", radiusz);
-			break;
-			
-		case 3:
+			if (radiusz < 1){radiusz = 1;}
+			getNBT(stack).setInteger("radiusZ", radiusz);
+		} else if (buttonID == 3) {
 			getNBT(stack).setBoolean("placeAll", !getNBT(stack).getBoolean("placeAll"));
-			break;
-	
-		default:
-			break;
+		} else {
 		}
 		
 		//System.out.println(getNBT(stack).getInteger("generator"));

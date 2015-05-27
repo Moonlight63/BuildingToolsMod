@@ -11,10 +11,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
 import com.moonlight.buildingtools.helpers.FontHelper;
-import com.moonlight.buildingtools.items.tools.brushtool.BrushTool;
-import com.moonlight.buildingtools.items.tools.buildingtool.BuildingTool;
-import com.moonlight.buildingtools.items.tools.filtertool.FilterTool;
-import com.moonlight.buildingtools.items.tools.smoothtool.BlockSmoother;
+import com.moonlight.buildingtools.items.tools.brushtool.ToolBrush;
+import com.moonlight.buildingtools.items.tools.buildingtool.ToolBuilding;
+import com.moonlight.buildingtools.items.tools.filtertool.ToolFilter;
+import com.moonlight.buildingtools.items.tools.terrainsmoother.ToolTerrainSmooth;
 
 public class BlockChangerGuiHelper extends Gui
 {
@@ -46,9 +46,9 @@ public class BlockChangerGuiHelper extends Gui
 
         
         
-        if ((player.inventory.getCurrentItem().getItem() instanceof BrushTool)){
+        if ((player.inventory.getCurrentItem().getItem() instanceof ToolBrush)){
         	ItemStack currItem = player.inventory.getCurrentItem();
-        	ItemStack source = ItemStack.loadItemStackFromNBT(BrushTool.getNBT(currItem).getCompoundTag("sourceblock"));
+        	ItemStack source = ItemStack.loadItemStackFromNBT(ToolBrush.getNBT(currItem).getCompoundTag("sourceblock"));
         	
         	// Null check prevents NPEs in vanilla renderItemAndEffectIntoGUI for items which drop the wrong thing
             net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
@@ -64,22 +64,22 @@ public class BlockChangerGuiHelper extends Gui
 	        }
 
 	        FontHelper.drawItemQuantity(mc.fontRendererObj, 5, 5, am);
-	        FontHelper.renderText(mc.fontRendererObj, 25, 8, 1.0, "Radius: " + BrushTool.getNBT(currItem).getInteger("radiusX") + ",  " + BrushTool.getNBT(currItem).getInteger("radiusY") + ",  " + BrushTool.getNBT(currItem).getInteger("radiusZ"));
+	        FontHelper.renderText(mc.fontRendererObj, 25, 8, 1.0, "Radius: " + ToolBrush.getNBT(currItem).getInteger("radiusX") + ",  " + ToolBrush.getNBT(currItem).getInteger("radiusY") + ",  " + ToolBrush.getNBT(currItem).getInteger("radiusZ"));
         }
         
-        else if ((player.inventory.getCurrentItem().getItem() instanceof BuildingTool)){
+        else if ((player.inventory.getCurrentItem().getItem() instanceof ToolBuilding)){
         	ItemStack currItem = player.inventory.getCurrentItem();
-        	FontHelper.renderText(mc.fontRendererObj, 25, 8, 1.0, "Radius: " + BuildingTool.getNBT(currItem).getInteger("radiusX") + ",  " + BuildingTool.getNBT(currItem).getInteger("radiusZ"));
+        	FontHelper.renderText(mc.fontRendererObj, 25, 8, 1.0, "Radius: " + ToolBuilding.getNBT(currItem).getInteger("radiusX") + ",  " + ToolBuilding.getNBT(currItem).getInteger("radiusZ"));
         }
         
-        else if ((player.inventory.getCurrentItem().getItem() instanceof FilterTool)){
+        else if ((player.inventory.getCurrentItem().getItem() instanceof ToolFilter)){
         	ItemStack currItem = player.inventory.getCurrentItem();
-        	FontHelper.renderText(mc.fontRendererObj, 25, 8, 1.0, "Radius: " + FilterTool.getNBT(currItem).getInteger("radiusX") + ",  " + FilterTool.getNBT(currItem).getInteger("radiusY") + ",  " + FilterTool.getNBT(currItem).getInteger("radiusZ") + ", Depth: " +  FilterTool.getNBT(currItem).getInteger("topsoildepth"));
+        	FontHelper.renderText(mc.fontRendererObj, 25, 8, 1.0, "Radius: " + ToolFilter.getNBT(currItem).getInteger("radiusX") + ",  " + ToolFilter.getNBT(currItem).getInteger("radiusY") + ",  " + ToolFilter.getNBT(currItem).getInteger("radiusZ") + ", Depth: " +  ToolFilter.getNBT(currItem).getInteger("topsoildepth"));
         }
         
-        else if ((player.inventory.getCurrentItem().getItem() instanceof BlockSmoother)){
+        else if ((player.inventory.getCurrentItem().getItem() instanceof ToolTerrainSmooth)){
         	ItemStack currItem = player.inventory.getCurrentItem();
-	        FontHelper.renderText(mc.fontRendererObj, 25, 8, 1.0, "Radius: " + ((BlockSmoother)currItem.getItem()).getTargetRadius(currItem));
+	        FontHelper.renderText(mc.fontRendererObj, 25, 8, 1.0, "Radius: " + ((ToolTerrainSmooth)currItem.getItem()).getTargetRadius(currItem));
         }
         
         else{

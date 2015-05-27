@@ -103,6 +103,7 @@ public class RenderHelper
         GL11.glLineWidth(lineWidth);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDepthMask(true);
+        //GL11.glDisable(GL11.GL_DEPTH_TEST);
         float f1 = 0.02F;
 
         double d0 = entityPlayer.lastTickPosX + (entityPlayer.posX - entityPlayer.lastTickPosX) * (double) partialTicks;

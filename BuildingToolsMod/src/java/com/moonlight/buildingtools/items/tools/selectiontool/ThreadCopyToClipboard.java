@@ -24,7 +24,7 @@ import com.moonlight.buildingtools.items.tools.BlockChangeBase;
 import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
-public class CopyToClipboardThread implements BlockChangeBase, IShapeable{
+public class ThreadCopyToClipboard implements BlockChangeBase, IShapeable{
 	
 	protected StructureBoundingBox structureBoundingBox;
 	protected AxisAlignedBB entityDetectionBox;
@@ -38,7 +38,7 @@ public class CopyToClipboardThread implements BlockChangeBase, IShapeable{
 	public boolean selectionCalculated = false;
 	protected boolean currentlyCalculating = false;
 	
-	public CopyToClipboardThread(BlockPos blockpos1, BlockPos blockpos2, World world, EntityPlayer player){
+	public ThreadCopyToClipboard(BlockPos blockpos1, BlockPos blockpos2, World world, EntityPlayer player){
 		this.structureBoundingBox = new StructureBoundingBox(blockpos1, blockpos2);
 		
 		int p1x = (blockpos1.getX() <= blockpos2.getX()) ? blockpos1.getX() : blockpos1.getX() + 1;

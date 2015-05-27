@@ -1,6 +1,8 @@
 package com.moonlight.buildingtools.items.tools.brushtool;
 
 import java.io.IOException;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -12,19 +14,26 @@ import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.opengl.GL11;
 
 import com.moonlight.buildingtools.helpers.Shapes;
+import com.moonlight.buildingtools.items.tools.selectiontool.ToolSelection;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendGuiButtonPressedToItemMessage;
 
-public class BrushToolGui extends GuiScreen{
+public class GUIToolBrush extends GuiScreen{
 	
 	private EntityPlayer player;
-
-	public static final int GUI_ID = 2;
 	
-	public final int xSizeOfTexture = 176;
-	public final int ySizeOfTexture = 88;
+	private Set<GuiButton> buttons = new LinkedHashSet<GuiButton>();
+	public static final GuiButton generator = 		new GuiButton(1, 0, 0, 160, 20, "");
+	public static final GuiButton radiusx = 		new GuiButton(2, 0, 0, 160, 20, "");
+	public static final GuiButton radiusy = 		new GuiButton(3, 0, 0, 160, 20, "");
+	public static final GuiButton radiusz = 		new GuiButton(4, 0, 0, 160, 20, "");
+	public static final GuiButton setblock = 		new GuiButton(5, 0, 0, 160, 20, "");
+	public static final GuiButton setair = 			new GuiButton(6, 0, 0, 160, 20, "");
+	public static final GuiButton fill = 			new GuiButton(7, 0, 0, 160, 20, "");
+	public static final GuiButton fall = 			new GuiButton(8, 0, 0, 160, 20, "");
+	public static final GuiButton replace = 		new GuiButton(9, 0, 0, 160, 20, "");
 	
-	public BrushToolGui(EntityPlayer player){
+	public GUIToolBrush(EntityPlayer player){
 		this.player = player;
 	}
 	
@@ -60,27 +69,40 @@ public class BrushToolGui extends GuiScreen{
 	public void initGui(){
 		
 		buttonList.clear();
+		buttons.clear();
 		
-		NBTTagCompound heldnbt = BrushTool.getNBT(player.getHeldItem());
+		NBTTagCompound heldnbt = ToolBrush.getNBT(player.getHeldItem());
 		Shapes gen = Shapes.VALUES[heldnbt.getInteger("generator")];
 		
-		buttonList.add(new GuiButton(1, this.width / 2 - 170 / 2, this.height / 2 -10 - 80, 170, 20, gen.getLocalizedName()));
-		buttonList.add(new GuiButton(2, this.width / 2 - 170 / 2, this.height / 2 -10 - 60, 170, 20, (gen.fixedRatio ? "Radius: " : "Radius X: ") + heldnbt.getInteger("radiusX")));
-		buttonList.add(new GuiButton(3, this.width / 2 - 170 / 2, this.height / 2 -10 - 40, 170, 20, "Radius Y: " + heldnbt.getInteger("radiusY")));
+		generator.displayString = gen.getLocalizedName();
+		radiusx.displayString = (gen.fixedRatio ? "Radius: " : "Radius X: ") + heldnbt.getInteger("radiusX");
+		radiusy.displayString = "Radius Y: " + heldnbt.getInteger("radiusY");
+		radiusz.displayString = (gen.fixedRatio ? "Fixed Ratio: " : "Radius Z: ") + heldnbt.getInteger("radiusZ");
+		setblock.displayString = "Set Block to looking at";
+		setair.displayString = "Set Block to Air (Erase mode)";
+		fill.displayString = "Fill Mode: " + heldnbt.getBoolean("fillmode");
+		fall.displayString = "Force Falling Blocks: " + heldnbt.getBoolean("forcefall");
+		replace.displayString = "Replace Mode: " + (heldnbt.getInteger("replacemode") == 1 ? "Replace Air" : (heldnbt.getInteger("replacemode") == 2 ? "Replace Block" : "Replace All"));
 		
-		GuiButton zradbutton = new GuiButton(4, this.width / 2 - 170 / 2, this.height / 2 -10 - 20, 170, 20, (gen.fixedRatio ? "Fixed Ratio: " : "Radius Z: ") + heldnbt.getInteger("radiusZ"));
-		zradbutton.enabled = !gen.fixedRatio;
-		buttonList.add(zradbutton);
+		radiusz.enabled = !gen.fixedRatio;
+		setblock.enabled = ((ToolBrush)player.getHeldItem().getItem()).targetBlock != null;
 		
-		if(((BrushTool)player.getHeldItem().getItem()).targetBlock != null)
-			buttonList.add(new GuiButton(8, this.width / 2 - 170 / 2, this.height / 2 -10, 170, 20, "Set Block to looking at"));
+		buttons.add(generator);
+		buttons.add(radiusx);
+		buttons.add(radiusy);
+		buttons.add(radiusz);
+		buttons.add(setblock);
+		buttons.add(setair);
+		buttons.add(fill);
+		buttons.add(fall);
+		buttons.add(replace);
 		
-		buttonList.add(new GuiButton(9, this.width / 2 - 170 / 2, this.height / 2 -10 + 20, 170, 20, "Set Block to Air (Erase mode)"));
+		for (GuiButton btn : buttons){
+			btn.xPosition = this.width / 2 - (160 / 2);
+			btn.yPosition = ((this.height / 2) - 121) + (22 * btn.id);
+			buttonList.add(btn);
+		}
 		
-		buttonList.add(new GuiButton(5, this.width / 2 - 170 / 2, this.height / 2 -10 + 40, 170, 20, "Fill Mode: " + heldnbt.getBoolean("fillmode")));
-		buttonList.add(new GuiButton(6, this.width / 2 - 170 / 2, this.height / 2 -10 + 60, 170, 20, "Force Falling Blocks: " + heldnbt.getBoolean("forcefall")));
-		
-		buttonList.add(new GuiButton(7, this.width / 2 - 170 / 2, this.height / 2 -10 + 80, 170, 20, "Replace Mode: " + (heldnbt.getInteger("replacemode") == 1 ? "Replace Air" : (heldnbt.getInteger("replacemode") == 2 ? "Replace Block" : "Replace All"))));
 		
 	}
 	
@@ -108,7 +130,7 @@ public class BrushToolGui extends GuiScreen{
 	//@Override
 	protected void actionPerformed(GuiButton button, int mouseButton){
 		PacketDispatcher.sendToServer(new SendGuiButtonPressedToItemMessage((byte) button.id, mouseButton, isCtrlKeyDown(), func_175283_s(), isShiftKeyDown()));
-		if(button.id == 8 || button.id == 9)
+		if(button.id == setblock.id || button.id == setair.id)
 			this.mc.thePlayer.closeScreen();
 	}
 	

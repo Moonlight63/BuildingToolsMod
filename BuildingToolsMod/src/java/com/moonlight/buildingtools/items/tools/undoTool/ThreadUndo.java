@@ -14,7 +14,7 @@ import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
 @Deprecated
-public class UndoThread implements BlockChangeBase {
+public class ThreadUndo implements BlockChangeBase {
 	
 	protected World world;
 	protected boolean isFinished = false;
@@ -24,7 +24,7 @@ public class UndoThread implements BlockChangeBase {
 	protected boolean currentlyCalculating = false;
 	
 	@Deprecated
-	public UndoThread(World world, EntityPlayer entity){
+	public ThreadUndo(World world, EntityPlayer entity){
 		this.world = world;
 		this.entity = entity;
 		

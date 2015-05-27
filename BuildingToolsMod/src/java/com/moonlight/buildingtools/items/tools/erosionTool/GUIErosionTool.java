@@ -1,10 +1,14 @@
-package com.moonlight.buildingtools.items.tools.smoothtool;
+package com.moonlight.buildingtools.items.tools.erosionTool;
 
 import java.io.IOException;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
 
 import com.moonlight.buildingtools.Reference;
+import com.moonlight.buildingtools.helpers.Shapes;
+import com.moonlight.buildingtools.items.tools.selectiontool.ToolSelection;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendGuiButtonPressedToItemMessage;
 
@@ -12,21 +16,20 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.common.MinecraftForge;
 
-public class BlockSmootherGui extends GuiScreen{
+public class GUIErosionTool extends GuiScreen{
 	
 	private EntityPlayer player;
-
-	public static final int GUI_ID = 1;
 	
-	private GuiTextField radiusText;
-	private GuiTextField iterationsText;
-	private GuiTextField sigmaText;
+	private Set<GuiButton> buttons = new LinkedHashSet<GuiButton>();
+	public static final GuiButton presetButton = new GuiButton(1, 0, 0, 170, 20, "");
+	public static final GuiButton radius = new GuiButton(2, 0, 0, 170, 20, "");
 	
-	public BlockSmootherGui(EntityPlayer player){
+	public GUIErosionTool(EntityPlayer player){
 		this.player = player;
 	}
 	
@@ -36,13 +39,8 @@ public class BlockSmootherGui extends GuiScreen{
 		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		
-		radiusText.drawTextBox();
-		iterationsText.drawTextBox();
-		sigmaText.drawTextBox();
-		
-		radiusText.setText("Radius: " + BlockSmoother.getNBT(player.getHeldItem()).getInteger("radius"));
-		iterationsText.setText("Iterations: " + BlockSmoother.getNBT(player.getHeldItem()).getInteger("iterations"));
-		sigmaText.setText("Sigma: " + BlockSmoother.getNBT(player.getHeldItem()).getInteger("sigma"));
+		this.buttonList.clear();
+        this.initGui();
 		
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		
@@ -65,26 +63,23 @@ public class BlockSmootherGui extends GuiScreen{
 	public void initGui(){
 		
 		buttonList.clear();
+		buttons.clear();
 		
-		int posX = (this.width) / 2;
-		int posY = (this.height) / 2;
+		NBTTagCompound heldnbt = ToolErosion.getNBT(player.getHeldItem());
+		ErosionVisuallizer.Preset gen = ErosionVisuallizer.Preset.values()[heldnbt.getInteger("preset")];
 		
-		/*buttonList.add(new GuiButton(1, this.width / 2 - 12 - 29, posY + 4, 24, 20, "-"));
-		radiusText = new GuiTextField(0, fontRendererObj, this.width / 2 - 12, posY + 5, 24, 18);
-		radiusText.setText("" + ((BlockSmoother)player.getHeldItem().getItem()).getNBT(player.getHeldItem()).getInteger("radius"));
-		buttonList.add(new GuiButton(0, this.width / 2 - 12 + 29, posY + 4, 24, 20, "+"));*/
+		presetButton.displayString = gen.name();
+		radius.displayString = "Raduis: " + heldnbt.getInteger("radius");
 		
-		buttonList.add(new GuiButton(0, posX - 108/2 - 24 - 2, posY - 80, 24, 20, "-"));
-		radiusText = new GuiTextField(0, fontRendererObj, posX - 108/2, posY - 79, 108, 18);
-		buttonList.add(new GuiButton(1, posX + 108/2 + 2, posY - 80, 24, 20, "+"));
+		buttons.add(presetButton);
+		buttons.add(radius);
 		
-		buttonList.add(new GuiButton(2, posX - 108/2 - 24 - 2, posY - 55, 24, 20, "-"));
-		iterationsText = new GuiTextField(0, fontRendererObj, posX - 108/2, posY - 54, 108, 18);
-		buttonList.add(new GuiButton(3, posX + 108/2 + 2, posY - 55, 24, 20, "+"));
+		for (GuiButton btn : buttons){
+			btn.xPosition = this.width / 2 - (160 / 2);
+			btn.yPosition = ((this.height / 2) - 111) + (22 * btn.id);
+			buttonList.add(btn);
+		}
 		
-		buttonList.add(new GuiButton(4, posX - 108/2 - 24 - 2, posY - 30, 24, 20, "-"));
-		sigmaText = new GuiTextField(0, fontRendererObj, posX - 108/2, posY - 29, 108, 18);
-		buttonList.add(new GuiButton(5, posX + 108/2 + 2, posY - 30, 24, 20, "+"));
 	}
 	
 	@Override

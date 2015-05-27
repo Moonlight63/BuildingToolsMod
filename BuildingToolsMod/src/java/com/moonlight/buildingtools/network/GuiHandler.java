@@ -5,15 +5,26 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
+
+
+
 import com.moonlight.buildingtools.BuildingTools;
-import com.moonlight.buildingtools.items.tools.brushtool.BrushToolGui;
-import com.moonlight.buildingtools.items.tools.buildingtool.BuildingToolGui;
-import com.moonlight.buildingtools.items.tools.filtertool.FilterToolGui;
-import com.moonlight.buildingtools.items.tools.selectiontool.SelectionToolGui;
-import com.moonlight.buildingtools.items.tools.smoothtool.BlockSmootherGui;
+import com.moonlight.buildingtools.items.tools.brushtool.GUIToolBrush;
+import com.moonlight.buildingtools.items.tools.buildingtool.GUIBuildersTool;
+import com.moonlight.buildingtools.items.tools.erosionTool.GUIErosionTool;
+import com.moonlight.buildingtools.items.tools.filtertool.GUIToolFilter;
+import com.moonlight.buildingtools.items.tools.selectiontool.GUISelectionTool;
+import com.moonlight.buildingtools.items.tools.terrainsmoother.GUITerrainSmooth;
 
 
 public class GuiHandler implements IGuiHandler {
+	
+	public static final int GUIBrushTool = 1;
+	public static final int GUIBuildingTool = 2;
+	public static final int GUIFilterTool = 3;
+	public static final int GUISelectionTool = 4;
+	public static final int GUITerrainSmoothTool = 5;
+	public static final int GUIErosionTool = 6;
 	
 	public GuiHandler(){
 		NetworkRegistry.INSTANCE.registerGuiHandler(BuildingTools.instance, this);
@@ -29,16 +40,19 @@ public class GuiHandler implements IGuiHandler {
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world,	int x, int y, int z) {
 		
 		switch (ID) {
-		case BlockSmootherGui.GUI_ID:
-			return new BlockSmootherGui(player);
-		case BrushToolGui.GUI_ID:
-			return new BrushToolGui(player);
-		case BuildingToolGui.GUI_ID:
-			return new BuildingToolGui(player);
-		case FilterToolGui.GUI_ID:
-			return new FilterToolGui(player);
-		case SelectionToolGui.GUI_ID:
-			return new SelectionToolGui(player);
+		
+		case GUIBrushTool:
+			return new GUIToolBrush(player);
+		case GUIBuildingTool:
+			return new GUIBuildersTool(player);
+		case GUIFilterTool:
+			return new GUIToolFilter(player);
+		case GUISelectionTool:
+			return new GUISelectionTool(player);
+		case GUITerrainSmoothTool:
+			return new GUITerrainSmooth(player);
+		case GUIErosionTool:
+			return new GUIErosionTool(player);
 
 		default:
 			break;

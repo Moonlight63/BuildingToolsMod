@@ -12,14 +12,14 @@ import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.helpers.loaders.BlockLoader;
 import com.moonlight.buildingtools.items.tools.IToolOverrideHitDistance;
 
-public class TempBlockTool extends Item implements IToolOverrideHitDistance{
+public class ToolPlaceTempBlock extends Item implements IToolOverrideHitDistance{
 	
 	public static BlockPos targetBlock;
 	public static World world;
 	
 	public static ItemStack thisStack;
 	
-	public TempBlockTool(){
+	public ToolPlaceTempBlock(){
 		super();
 		setUnlocalizedName("tempblockplacer");
 		setCreativeTab(BuildingTools.tabBT);

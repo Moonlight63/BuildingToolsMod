@@ -16,7 +16,7 @@ import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 import com.moonlight.buildingtools.items.tools.BlockChangeBase;
 import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
 
-public class ClearSelectionThread implements BlockChangeBase, IShapeable{
+public class ThreadClearSelection implements BlockChangeBase, IShapeable{
 	
 	protected StructureBoundingBox structureBoundingBox;
 	protected AxisAlignedBB entityDetectionBox;
@@ -29,7 +29,7 @@ public class ClearSelectionThread implements BlockChangeBase, IShapeable{
 	public boolean selectionCalculated = false;
 	protected boolean currentlyCalculating = false;
 	
-	public ClearSelectionThread(BlockPos blockpos1, BlockPos blockpos2, World world){
+	public ThreadClearSelection(BlockPos blockpos1, BlockPos blockpos2, World world){
 		this.structureBoundingBox = new StructureBoundingBox(blockpos1, blockpos2);
 		
 		int p1x = (blockpos1.getX() <= blockpos2.getX()) ? blockpos1.getX() : blockpos1.getX() + 1;

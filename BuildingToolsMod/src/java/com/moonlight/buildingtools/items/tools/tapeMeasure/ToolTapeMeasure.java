@@ -10,11 +10,11 @@ import net.minecraft.world.World;
 
 import com.moonlight.buildingtools.BuildingTools;
 
-public class TapeMeasure extends Item{
+public class ToolTapeMeasure extends Item{
 	
 	private BlockPos firstPos = BlockPos.ORIGIN;
 	
-	public TapeMeasure(){
+	public ToolTapeMeasure(){
 		super();
 		setUnlocalizedName("tape");
 		setCreativeTab(BuildingTools.tabBT);

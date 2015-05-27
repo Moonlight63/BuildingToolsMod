@@ -15,6 +15,7 @@ item.filterTool.name=Filter Tool (Topsoil only right now)
 item.tempblockplacer.name=Temporary Block Tool
 item.selectionTool.name=Selection Tool
 item.smoothTool.name=Terrain Smooth Tool
+item.erosionTool.name=Erosion Tool
 item.undoTool.name=Undo Tool
 item.tape.name=Measuring Tape
 key.buildingTools.tools=Building Tools Controls

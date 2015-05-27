@@ -12,15 +12,15 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
 import com.moonlight.buildingtools.BuildingTools;
-import com.moonlight.buildingtools.items.tools.selectiontool.RegoinCopyThread;
+import com.moonlight.buildingtools.items.tools.selectiontool.ThreadPasteClipboard;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.KeyHelper;
 
-public class UndoTool extends Item{
+public class ToolUndo extends Item{
 	
 	
 	
-	public UndoTool(){
+	public ToolUndo(){
 		super();
 		setUnlocalizedName("undoTool");
 		setCreativeTab(BuildingTools.tabBT);
@@ -59,7 +59,7 @@ public class UndoTool extends Item{
 			System.out.println("Used Undo Tool");
 			PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
 			if(!player.undolist.isEmpty())
-				player.addPending(new RegoinCopyThread(worldIn, playerIn, player.undolist.pollLast(), new LinkedHashSet<Entity>()));
+				player.addPending(new ThreadPasteClipboard(worldIn, playerIn, player.undolist.pollLast(), new LinkedHashSet<Entity>()));
 			//player.addPending(new UndoThread(worldIn, playerIn));
 		}
         return itemStackIn;
@@ -78,7 +78,7 @@ public class UndoTool extends Item{
 			System.out.println("Used Undo Tool");
 			PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
 			if(!player.undolist.isEmpty())
-				player.addPending(new RegoinCopyThread(worldIn, playerIn, player.undolist.pollLast(), new LinkedHashSet<Entity>()));
+				player.addPending(new ThreadPasteClipboard(worldIn, playerIn, player.undolist.pollLast(), new LinkedHashSet<Entity>()));
 		}
 		
 		return true;

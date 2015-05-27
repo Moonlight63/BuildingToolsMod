@@ -14,27 +14,28 @@ import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.helpers.RenderHelper;
 import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
 import com.moonlight.buildingtools.items.tools.IToolOverrideHitDistance;
+import com.moonlight.buildingtools.network.GuiHandler;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.IOutlineDrawer;
 import com.moonlight.buildingtools.utils.RGBA;
 
-public class SelectionTool extends Item implements IOutlineDrawer, IGetGuiButtonPressed, IToolOverrideHitDistance{
+public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButtonPressed, IToolOverrideHitDistance{
 	
-	public static BlockPos targetBlock;
+	public BlockPos targetBlock;
 	public World world;
-	public static EntityPlayer currPlayer;
-	public static ItemStack thisStack;
+	public EntityPlayer currPlayer;
+	public ItemStack thisStack;
 	
-	public static BlockPos blockpos1;
-	public static BlockPos blockpos2;
-	public static boolean blockpos1set;
-	public static boolean blockpos2set;
+	public BlockPos blockpos1;
+	public BlockPos blockpos2;
+	public boolean blockpos1set;
+	public boolean blockpos2set;
 	
-	public static RegoinCopyThread copyThread;
+	public static ThreadPasteClipboard copyThread;
 	
-	public SelectionTool(){
+	public ToolSelection(){
 		super();
 		setUnlocalizedName("selectionTool");
 		setCreativeTab(BuildingTools.tabBT);
@@ -97,7 +98,7 @@ public class SelectionTool extends Item implements IOutlineDrawer, IGetGuiButton
 		thisStack = stack;
 		if(playerIn.isSneaking()){
 				
-				playerIn.openGui(BuildingTools.instance, SelectionToolGui.GUI_ID, worldIn, 0, 0, 0);
+				playerIn.openGui(BuildingTools.instance, GuiHandler.GUISelectionTool, worldIn, 0, 0, 0);
 				
 			}
 		
@@ -105,7 +106,7 @@ public class SelectionTool extends Item implements IOutlineDrawer, IGetGuiButton
 			
 			if(playerIn.isSneaking()){
 				
-			//	playerIn.openGui(BuildingTools.instance, SelectionToolGui.GUI_ID, worldIn, 0, 0, 0);
+				playerIn.openGui(BuildingTools.instance, GuiHandler.GUISelectionTool, worldIn, 0, 0, 0);
 				
 			}
 			else{
@@ -206,10 +207,11 @@ public class SelectionTool extends Item implements IOutlineDrawer, IGetGuiButton
 		
 		thisStack = stack;
 		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
-		switch (buttonID) {
-		case 1:
+		
+		
+		if (buttonID == 1) {
 			System.out.println("Copying");
-			player.addPending(new CopyToClipboardThread(
+			player.addPending(new ThreadCopyToClipboard(
 					new BlockPos(getBlockPos1(stack).getX(),
 								getBlockPos1(stack).getY(),
 								getBlockPos1(stack).getZ()),
@@ -217,20 +219,17 @@ public class SelectionTool extends Item implements IOutlineDrawer, IGetGuiButton
 								getBlockPos2(stack).getY(),
 								getBlockPos2(stack).getZ()), 
 					world, currPlayer));
-			break;
 			
-		case 2:
-			
-			player.addPending(new RegoinCopyThread(
+		} else if (buttonID == 2) {
+			player.addPending(new ThreadPasteClipboard(
 					world, currPlayer, targetBlock,
 					getNBT(stack).getInteger("Rotation"),
 					getNBT(stack).getBoolean("flipX"),
 					getNBT(stack).getBoolean("flipY"),
 					getNBT(stack).getBoolean("flipZ")));
-			
 			if(getNBT(stack).getInteger("repeat") > 0){				
 				for(int i = 1; i < getNBT(stack).getInteger("repeat"); i++){
-					player.addPending(new RegoinCopyThread(
+					player.addPending(new ThreadPasteClipboard(
 					world, currPlayer, targetBlock.add(new BlockPos(
 							getNBT(stack).getInteger("repeatMovmentX") * i, 
 							getNBT(stack).getInteger("repeatMovmentY") * i, 
@@ -242,80 +241,28 @@ public class SelectionTool extends Item implements IOutlineDrawer, IGetGuiButton
 					getNBT(stack).getBoolean("flipZ")));
 				}				
 			}
-			
-			break;
-		
-		case 3:
+		} else if (buttonID == 3) {
 			if(player.clipboardMaxPos != null){
 				setBlockPos1(stack, targetBlock);
 				BlockPos tempPos = getAdjustedBlockPos(player.clipboardMaxPos).add(targetBlock);
 				//BlockPos tempPos2 = new BlockPos(-player.clipboardMaxPos.getZ(), player.clipboardMaxPos.getY(), player.clipboardMaxPos.getX()).add(targetBlock);
 				setBlockPos2(stack, tempPos);
 			}
-			break;
-
-		case 4:
-			getNBT(stack).setInteger("Rotation", getNBT(stack).getInteger("Rotation") == 3 ? 0 : getNBT(stack).getInteger("Rotation") + 1);
-			break;
-			
-		case 5:
-			getNBT(stack).setBoolean("flipX", !getNBT(stack).getBoolean("flipX"));
-			break;
-			
-		case 6:
-			getNBT(stack).setBoolean("flipY", !getNBT(stack).getBoolean("flipY"));
-			break;
-			
-		case 7:
-			getNBT(stack).setBoolean("flipZ", !getNBT(stack).getBoolean("flipZ"));
-			break;
-			
-		case 8:
+		} else if (buttonID == 4) {
 			getNBT(stack).setBoolean("bpos1Set", false);
 			getNBT(stack).setBoolean("bpos2Set", false);
-			break;
-			
-		case 9:
-			System.out.println(mouseButton);
-			if(mouseButton == 0){
-				getNBT(stack).setInteger("repeat", getNBT(stack).getInteger("repeat") + 1);
-			}
-			else if(mouseButton == 1){
-				getNBT(stack).setInteger("repeat", getNBT(stack).getInteger("repeat") - 1);
-			}
-			break;
-			
-		case 10:
-			if(mouseButton == 0){
-				getNBT(stack).setInteger("repeatMovmentX", getNBT(stack).getInteger("repeatMovmentX") + 1);
-			}
-			else if(mouseButton == 1){
-				getNBT(stack).setInteger("repeatMovmentX", getNBT(stack).getInteger("repeatMovmentX") - 1);
-			}
-			break;
-			
-		case 11:
-			if(mouseButton == 0){
-				getNBT(stack).setInteger("repeatMovmentY", getNBT(stack).getInteger("repeatMovmentY") + 1);
-			}
-			else if(mouseButton == 1){
-				getNBT(stack).setInteger("repeatMovmentY", getNBT(stack).getInteger("repeatMovmentY") - 1);
-			}
-			break;
-			
-		case 12:
-			if(mouseButton == 0){
-				getNBT(stack).setInteger("repeatMovmentZ", getNBT(stack).getInteger("repeatMovmentZ") + 1);
-			}
-			else if(mouseButton == 1){
-				getNBT(stack).setInteger("repeatMovmentZ", getNBT(stack).getInteger("repeatMovmentZ") - 1);
-			}
-			break;
-			
-		case 13:
+		} else if (buttonID == 5) {
+			getNBT(stack).setInteger("Rotation", getNBT(stack).getInteger("Rotation") == 3 ? 0 : getNBT(stack).getInteger("Rotation") + 1);
+		} else if (buttonID == 6) {
+			getNBT(stack).setBoolean("flipX", !getNBT(stack).getBoolean("flipX"));
+		} else if (buttonID == 7) {
+			getNBT(stack).setBoolean("flipY", !getNBT(stack).getBoolean("flipY"));
+		} else if (buttonID == 8) {
+			getNBT(stack).setBoolean("flipZ", !getNBT(stack).getBoolean("flipZ"));
+		} else if (buttonID == 9) {
 			System.out.println("Clearing");
 			if(getBlockPos1(stack) != null && getBlockPos2(stack) != null){
-				player.addPending(new ClearSelectionThread(
+				player.addPending(new ThreadClearSelection(
 						new BlockPos(getBlockPos1(stack).getX(),
 									getBlockPos1(stack).getY(),
 									getBlockPos1(stack).getZ()),
@@ -324,10 +271,36 @@ public class SelectionTool extends Item implements IOutlineDrawer, IGetGuiButton
 									getBlockPos2(stack).getZ()), 
 						world));
 			}
-			break;
-			
-		default:
-			break;
+		} else if (buttonID == 10) {
+			System.out.println(mouseButton);
+			if(mouseButton == 0){
+				getNBT(stack).setInteger("repeat", getNBT(stack).getInteger("repeat") + 1);
+			}
+			else if(mouseButton == 1){
+				getNBT(stack).setInteger("repeat", getNBT(stack).getInteger("repeat") - 1);
+			}
+		} else if (buttonID == 11) {
+			if(mouseButton == 0){
+				getNBT(stack).setInteger("repeatMovmentX", getNBT(stack).getInteger("repeatMovmentX") + 1);
+			}
+			else if(mouseButton == 1){
+				getNBT(stack).setInteger("repeatMovmentX", getNBT(stack).getInteger("repeatMovmentX") - 1);
+			}
+		} else if (buttonID == 12) {
+			if(mouseButton == 0){
+				getNBT(stack).setInteger("repeatMovmentY", getNBT(stack).getInteger("repeatMovmentY") + 1);
+			}
+			else if(mouseButton == 1){
+				getNBT(stack).setInteger("repeatMovmentY", getNBT(stack).getInteger("repeatMovmentY") - 1);
+			}
+		} else if (buttonID == 13) {
+			if(mouseButton == 0){
+				getNBT(stack).setInteger("repeatMovmentZ", getNBT(stack).getInteger("repeatMovmentZ") + 1);
+			}
+			else if(mouseButton == 1){
+				getNBT(stack).setInteger("repeatMovmentZ", getNBT(stack).getInteger("repeatMovmentZ") - 1);
+			}
+		} else {
 		}
 		
 	}

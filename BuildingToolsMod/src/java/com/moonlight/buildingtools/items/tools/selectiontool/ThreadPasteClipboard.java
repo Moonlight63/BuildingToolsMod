@@ -43,7 +43,7 @@ import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
 import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
-public class RegoinCopyThread implements BlockChangeBase{
+public class ThreadPasteClipboard implements BlockChangeBase{
 	
 	protected AxisAlignedBB entityDetectionBox;
 	protected World world;
@@ -69,7 +69,7 @@ public class RegoinCopyThread implements BlockChangeBase{
 	
 	protected boolean saveUndo = true;
 	
-	public RegoinCopyThread(World world, EntityPlayer player, BlockPos copyTo, int rot, boolean flipx, boolean flipy, boolean flipz){
+	public ThreadPasteClipboard(World world, EntityPlayer player, BlockPos copyTo, int rot, boolean flipx, boolean flipy, boolean flipz){
 		
 		this.world = world;
 		this.copyToPos = copyTo;		
@@ -86,7 +86,7 @@ public class RegoinCopyThread implements BlockChangeBase{
 		
 	}
 	
-	public RegoinCopyThread(World world, EntityPlayer player, Set<ChangeBlockToThis> selection, Set<Entity> entities){
+	public ThreadPasteClipboard(World world, EntityPlayer player, Set<ChangeBlockToThis> selection, Set<Entity> entities){
 		
 		this.world = world;
 		this.entity = player;

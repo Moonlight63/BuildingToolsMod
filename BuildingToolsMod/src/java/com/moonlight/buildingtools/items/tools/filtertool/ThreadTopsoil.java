@@ -20,7 +20,7 @@ import com.moonlight.buildingtools.items.tools.BlockChangeBase;
 import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
 import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
 
-public class TopSoilThread implements IShapeable, BlockChangeBase {
+public class ThreadTopsoil implements IShapeable, BlockChangeBase {
 	
 	protected World world;
 	protected BlockPos origin;
@@ -40,7 +40,7 @@ public class TopSoilThread implements IShapeable, BlockChangeBase {
 	
 	protected Set<BlockPos> checkedList = new HashSet<BlockPos>();
 	
-	public TopSoilThread(World world, BlockPos origin, int radiusX, int radiusY, int radiusZ, int depth, EnumFacing side, EntityPlayer entity){
+	public ThreadTopsoil(World world, BlockPos origin, int radiusX, int radiusY, int radiusZ, int depth, EnumFacing side, EntityPlayer entity){
 		this.world = world;
 		this.origin = origin;
 		this.radiusX = radiusX;

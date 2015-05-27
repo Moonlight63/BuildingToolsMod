@@ -23,7 +23,7 @@ import com.moonlight.buildingtools.items.tools.BlockChangeBase;
 import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
 import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
 
-public class BlockShapeThread implements IShapeable, BlockChangeBase {
+public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 	
 	protected World world;
 	protected BlockPos origin;
@@ -53,7 +53,7 @@ public class BlockShapeThread implements IShapeable, BlockChangeBase {
 	protected IBlockState blockStateToReplace = Blocks.air.getDefaultState();
 	protected boolean replaceAll = false;
 	
-	public BlockShapeThread(World world, BlockPos origin, int radiusX, int radiusY, int radiusZ, EnumFacing side, EntityPlayer entity, IShapeGenerator shapegen, boolean fill, boolean forceblockstofall, IBlockState blockStateToCreate){
+	public ThreadPaintShape(World world, BlockPos origin, int radiusX, int radiusY, int radiusZ, EnumFacing side, EntityPlayer entity, IShapeGenerator shapegen, boolean fill, boolean forceblockstofall, IBlockState blockStateToCreate){
 		this.world = world;
 		this.origin = origin;
 		this.radiusX = radiusX;
@@ -70,7 +70,7 @@ public class BlockShapeThread implements IShapeable, BlockChangeBase {
 		this.fillmode = fill;
 	}
 	
-	public BlockShapeThread(World world, BlockPos origin, int radiusX, int radiusY, int radiusZ, EnumFacing side, EntityPlayer entity, IShapeGenerator shapegen, boolean fill, boolean forceblockstofall, IBlockState blockStateToCreate, IBlockState blockStateToReplace){
+	public ThreadPaintShape(World world, BlockPos origin, int radiusX, int radiusY, int radiusZ, EnumFacing side, EntityPlayer entity, IShapeGenerator shapegen, boolean fill, boolean forceblockstofall, IBlockState blockStateToCreate, IBlockState blockStateToReplace){
 		this.world = world;
 		this.origin = origin;
 		this.radiusX = radiusX;
@@ -88,7 +88,7 @@ public class BlockShapeThread implements IShapeable, BlockChangeBase {
 		this.fillmode = fill;
 	}
 	
-	public BlockShapeThread(World world, BlockPos origin, int radiusX, int radiusY, int radiusZ, EnumFacing side, EntityPlayer entity, IShapeGenerator shapegen, boolean fill, boolean forceblockstofall, IBlockState blockStateToCreate, boolean replaceAllBlocks){
+	public ThreadPaintShape(World world, BlockPos origin, int radiusX, int radiusY, int radiusZ, EnumFacing side, EntityPlayer entity, IShapeGenerator shapegen, boolean fill, boolean forceblockstofall, IBlockState blockStateToCreate, boolean replaceAllBlocks){
 		this.world = world;
 		this.origin = origin;
 		this.radiusX = radiusX;

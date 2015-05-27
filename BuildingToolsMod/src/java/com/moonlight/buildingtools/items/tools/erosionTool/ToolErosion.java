@@ -1,4 +1,4 @@
-package com.moonlight.buildingtools.items.tools.smoothtool;
+package com.moonlight.buildingtools.items.tools.erosionTool;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,17 +11,24 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 
 import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.helpers.RenderHelper;
+import com.moonlight.buildingtools.helpers.Shapes;
 import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
 import com.moonlight.buildingtools.items.tools.IToolOverrideHitDistance;
+import com.moonlight.buildingtools.items.tools.brushtool.GUIToolBrush;
+import com.moonlight.buildingtools.network.GuiHandler;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.IKeyHandler;
+import com.moonlight.buildingtools.utils.IOutlineDrawer;
 import com.moonlight.buildingtools.utils.Key;
+import com.moonlight.buildingtools.utils.RGBA;
 
-public class BlockSmoother extends Item implements IKeyHandler, IGetGuiButtonPressed, IToolOverrideHitDistance{
+public class ToolErosion extends Item implements IKeyHandler, IOutlineDrawer, IGetGuiButtonPressed, IToolOverrideHitDistance{
 	
 	private static Set<Key.KeyCode> handledKeys;
 	
@@ -32,18 +39,17 @@ public class BlockSmoother extends Item implements IKeyHandler, IGetGuiButtonPre
         handledKeys.add(Key.KeyCode.TOOL_DECREASE);
     }
 	
-	public BlockSmoother(){
+	public ToolErosion(){
 		super();
-		setUnlocalizedName("smoothTool");
+		setUnlocalizedName("erosionTool");
 		setCreativeTab(BuildingTools.tabBT);
 	}
 	
 	public static NBTTagCompound getNBT(ItemStack stack) {
 	    if (stack.getTagCompound() == null) {
 	        stack.setTagCompound(new NBTTagCompound());
+	        stack.getTagCompound().setInteger("preset", 1);
 	        stack.getTagCompound().setInteger("radius", 1);
-	        stack.getTagCompound().setInteger("iterations", 5);
-	        stack.getTagCompound().setDouble("sigma", 2);
 	    }
 	    return stack.getTagCompound();	    
 	}
@@ -53,7 +59,7 @@ public class BlockSmoother extends Item implements IKeyHandler, IGetGuiButtonPre
 	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
     {
 		if(playerIn.isSneaking())
-			playerIn.openGui(BuildingTools.instance, 1, worldIn, 0, 0, 0);
+			playerIn.openGui(BuildingTools.instance, GuiHandler.GUIErosionTool, worldIn, 0, 0, 0);
         return itemStackIn;
     }
 	
@@ -67,12 +73,12 @@ public class BlockSmoother extends Item implements IKeyHandler, IGetGuiButtonPre
             float hitZ){
 		
 		if(playerIn.isSneaking())
-			playerIn.openGui(BuildingTools.instance, 1, worldIn, 0, 0, 0);
+			playerIn.openGui(BuildingTools.instance, GuiHandler.GUIErosionTool, worldIn, 0, 0, 0);
 		else{
 			if(!worldIn.isRemote){
 				PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
-				player.addPending(new SmoothToolThread(worldIn, pos, getTargetRadius(stack), stack, playerIn));
-				//player.addPending(new ErosionThread(worldIn, pos, 3, 3, 3, side, playerIn));
+				player.addPending(new ThreadErosion(worldIn, pos, getTargetRadius(stack), playerIn, getNBT(stack).getInteger("preset")));
+				//player.addPending(new ErosionThread(worldIn, pos, 3, 3, 3, side, playerIn, getNBT(stack).getInteger("preset")));
 			}
 		}
 		return true;
@@ -131,41 +137,56 @@ public class BlockSmoother extends Item implements IKeyHandler, IGetGuiButtonPre
     @Override
     public Set<Key.KeyCode> getHandledKeys()
     {
-        return BlockSmoother.handledKeys;
+        return ToolErosion.handledKeys;
     }
 
 	@Override
 	public void GetGuiButtonPressed(byte buttonID, int mouseButton, boolean isCtrlDown, boolean isAltDown, boolean isShiftDown, ItemStack stack) {
-		switch (buttonID) {
-		case 0:
-			getNBT(stack).setInteger("radius", getNBT(stack).getInteger("radius") - 1);
-			break;
-			
-		case 1:
-			getNBT(stack).setInteger("radius", getNBT(stack).getInteger("radius") + 1);
-			break;
-			
-		case 2:
-			getNBT(stack).setInteger("iterations", getNBT(stack).getInteger("iterations") - 1);
-			break;
-			
-		case 3:
-			getNBT(stack).setInteger("iterations", getNBT(stack).getInteger("iterations") + 1);
-			break;
-			
-		case 4:
-			getNBT(stack).setInteger("sigma", getNBT(stack).getInteger("sigma") - 1);
-			break;
-			
-		case 5:
-			getNBT(stack).setInteger("sigma", getNBT(stack).getInteger("sigma") + 1);
-			break;
-
-		default:
-			break;
+		if (buttonID == 1) {
+			if(mouseButton == 0){
+				if(getNBT(stack).getInteger("preset") < ErosionVisuallizer.Preset.values().length - 1)
+					getNBT(stack).setInteger("preset", getNBT(stack).getInteger("preset") + 1);
+				else
+					getNBT(stack).setInteger("preset", 0);
+			}
+			else if(mouseButton == 1){
+				if(getNBT(stack).getInteger("preset") > 0)
+					getNBT(stack).setInteger("preset", getNBT(stack).getInteger("preset") - 1);
+				else
+					getNBT(stack).setInteger("preset", ErosionVisuallizer.Preset.values().length - 1);
+			}
+		}
+		else if(buttonID == 2){
+			int radius = getNBT(stack).getInteger("radius");
+			if (mouseButton == 0){
+				radius++;
+	        } else if (mouseButton == 1){
+	        	radius--;
+	        }
+			if (radius < 1){radius = 1;}
+			getNBT(stack).setInteger("radius", radius);
+		}
+		else{
 		}
 		
 		PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(stack)));
+	}
+
+	@Override
+	public boolean drawOutline(DrawBlockHighlightEvent event) {
+		BlockPos target = event.target.getBlockPos();
+		
+		ErosionVisuallizer visuallizer = new ErosionVisuallizer(getTargetRadius(event.currentItem), event.player.worldObj, target, getNBT(event.currentItem).getInteger("preset"));
+		
+		for(BlockPos pos : visuallizer.getErosionData()){
+			RenderHelper.renderBlockOutline(event.context, event.player, pos, RGBA.Red.setAlpha(0.6f), 2.0f, event.partialTicks);
+		}
+		
+		for(BlockPos pos : visuallizer.getFillData()){
+			RenderHelper.renderBlockOutline(event.context, event.player, pos, RGBA.Green.setAlpha(0.6f), 2.0f, event.partialTicks);
+		}
+		
+		return true;
 	}
 
 }
