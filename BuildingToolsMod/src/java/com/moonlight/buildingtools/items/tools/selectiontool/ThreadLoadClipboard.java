@@ -129,7 +129,7 @@ public class ThreadLoadClipboard implements BlockChangeBase{
 			byte id = nbt.tagType;
 			
             if(id == 0)
-            	tempCompound.setTag("", new NBTTagEnd());
+            	;
             else if(id == 1)
             	tempCompound.setByte(nbt.name, (byte) nbt.data.byteData);
             else if(id == 2)
