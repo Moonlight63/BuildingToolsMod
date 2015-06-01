@@ -1,10 +1,12 @@
 package com.moonlight.buildingtools.items.tools;
 
+import java.io.Serializable;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 
-public class ChangeBlockToThis {
+public class ChangeBlockToThis implements Serializable {
 	
 	private final BlockPos thisPos;
 	private final IBlockState changeToThis;

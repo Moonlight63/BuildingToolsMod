@@ -39,7 +39,7 @@ public class GUISelectionTool extends GuiScreen{
 	public static final GuiButton moveZ = 				new GuiButton(13, 0, 0, 160, 20, "Z Movment: ");
 	public static final GuiButton fill = 				new GuiButton(14, 0, 0, 160, 20, "Fill Mode (WIP)");
 	public static final GuiButton replace = 			new GuiButton(15, 0, 0, 160, 20, "Replace Mode (WIP)");
-	
+	public static final GuiButton file = 				new GuiButton(16, 0, 0, 160, 20, "File Save / Load (WIP)");
 	
 	
 	public GUISelectionTool(EntityPlayer player){
@@ -116,6 +116,7 @@ public class GUISelectionTool extends GuiScreen{
 		buttonsRight.add(moveZ);
 		buttonsRight.add(fill);
 		buttonsRight.add(replace);
+		buttonsRight.add(file);
 		
 		for (GuiButton btn : buttonsRight){
 			btn.xPosition = (this.width / 2) + 1;
@@ -155,6 +156,10 @@ public class GUISelectionTool extends GuiScreen{
 		if(button.id == copytoclipboard.id || button.id == pasteclipboard.id || button.id == selectpaste.id || button.id == clearselction.id
 				 || button.id == clearsel.id)
 			this.mc.thePlayer.closeScreen();
+		else if (button.id == file.id){
+			this.mc.displayGuiScreen((GuiScreen) null);
+			this.mc.displayGuiScreen(new GUISaveLoadClipboard(this.player));
+		}
 	}
 	
 }

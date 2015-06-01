@@ -53,7 +53,8 @@ public class PacketDispatcher
 		 PacketDispatcher.dispatcher.registerMessage(SyncNBTDataMessage.Handler.class, SyncNBTDataMessage.class, packetId++, Side.SERVER);
 		 //PacketDispatcher.dispatcher.registerMessage(PlayerReachMessage.Handler.class, PlayerReachMessage.class, packetId++, Side.SERVER);
 		 PacketDispatcher.dispatcher.registerMessage(SendGuiButtonPressedToItemMessage.Handler.class, SendGuiButtonPressedToItemMessage.class, packetId++, Side.SERVER);
-		 
+		 PacketDispatcher.dispatcher.registerMessage(SelectionToolSaveSelectionPacket.Handler.class, SelectionToolSaveSelectionPacket.class, packetId++, Side.SERVER);
+		 PacketDispatcher.dispatcher.registerMessage(SendFileSelection.Handler.class, SendFileSelection.class, packetId++, Side.SERVER);
 		 
 	 // If you don't want to make a 'registerMessage' method, you can do it directly:
 	 //PacketDispatcher.dispatcher.registerMessage(OpenGuiMessage.OpenGuiMessageHandler.class, OpenGuiMessage.class, packetId++, Side.SERVER);

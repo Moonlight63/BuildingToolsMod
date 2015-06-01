@@ -8,11 +8,13 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 
 
+
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.items.tools.brushtool.GUIToolBrush;
 import com.moonlight.buildingtools.items.tools.buildingtool.GUIBuildersTool;
 import com.moonlight.buildingtools.items.tools.erosionTool.GUIErosionTool;
 import com.moonlight.buildingtools.items.tools.filtertool.GUIToolFilter;
+import com.moonlight.buildingtools.items.tools.selectiontool.GUISaveLoadClipboard;
 import com.moonlight.buildingtools.items.tools.selectiontool.GUISelectionTool;
 import com.moonlight.buildingtools.items.tools.terrainsmoother.GUITerrainSmooth;
 
@@ -25,6 +27,7 @@ public class GuiHandler implements IGuiHandler {
 	public static final int GUISelectionTool = 4;
 	public static final int GUITerrainSmoothTool = 5;
 	public static final int GUIErosionTool = 6;
+	public static final int GUIFileSave = 7;
 	
 	public GuiHandler(){
 		NetworkRegistry.INSTANCE.registerGuiHandler(BuildingTools.instance, this);
@@ -53,6 +56,8 @@ public class GuiHandler implements IGuiHandler {
 			return new GUITerrainSmooth(player);
 		case GUIErosionTool:
 			return new GUIErosionTool(player);
+		case GUIFileSave:
+			return new GUISaveLoadClipboard(player);
 
 		default:
 			break;

@@ -1,5 +1,11 @@
 package com.moonlight.buildingtools.items.tools.selectiontool;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.zip.GZIPOutputStream;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -9,6 +15,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.helpers.RenderHelper;
@@ -300,10 +307,24 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 			else if(mouseButton == 1){
 				getNBT(stack).setInteger("repeatMovmentZ", getNBT(stack).getInteger("repeatMovmentZ") - 1);
 			}
+		} else if (buttonID == 16) {
+			if(mouseButton == 0){
+				//OpenSaveGUI();
+			}
+		} else if (buttonID == 17) {
+			if(mouseButton == 0){
+				
+			}
 		} else {
 		}
 		
 	}
+	
+	//public void OpenSaveGUI(){
+	//	System.out.println("Opening GUI");
+	//	System.out.println(FMLCommonHandler.instance().getEffectiveSide());
+	//	currPlayer.openGui(BuildingTools.instance, GuiHandler.GUIFileSave, world, 0, 0, 0);
+	//}
 	
 	public BlockPos getAdjustedBlockPos(BlockPos originalPos){
 		BlockPos tempPos = originalPos;
@@ -339,6 +360,22 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 		}
 		
 		return tempPos;
+	}
+
+	public void SaveSelectionToFile(String savename, int mouseButton,
+			boolean ctrlDown, boolean altDown, boolean shiftDown,
+			ItemStack heldItem) {
+		
+		thisStack = heldItem;
+		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
+		player.addPending(new ThreadSaveClipboard(currPlayer, savename));
+		
+	}
+
+	public void LoadSelectionFromFile(String file, ItemStack heldItem) {
+		thisStack = heldItem;
+		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
+		player.addPending(new ThreadLoadClipboard(currPlayer, file));
 	}
 	
 }

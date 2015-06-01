@@ -6,10 +6,13 @@ import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.WorldSettings.GameType;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import com.google.common.base.Optional;
+import com.moonlight.buildingtools.helpers.WorldEventHandler;
 import com.moonlight.buildingtools.helpers.loaders.BlockRenderRegister;
 import com.moonlight.buildingtools.helpers.loaders.ItemRenderRegister;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerRegistry;
@@ -23,7 +26,6 @@ import com.moonlight.buildingtools.utils.Pair;
 
 public class ClientProxy extends CommonProxy {
 
-	
 	@Override
 	public EntityPlayer getPlayerEntity(MessageContext ctx) {
 	 // Note that if you simply return 'Minecraft.getMinecraft().thePlayer',

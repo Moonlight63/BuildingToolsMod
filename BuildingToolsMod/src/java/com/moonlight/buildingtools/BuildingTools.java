@@ -1,5 +1,7 @@
 package com.moonlight.buildingtools;
 
+import java.io.File;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.common.MinecraftForge;
@@ -38,6 +40,8 @@ public class BuildingTools
 	public static ForgeSchedulerService scheduler;
     public static PlayerRegistry playerregistry;
     
+    public static File clipboardSaveDir;
+    
     @EventHandler
     public void preInit(FMLPreInitializationEvent event){
     	
@@ -52,7 +56,22 @@ public class BuildingTools
     		FMLCommonHandler.instance().bus().register(new KeyBindsHandler());
     		MinecraftForge.EVENT_BUS.register(new DrawBlockHighlightEventHandler());
             KeyBindsHandler.init();
+            
         }
+    	
+    	System.out.println("Making directory");
+    	
+    	try{
+	    	clipboardSaveDir = new File(event.getModConfigurationDirectory().getParent().concat("/BuildingToolsSaves"));
+	    	System.out.println(clipboardSaveDir.exists());
+	    	if(!clipboardSaveDir.exists()){
+	    		System.out.println(clipboardSaveDir.mkdir());
+	    	}
+	    	System.out.println(clipboardSaveDir);
+    	}
+    	catch(Exception e){
+    		System.out.println(e);
+    	}
     	
     	PacketDispatcher.registerPackets();
     	
@@ -62,6 +81,8 @@ public class BuildingTools
     public void init(FMLInitializationEvent event){    	
     	proxy.init(event);
     	proxy.registerRenderInformation();
+    	
+    	
     }
     
     @EventHandler
@@ -77,6 +98,9 @@ public class BuildingTools
     	
     	playerregistry = proxy.getPlayerRegistry();
     	playerregistry.init();
+    	
+    	
+    	
     	
     }
     
