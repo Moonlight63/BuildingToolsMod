@@ -140,33 +140,33 @@ public class ToolTerrainSmooth extends Item implements IKeyHandler, IGetGuiButto
 	@Override
 	public void GetGuiButtonPressed(byte buttonID, int mouseButton, boolean isCtrlDown, boolean isAltDown, boolean isShiftDown, ItemStack stack) {
 
+		int multiplier = 0;
+		if(isShiftDown)
+			multiplier = 10;
+		else
+			multiplier = 1;
 		
+		int amount = 0;
+		if(mouseButton == 0)
+			amount = multiplier;
+		else if(mouseButton == 1)
+			amount = -multiplier;
+		else 
+			return;
 		
 		if (buttonID == 1) {
 			int radius = getNBT(stack).getInteger("radius");
-			if (mouseButton == 0){
-	                radius++;
-	        } else if (mouseButton == 1){
-	                radius--;
-	        }
+			radius+=amount;
 			if (radius < 1){radius = 1;}
 			getNBT(stack).setInteger("radius", radius);
 		} else if (buttonID == 2) {
 			int iterations = getNBT(stack).getInteger("iterations");
-			if (mouseButton == 0){
-	        	iterations++;
-	        } else if (mouseButton == 1){
-	        	iterations--;
-	        }
+			iterations+=amount;
 			if (iterations < 1){iterations = 1;}
 			getNBT(stack).setInteger("iterations", iterations);
 		} else if (buttonID == 3) {
 			double sigma = getNBT(stack).getDouble("sigma");
-			if (mouseButton == 0){
-	        	sigma++;
-	        } else if (mouseButton == 1){
-	        	sigma--;
-	        }
+			sigma+=amount;
 			if (sigma < 1){sigma = 1;}
 			getNBT(stack).setDouble("sigma", sigma);
 		} else {

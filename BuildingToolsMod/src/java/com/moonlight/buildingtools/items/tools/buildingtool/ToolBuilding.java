@@ -297,23 +297,29 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
 			boolean isCtrlDown, boolean isAltDown, boolean isShiftDown,
 			ItemStack stack) {
 		
+		int multiplier = 0;
+		if(isShiftDown)
+			multiplier = 10;
+		else
+			multiplier = 1;
+		
+		int amount = 0;
+		if(mouseButton == 0)
+			amount = multiplier;
+		else if(mouseButton == 1)
+			amount = -multiplier;
+		else 
+			return;
+		
 		
 		if (buttonID == 1) {
 			int radiusx = getNBT(stack).getInteger("radiusX");
-			if (mouseButton == 0){
-	                radiusx++;
-	        } else if (mouseButton == 1){
-	                radiusx--;
-	        }
+			radiusx+=amount;
 			if (radiusx < 1){radiusx = 1;}
 			getNBT(stack).setInteger("radiusX", radiusx);
 		} else if (buttonID == 2) {
 			int radiusz = getNBT(stack).getInteger("radiusZ");
-			if (mouseButton == 0){
-	                radiusz++;
-	        } else if (mouseButton == 1){
-	                radiusz--;
-	        }
+			radiusz+=amount;
 			if (radiusz < 1){radiusz = 1;}
 			getNBT(stack).setInteger("radiusZ", radiusz);
 		} else if (buttonID == 3) {

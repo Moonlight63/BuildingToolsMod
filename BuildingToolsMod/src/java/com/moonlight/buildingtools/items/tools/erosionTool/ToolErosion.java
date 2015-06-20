@@ -142,6 +142,21 @@ public class ToolErosion extends Item implements IKeyHandler, IOutlineDrawer, IG
 
 	@Override
 	public void GetGuiButtonPressed(byte buttonID, int mouseButton, boolean isCtrlDown, boolean isAltDown, boolean isShiftDown, ItemStack stack) {
+		
+		int multiplier = 0;
+		if(isShiftDown)
+			multiplier = 10;
+		else
+			multiplier = 1;
+		
+		int amount = 0;
+		if(mouseButton == 0)
+			amount = multiplier;
+		else if(mouseButton == 1)
+			amount = -multiplier;
+		else 
+			return;
+		
 		if (buttonID == 1) {
 			if(mouseButton == 0){
 				if(getNBT(stack).getInteger("preset") < ErosionVisuallizer.Preset.values().length - 1)
@@ -158,11 +173,7 @@ public class ToolErosion extends Item implements IKeyHandler, IOutlineDrawer, IG
 		}
 		else if(buttonID == 2){
 			int radius = getNBT(stack).getInteger("radius");
-			if (mouseButton == 0){
-				radius++;
-	        } else if (mouseButton == 1){
-	        	radius--;
-	        }
+			radius+=amount;
 			if (radius < 1){radius = 1;}
 			getNBT(stack).setInteger("radius", radius);
 		}

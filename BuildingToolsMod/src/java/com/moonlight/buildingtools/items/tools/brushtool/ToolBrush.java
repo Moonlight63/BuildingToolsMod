@@ -406,6 +406,20 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IIte
 			boolean isCtrlDown, boolean isAltDown, boolean isShiftDown,
 			ItemStack stack) {
 		
+		int multiplier = 0;
+		if(isShiftDown)
+			multiplier = 10;
+		else
+			multiplier = 1;
+		
+		int amount = 0;
+		if(mouseButton == 0)
+			amount = multiplier;
+		else if(mouseButton == 1)
+			amount = -multiplier;
+		else 
+			return;
+		
 		
 		if (buttonID == 1) {
 			if(mouseButton == 0){
@@ -422,29 +436,17 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IIte
 			}
 		} else if (buttonID == 2) {
 			int radiusx = getNBT(stack).getInteger("radiusX");
-			if (mouseButton == 0){
-	                radiusx++;
-	        } else if (mouseButton == 1){
-	                radiusx--;
-	        }
+	        radiusx+=amount;
 			if (radiusx < 1){radiusx = 1;}
 			getNBT(stack).setInteger("radiusX", radiusx);
 		} else if (buttonID == 3) {
 			int radiusy = getNBT(stack).getInteger("radiusY");
-			if (mouseButton == 0){
-	                radiusy++;
-	        } else if (mouseButton == 1){
-	                radiusy--;
-	        }
+	        radiusy+=amount;
 			if (radiusy < 1){radiusy = 1;}
 			getNBT(stack).setInteger("radiusY", radiusy);
 		} else if (buttonID == 4) {
 			int radiusz = getNBT(stack).getInteger("radiusZ");
-			if (mouseButton == 0){
-	                radiusz++;
-	        } else if (mouseButton == 1){
-	                radiusz--;
-	        }
+			radiusz+=amount;
 			if (radiusz < 1){radiusz = 1;}
 			getNBT(stack).setInteger("radiusZ", radiusz);
 		} else if (buttonID == 5) {

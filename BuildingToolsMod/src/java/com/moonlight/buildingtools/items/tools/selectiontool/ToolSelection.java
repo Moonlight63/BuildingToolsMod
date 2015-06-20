@@ -212,6 +212,21 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 			boolean isCtrlDown, boolean isAltDown, boolean isShiftDown,
 			ItemStack stack) {
 		
+		int multiplier = 0;
+		if(isShiftDown)
+			multiplier = 10;
+		else
+			multiplier = 1;
+		
+		int amount = 0;
+		if(mouseButton == 0)
+			amount = multiplier;
+		else if(mouseButton == 1)
+			amount = -multiplier;
+		else 
+			return;
+		
+		
 		thisStack = stack;
 		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
 		
@@ -279,34 +294,13 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 						world));
 			}
 		} else if (buttonID == 10) {
-			System.out.println(mouseButton);
-			if(mouseButton == 0){
-				getNBT(stack).setInteger("repeat", getNBT(stack).getInteger("repeat") + 1);
-			}
-			else if(mouseButton == 1){
-				getNBT(stack).setInteger("repeat", getNBT(stack).getInteger("repeat") - 1);
-			}
+			getNBT(stack).setInteger("repeat", getNBT(stack).getInteger("repeat") + amount);
 		} else if (buttonID == 11) {
-			if(mouseButton == 0){
-				getNBT(stack).setInteger("repeatMovmentX", getNBT(stack).getInteger("repeatMovmentX") + 1);
-			}
-			else if(mouseButton == 1){
-				getNBT(stack).setInteger("repeatMovmentX", getNBT(stack).getInteger("repeatMovmentX") - 1);
-			}
+			getNBT(stack).setInteger("repeatMovmentX", getNBT(stack).getInteger("repeatMovmentX") + amount);
 		} else if (buttonID == 12) {
-			if(mouseButton == 0){
-				getNBT(stack).setInteger("repeatMovmentY", getNBT(stack).getInteger("repeatMovmentY") + 1);
-			}
-			else if(mouseButton == 1){
-				getNBT(stack).setInteger("repeatMovmentY", getNBT(stack).getInteger("repeatMovmentY") - 1);
-			}
+			getNBT(stack).setInteger("repeatMovmentY", getNBT(stack).getInteger("repeatMovmentY") + amount);
 		} else if (buttonID == 13) {
-			if(mouseButton == 0){
-				getNBT(stack).setInteger("repeatMovmentZ", getNBT(stack).getInteger("repeatMovmentZ") + 1);
-			}
-			else if(mouseButton == 1){
-				getNBT(stack).setInteger("repeatMovmentZ", getNBT(stack).getInteger("repeatMovmentZ") - 1);
-			}
+			getNBT(stack).setInteger("repeatMovmentZ", getNBT(stack).getInteger("repeatMovmentZ") + amount);
 		} else if (buttonID == 16) {
 			if(mouseButton == 0){
 				//OpenSaveGUI();
