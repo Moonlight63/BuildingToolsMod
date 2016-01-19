@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
 import net.minecraft.block.Block;
@@ -19,6 +20,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
+import com.google.common.collect.Lists;
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.helpers.RenderHelper;
 import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
@@ -388,5 +390,20 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 		player.addPending(new ThreadSimpleFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, fillBlock));
 	}
 	
-	
+	public void AdvancedFill(List<Integer> ID, List<Integer> DATA, List<Integer> COUNT){
+		System.out.println("Recieved Message!");
+		System.out.println(ID + "   " + DATA + "   " + COUNT);
+		
+		List<IBlockState> blockStates = Lists.<IBlockState>newArrayList();
+		
+		for (int i = 0; i < ID.size(); i++) {
+			blockStates.add(Block.getBlockById(ID.get(i)).getStateFromMeta(DATA.get(i)));
+		}
+		
+		//IBlockState fillBlock = Block.getBlockById(ID).getStateFromMeta(DATA);
+		
+		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
+		player.addPending(new ThreadAdvancedFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, blockStates, COUNT));
+		//player.addPending(new ThreadSimpleFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, fillBlock));
+	}
 }
