@@ -17,7 +17,7 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "0.0.6-mc1.8"
+version = "0.0.8-mc1.8"
 group= "com.moonlight.buildingtools" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "buildingtools"
 
@@ -29,7 +29,7 @@ sourceSets {
 }
 
 minecraft {
-    version = "1.8-11.14.1.1334"
+    version = "1.8.9-11.15.0.1694"
     runDir = "eclipse"
     
     // the mappings can be changed at any time, and must be in the following format.
