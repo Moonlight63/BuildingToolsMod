@@ -40,6 +40,7 @@ public class ThreadAdvancedFill implements BlockChangeBase, IShapeable{
 	protected EntityPlayer entity;
 	
 	protected Set<ChangeBlockToThis> tempList = new HashSet<ChangeBlockToThis>();
+	protected Set<BlockPos> checkList = new HashSet<BlockPos>();
 	
 	protected boolean isFinished = false;
 	protected Set<ChangeBlockToThis> selectionSet = new LinkedHashSet<ChangeBlockToThis>();
@@ -70,35 +71,39 @@ public class ThreadAdvancedFill implements BlockChangeBase, IShapeable{
 		
 		if(count < 4096){
 			
-			currentlyCalculating = true;
-			
-			
-			int chanceTotal = 0;
-			
-			for (Integer integer : fillBlockChance) {
-				chanceTotal += integer;
-			}
-			
-			
-			int random = new Random().nextInt(chanceTotal);
-			IBlockState blockstate = Blocks.air.getDefaultState();
-			
-			
-			int curVal = 0;
-			for(int i = 0; i < fillBlockChance.size(); i++){
-				curVal += fillBlockChance.get(i);
+			if(!checkList.contains(bpos)){
+				currentlyCalculating = true;
 				
-				if(random < curVal){
-					blockstate = fillBlockState.get(i);
-					break;
+				
+				int chanceTotal = 0;
+				
+				for (Integer integer : fillBlockChance) {
+					chanceTotal += integer;
 				}
 				
-			}
-		
-			//if(world.getBlockState(bpos) != fillBlockState){
+				
+				int random = new Random().nextInt(chanceTotal);
+				IBlockState blockstate = Blocks.air.getDefaultState();
+				
+				
+				int curVal = 0;
+				for(int i = 0; i < fillBlockChance.size(); i++){
+					curVal += fillBlockChance.get(i);
+					
+					if(random < curVal){
+						blockstate = fillBlockState.get(i);
+						break;
+					}
+					
+				}
+			
 				tempList.add(new ChangeBlockToThis(bpos, blockstate));
+				checkList.add(bpos);
 				count++;
-			//}
+			}
+			else{
+				return;
+			}
 		
 		}
 		else{

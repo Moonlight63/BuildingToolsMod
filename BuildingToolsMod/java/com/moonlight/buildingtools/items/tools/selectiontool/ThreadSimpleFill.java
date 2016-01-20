@@ -37,6 +37,7 @@ public class ThreadSimpleFill implements BlockChangeBase, IShapeable{
 	protected EntityPlayer entity;
 	
 	protected Set<ChangeBlockToThis> tempList = new HashSet<ChangeBlockToThis>();
+	protected Set<BlockPos> checkList = new HashSet<BlockPos>();
 	
 	protected boolean isFinished = false;
 	protected Set<ChangeBlockToThis> selectionSet = new LinkedHashSet<ChangeBlockToThis>();
@@ -65,13 +66,14 @@ public class ThreadSimpleFill implements BlockChangeBase, IShapeable{
 		
 		if(count < 4096){
 			
-			currentlyCalculating = true;
-		
-			if(world.getBlockState(bpos) != fillBlockState){
+			if(!checkList.contains(bpos)){
+			
+				currentlyCalculating = true;
+			
 				tempList.add(new ChangeBlockToThis(bpos, fillBlockState));
+				checkList.add(bpos);
 				count++;
 			}
-		
 		}
 		else{
 			return;

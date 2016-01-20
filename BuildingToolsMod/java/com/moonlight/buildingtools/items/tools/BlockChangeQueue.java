@@ -36,12 +36,10 @@ public class BlockChangeQueue {
 		for(ChangeBlockToThis bpos : blockpos){
 			
 			if(replaceAll)
-				if(bpos.getBlockState() != BlockLoader.tempBlock.getDefaultState()){
-					world.setBlockState(bpos.getBlockPos(), bpos.getBlockState());
-				}
+				world.setBlockState(bpos.getBlockPos(), bpos.getBlockState() != BlockLoader.tempBlock.getDefaultState() ? bpos.getBlockState() : Blocks.air.getDefaultState());
 			if(!replaceAll)
-				if(world.getBlockState(bpos.getBlockPos()) == blockStateToReplace && bpos.getBlockState() != BlockLoader.tempBlock.getDefaultState()){
-					world.setBlockState(bpos.getBlockPos(), bpos.getBlockState());
+				if(world.getBlockState(bpos.getBlockPos()) == blockStateToReplace){
+					world.setBlockState(bpos.getBlockPos(), bpos.getBlockState() != BlockLoader.tempBlock.getDefaultState() ? bpos.getBlockState() : Blocks.air.getDefaultState());
 				}
 			
 			if(!world.isAirBlock(bpos.getBlockPos())){

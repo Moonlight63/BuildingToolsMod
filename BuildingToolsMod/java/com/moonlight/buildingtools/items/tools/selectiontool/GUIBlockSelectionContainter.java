@@ -10,13 +10,11 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -34,7 +32,6 @@ import org.lwjgl.input.Mouse;
 import com.google.common.collect.Lists;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendAdvancedFillPacketToItemMessage;
-import com.moonlight.buildingtools.network.packethandleing.SendGuiButtonPressedToItemMessage;
 import com.moonlight.buildingtools.network.packethandleing.SendSimpleFillPacketToItemMessage;
 import com.moonlight.buildingtools.utils.RGBA;
 
@@ -51,7 +48,6 @@ public class GUIBlockSelectionContainter extends GuiContainer{
     private boolean wasClicking;
     private GuiTextField searchField;
     private boolean keyOrButtonClicked;
-//    private ContainerBlockSelMenu container;
     private GuiCheckBox showMetaData = new GuiCheckBox(0, 0, 0, "Meta Data?", false);
     
     private GuiButton modeSwitch = new GuiButton(1, 0, 0, "Simple Fill");
@@ -66,7 +62,6 @@ public class GUIBlockSelectionContainter extends GuiContainer{
     public GUIBlockSelectionContainter(EntityPlayer player){
         super(new ContainerBlockSelMenu());
         player.openContainer = this.inventorySlots;
-//        container = (ContainerBlockSelMenu) this.inventorySlots;
         this.allowUserInput = true;
         this.ySize = 136;
         this.xSize = 195;
@@ -89,7 +84,6 @@ public class GUIBlockSelectionContainter extends GuiContainer{
      */
     protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType){
         this.keyOrButtonClicked = true;
-        boolean flag = clickType == 1;
         clickType = slotId == -999 && clickType == 0 ? 4 : clickType;
         
         //if(slotIn != null && slotIn.getStack() != null)
@@ -214,10 +208,6 @@ public class GUIBlockSelectionContainter extends GuiContainer{
         
         if(mode == 1){
         	
-        	//int[] ID = {};
-        	//int[] META = {};
-        	//int[] CHANCE = {};
-        	
         	List<Integer> ID = Lists.<Integer>newArrayList();
         	List<Integer> META = Lists.<Integer>newArrayList();
         	List<Integer> CHANCE = Lists.<Integer>newArrayList();
@@ -268,34 +258,7 @@ public class GUIBlockSelectionContainter extends GuiContainer{
 
     private void updateCreativeSearch(){
     	
-        ContainerBlockSelMenu.itemList.clear();
-        
-//    	if(showMetaData.isChecked()){
-//            for(Block b : GameData.getBlockRegistry()){
-//        		if(Item.getItemFromBlock(b) != null/* && Item.getItemFromBlock(b).getCreativeTab() != null*/)
-//        			Item.getItemFromBlock(b).getSubItems(Item.getItemFromBlock(b), null, ContainerBlockSelMenu.itemList);
-//        	}
-//    	}
-//    	else{
-//    		for(Block b : GameData.getBlockRegistry()){
-//	    		if(Item.getItemFromBlock(b) != null/* && Item.getItemFromBlock(b).getCreativeTab() != null*/)
-//	    			ContainerBlockSelMenu.itemList.add(new ItemStack(b));
-//	    	}
-//    	}
-        
-//        List<ItemStack> tmpList = Lists.<ItemStack>newArrayList();
-//    	tmpList = blockFillList;
-//    	
-//    	for (ItemStack itemStack : tmpList) {
-//			itemStack.stackSize = 1;
-//			System.out.println(blockListMeta.indexOf(itemStack));
-//		}
-//    	for (ItemStack itemStack : blockListMeta) {
-//			if(tmpList.contains(itemStack)){
-//				itemStack.stackSize = blockFillList.get(tmpList.indexOf(itemStack)).stackSize;
-//			}
-//		}
-        
+        ContainerBlockSelMenu.itemList.clear();        
         
         Iterator<ItemStack> iterator1 = showMetaData.isChecked() ? blockListMeta.iterator() : blockList.iterator();
         
@@ -345,9 +308,9 @@ public class GUIBlockSelectionContainter extends GuiContainer{
      */
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException{
         if (mouseButton == 0){
-            int i = mouseX - this.guiLeft;
-            int j = mouseY - this.guiTop;
-            
+//            int i = mouseX - this.guiLeft;
+//            int j = mouseY - this.guiTop;
+//            
 //            if(i >= 82 && i <= 82+89 && j >= 5 && j <= 15){
 //            	System.out.println("Clicked in search field");
 //            }
@@ -362,11 +325,9 @@ public class GUIBlockSelectionContainter extends GuiContainer{
      */
     protected void mouseReleased(int mouseX, int mouseY, int state){
         if (state == 0){
-            int i = mouseX - this.guiLeft;
-            int j = mouseY - this.guiTop;
-
+//            int i = mouseX - this.guiLeft;
+//            int j = mouseY - this.guiTop;
         }
-
         super.mouseReleased(mouseX, mouseY, state);
     }
 
@@ -439,8 +400,11 @@ public class GUIBlockSelectionContainter extends GuiContainer{
         			slot.setColor(RGBA.Red.setAlpha(100));
         		}
         		else{
-        			slot.clearColor();
-        			slot.getStack().stackSize = 1;
+        			if(slot != null){
+	        			slot.clearColor();
+	        			if(slot.getStack() != null)
+	        				slot.getStack().stackSize = 1;
+        			}
         		}
         		slot.drawRect(this.guiLeft, this.guiTop); 
         	}
