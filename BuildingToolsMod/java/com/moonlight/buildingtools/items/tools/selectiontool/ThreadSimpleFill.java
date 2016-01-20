@@ -46,6 +46,7 @@ public class ThreadSimpleFill implements BlockChangeBase, IShapeable{
 	public boolean selectionCalculated = false;
 	protected boolean currentlyCalculating = false;
 	protected IBlockState fillBlockState;
+	protected IBlockState replaceBlockState;
 	protected int count = 0;
 	
 	public ThreadSimpleFill(BlockPos blockpos1, BlockPos blockpos2, World world, EntityPlayer player, IBlockState fillBlock){
@@ -60,6 +61,19 @@ public class ThreadSimpleFill implements BlockChangeBase, IShapeable{
 		this.fillBlockState = fillBlock;
 	}
 	
+	public ThreadSimpleFill(BlockPos blockpos1, BlockPos blockpos2, World world, EntityPlayer player, IBlockState fillBlock, IBlockState replaceBlock){
+		System.out.println("Thread Started");
+		if(blockpos1 != null && blockpos2 != null)
+			this.structureBoundingBox = new StructureBoundingBox(blockpos1, blockpos2);
+		else{
+			System.out.println(blockpos1 + "" + blockpos2); return;}
+		
+		this.world = world;		
+		this.entity = player;
+		this.fillBlockState = fillBlock;
+		this.replaceBlockState = replaceBlock;
+	}
+	
 	@Override
 	public void setBlock(BlockPos bpos){
 		//System.out.println(world);
@@ -67,6 +81,9 @@ public class ThreadSimpleFill implements BlockChangeBase, IShapeable{
 		if(count < 4096){
 			
 			if(!checkList.contains(bpos)){
+				
+				if(replaceBlockState != null && world.getBlockState(bpos) != replaceBlockState)
+					return;
 			
 				currentlyCalculating = true;
 			

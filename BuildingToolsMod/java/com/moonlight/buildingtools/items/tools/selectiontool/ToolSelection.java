@@ -406,4 +406,38 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 		player.addPending(new ThreadAdvancedFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, blockStates, COUNT));
 		//player.addPending(new ThreadSimpleFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, fillBlock));
 	}
+
+	public void SimpleReplace(int ID, int DATA, int ID2, int DATA2){
+		System.out.println("Recieved Message!");
+		
+		IBlockState fillBlock = Block.getBlockById(ID).getStateFromMeta(DATA);
+		IBlockState replaceBlock = Block.getBlockById(ID2).getStateFromMeta(DATA2);
+		
+		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
+		player.addPending(new ThreadSimpleFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, fillBlock, replaceBlock));
+	}
+	
+	public void AdvancedReplace(List<Integer> ID, List<Integer> DATA, List<Integer> COUNT, List<Integer> ID2, List<Integer> DATA2){
+		System.out.println("Recieved Message!");
+		System.out.println(ID + "   " + DATA + "   " + COUNT);
+		
+		List<IBlockState> blockStates = Lists.<IBlockState>newArrayList();
+		List<IBlockState> blockStatesReplace = Lists.<IBlockState>newArrayList();
+		
+		for (int i = 0; i < ID.size(); i++) {
+			blockStates.add(Block.getBlockById(ID.get(i)).getStateFromMeta(DATA.get(i)));
+		}
+		
+		for (int i = 0; i < ID2.size(); i++) {
+			blockStatesReplace.add(Block.getBlockById(ID2.get(i)).getStateFromMeta(DATA2.get(i)));
+		}
+		
+		System.out.println("Replacing: " + blockStatesReplace + "    With: " + blockStates);
+		
+		//IBlockState fillBlock = Block.getBlockById(ID).getStateFromMeta(DATA);
+		
+		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
+		player.addPending(new ThreadAdvancedFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, blockStates, blockStatesReplace, COUNT));
+		//player.addPending(new ThreadSimpleFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, fillBlock));
+	}
 }

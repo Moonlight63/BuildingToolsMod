@@ -32,11 +32,13 @@ import org.lwjgl.input.Mouse;
 import com.google.common.collect.Lists;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendAdvancedFillPacketToItemMessage;
+import com.moonlight.buildingtools.network.packethandleing.SendAdvancedReplacePacketToItemMessage;
 import com.moonlight.buildingtools.network.packethandleing.SendSimpleFillPacketToItemMessage;
+import com.moonlight.buildingtools.network.packethandleing.SendSimpleReplacePacketToItemMessage;
 import com.moonlight.buildingtools.utils.RGBA;
 
 @SideOnly(Side.CLIENT)
-public class GUIBlockSelectionContainter extends GuiContainer{
+public class GUIBlockSelectionReplace extends GuiContainer{
 	
     /** The location of the creative inventory tabs texture */
     private static final ResourceLocation creativeInventoryTabs = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
@@ -50,16 +52,17 @@ public class GUIBlockSelectionContainter extends GuiContainer{
     private boolean keyOrButtonClicked;
     private GuiCheckBox showMetaData = new GuiCheckBox(0, 0, 0, "Meta Data?", false);
     
-    private GuiButton modeSwitch = new GuiButton(1, 0, 0, "Simple Fill");
+    private GuiButton modeSwitch = new GuiButton(1, 0, 0, "Simple Replace");
     
     public static List<ItemStack> blockList = Lists.<ItemStack>newArrayList();
     public static List<ItemStack> blockListMeta = Lists.<ItemStack>newArrayList();
     
     private List<ItemStack> blockFillList = Lists.<ItemStack>newCopyOnWriteArrayList();
+    private List<ItemStack> blockReplaceList = Lists.<ItemStack>newCopyOnWriteArrayList();
     
     private int mode = 0;
 
-    public GUIBlockSelectionContainter(EntityPlayer player){
+    public GUIBlockSelectionReplace(EntityPlayer player){
         super(new ContainerBlockSelMenu());
         player.openContainer = this.inventorySlots;
         this.allowUserInput = true;
@@ -93,11 +96,10 @@ public class GUIBlockSelectionContainter extends GuiContainer{
         
         if (mode == 0){
 	        if(clickedButton == 0){
+	        	System.out.println(blockReplaceList);
 	        	if(clickType == 0){
-	        		int currID = Block.getIdFromBlock(Block.getBlockFromItem(slotIn.getStack().getItem()));
-	        		int currDATA = slotIn.getStack().getItem().getMetadata(slotIn.getStack());
-	        		PacketDispatcher.sendToServer(new SendSimpleFillPacketToItemMessage(currID, currDATA));
-	        		this.mc.thePlayer.closeScreen();
+	        		blockReplaceList.clear();
+	        		blockReplaceList.add(0, slotIn.getStack());
 	        	}
 	        	else if(clickType == 1){
 	        		//((ContainerBlockSelMenu.CustomSlot) slotIn).setColor(RGBA.Red.setAlpha(100));;
@@ -106,7 +108,14 @@ public class GUIBlockSelectionContainter extends GuiContainer{
 	        }
 	        else if(clickedButton == 1){
 	        	if(clickType == 0){
-	        		
+	        		if(!blockReplaceList.isEmpty()){
+		        		int currID = Block.getIdFromBlock(Block.getBlockFromItem(slotIn.getStack().getItem()));
+		        		int currDATA = slotIn.getStack().getItem().getMetadata(slotIn.getStack());
+		        		int currID2 = Block.getIdFromBlock(Block.getBlockFromItem(blockReplaceList.get(0).getItem()));
+		        		int currDATA2 = blockReplaceList.get(0).getItem().getMetadata(blockReplaceList.get(0));
+		        		PacketDispatcher.sendToServer(new SendSimpleReplacePacketToItemMessage(currID, currDATA, currID2, currDATA2));
+		        		this.mc.thePlayer.closeScreen();
+	        		}
 	        	}
 	        	else if(clickType == 1){
 	        		
@@ -116,6 +125,18 @@ public class GUIBlockSelectionContainter extends GuiContainer{
         else{
         	if(clickedButton == 0){
 	        	if(clickType == 0){
+	        		if(blockReplaceList.contains(slotIn.getStack())){
+	        			blockReplaceList.remove(slotIn.getStack());
+	        		}
+	        		else{
+	        			if(!blockFillList.contains(slotIn.getStack()))
+	        				blockReplaceList.add(slotIn.getStack());
+	        		}
+	        			
+	        		System.out.println(blockReplaceList);
+	        		
+	        	}
+	        	else if(clickType == 1){
 	        		if(!blockFillList.contains(slotIn.getStack())){
 	        			blockFillList.add(slotIn.getStack());
 	        		}
@@ -125,14 +146,11 @@ public class GUIBlockSelectionContainter extends GuiContainer{
 	        			blockFillList.add(slotIn.getStack());
 	        		}
 	        		System.out.println(blockFillList);
-	        	}
-	        	else if(clickType == 1){
-	        		
 	        		//slotIn.setColor(RGBA.Red.setAlpha(100));
 	        	}
 	        }
 	        else if(clickedButton == 1){
-	        	if(clickType == 0){
+	        	//if(clickType == 0){
 	        		if(!blockFillList.contains(slotIn.getStack())){
 	        			//((ContainerBlockSelMenu.CustomSlot) slotIn).setColor(RGBA.White.setAlpha(0));
 	        			//blockFillList.add(slotIn.getStack());
@@ -149,10 +167,10 @@ public class GUIBlockSelectionContainter extends GuiContainer{
 	        			
 	        		}
 	        		System.out.println(blockFillList);
-	        	}
-	        	else if(clickType == 1){
-	        		
-	        	}
+//	        	}
+//	        	else if(clickType == 1){
+//	        		
+//	        	}
 	        }
         }
 
@@ -208,21 +226,35 @@ public class GUIBlockSelectionContainter extends GuiContainer{
         
         if(mode == 1){
         	
-        	List<Integer> ID = Lists.<Integer>newArrayList();
-        	List<Integer> META = Lists.<Integer>newArrayList();
-        	List<Integer> CHANCE = Lists.<Integer>newArrayList();
+        	if(!blockFillList.isEmpty() && !blockReplaceList.isEmpty()){
         	
-        	for(int i = 0; i < blockFillList.size(); i++){
-        		
-        		System.out.println("SIZE = " + blockFillList.size());
-        		ID.add(i, Block.getIdFromBlock(Block.getBlockFromItem(blockFillList.get(i).getItem())));
-        		META.add(i, blockFillList.get(i).getMetadata());
-        		CHANCE.add(i, blockFillList.get(i).stackSize);
+	        	List<Integer> ID = Lists.<Integer>newArrayList();
+	        	List<Integer> META = Lists.<Integer>newArrayList();
+	        	List<Integer> CHANCE = Lists.<Integer>newArrayList();
+	        	
+	        	for(int i = 0; i < blockFillList.size(); i++){
+	        		
+	        		System.out.println("SIZE = " + blockFillList.size());
+	        		ID.add(i, Block.getIdFromBlock(Block.getBlockFromItem(blockFillList.get(i).getItem())));
+	        		META.add(i, blockFillList.get(i).getMetadata());
+	        		CHANCE.add(i, blockFillList.get(i).stackSize);
+	        	}
+	        	
+	        	List<Integer> ID2 = Lists.<Integer>newArrayList();
+	        	List<Integer> META2 = Lists.<Integer>newArrayList();
+	        	
+	        	for(int i = 0; i < blockReplaceList.size(); i++){
+	        		
+	        		System.out.println("SIZE = " + blockFillList.size());
+	        		ID2.add(i, Block.getIdFromBlock(Block.getBlockFromItem(blockReplaceList.get(i).getItem())));
+	        		META2.add(i, blockReplaceList.get(i).getMetadata());
+	        	}
+	        	
+	        	System.out.println(ID + "   " + META + "   " + CHANCE);
+	        	
+	        	PacketDispatcher.sendToServer(new SendAdvancedReplacePacketToItemMessage(ID, META, CHANCE, ID2, META2));
+	        	
         	}
-        	
-        	System.out.println(ID + "   " + META + "   " + CHANCE);
-        	
-        	PacketDispatcher.sendToServer(new SendAdvancedFillPacketToItemMessage(ID, META, CHANCE));
         }
     }
 
@@ -396,7 +428,27 @@ public class GUIBlockSelectionContainter extends GuiContainer{
         	ContainerBlockSelMenu.CustomSlot slot = (ContainerBlockSelMenu.CustomSlot)this.inventorySlots.inventorySlots.get(i11);
         	
         	if(mode == 1){
-        		if(blockFillList.contains(slot.getStack())){
+        		
+        		if(blockReplaceList.contains(slot.getStack())){
+        			slot.setColor(RGBA.Red.setAlpha(100));
+        		}
+        		
+        		else if(blockFillList.contains(slot.getStack())){
+        			slot.setColor(RGBA.Green.setAlpha(100));
+        		}
+        		
+        		else{
+        			if(slot != null){
+	        			slot.clearColor();
+	        			if(slot.getStack() != null)
+	        				slot.getStack().stackSize = 1;
+        			}
+        		}
+        		
+        	}
+        	else if (mode == 0){
+        		
+        		if(blockReplaceList.contains(slot.getStack())){
         			slot.setColor(RGBA.Red.setAlpha(100));
         		}
         		else{
@@ -406,15 +458,9 @@ public class GUIBlockSelectionContainter extends GuiContainer{
 	        				slot.getStack().stackSize = 1;
         			}
         		}
-        		slot.drawRect(this.guiLeft, this.guiTop); 
         	}
-        	else if (mode == 0){
-        		if(blockFillList.contains(slot.getStack())){
-	    			slot.getStack().stackSize = 1;
-	    			slot.clearColor();
-	    			slot.drawRect(this.guiLeft, this.guiTop);
-        		}
-        	}
+        	
+        	slot.drawRect(this.guiLeft, this.guiTop); 
         	
             if(this.isMouseOverSlot(slot, mouseX, mouseY) && slot.canBeHovered())
             	hoveredslot = slot;
@@ -422,12 +468,12 @@ public class GUIBlockSelectionContainter extends GuiContainer{
         }
         
         if(mode == 0){
-        	modeSwitch.displayString = "Simple Fill";
+        	modeSwitch.displayString = "Simple Replace";
         	if(!blockFillList.isEmpty())
         		blockFillList.clear();
         }
         else if (mode == 1){
-        	modeSwitch.displayString = "Advanced Fill";
+        	modeSwitch.displayString = "Advanced Replace";
         }
         
         InventoryPlayer inventoryplayer = this.mc.thePlayer.inventory;
@@ -518,6 +564,29 @@ public class GUIBlockSelectionContainter extends GuiContainer{
 					}
         		}
     		}
+        	
+        	
+        	for (ItemStack itemStack : blockReplaceList) {
+        		
+        		if(showMetaData.isChecked()){
+	        		for (ItemStack itemStack2 : blockListMeta) {
+						if(itemStack.getItem() == itemStack2.getItem() && itemStack.getMetadata() == itemStack2.getMetadata()){
+							blockReplaceList.remove(itemStack);
+							//itemStack2.stackSize = itemStack.stackSize;
+							blockReplaceList.add(itemStack2);
+						}
+					}
+        		}
+        		else{
+        			for (ItemStack itemStack2 : blockList) {
+						if(itemStack.getItem() == itemStack2.getItem() && itemStack.getMetadata() == itemStack2.getMetadata()){
+							blockReplaceList.remove(itemStack);
+							//itemStack2.stackSize = itemStack.stackSize;
+							blockReplaceList.add(itemStack2);
+						}
+					}
+        		}
+    		}
         }
 
         if (button.id == 1){
@@ -526,6 +595,8 @@ public class GUIBlockSelectionContainter extends GuiContainer{
         	}
         	else if (mode == 1){
         		mode--;
+        		if(!blockReplaceList.isEmpty())
+            		blockReplaceList.clear();
         	}
         }
     }

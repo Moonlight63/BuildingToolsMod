@@ -15,7 +15,7 @@ import com.moonlight.buildingtools.items.tools.brushtool.GUIToolBrush;
 import com.moonlight.buildingtools.items.tools.buildingtool.GUIBuildersTool;
 import com.moonlight.buildingtools.items.tools.erosionTool.GUIErosionTool;
 import com.moonlight.buildingtools.items.tools.filtertool.GUIToolFilter;
-import com.moonlight.buildingtools.items.tools.selectiontool.GUIBlockSelectionContainter;
+import com.moonlight.buildingtools.items.tools.selectiontool.GUIBlockSelectionFill;
 import com.moonlight.buildingtools.items.tools.selectiontool.GUISaveLoadClipboard;
 import com.moonlight.buildingtools.items.tools.selectiontool.GUISelectionTool;
 import com.moonlight.buildingtools.items.tools.terrainsmoother.GUITerrainSmooth;
@@ -62,7 +62,7 @@ public class GuiHandler implements IGuiHandler {
 		case GUIFileSave:
 			return new GUISaveLoadClipboard(player);
 		case GUIBlockSelection:
-			return new GUIBlockSelectionContainter(player);
+			return new GUIBlockSelectionFill(player);
 
 		default:
 			break;

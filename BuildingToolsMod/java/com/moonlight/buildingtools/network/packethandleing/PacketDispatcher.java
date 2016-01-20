@@ -57,6 +57,8 @@ public class PacketDispatcher
 		 PacketDispatcher.dispatcher.registerMessage(SendFileSelection.Handler.class, SendFileSelection.class, packetId++, Side.SERVER);
 		 PacketDispatcher.dispatcher.registerMessage(SendSimpleFillPacketToItemMessage.Handler.class, SendSimpleFillPacketToItemMessage.class, packetId++, Side.SERVER);
 		 PacketDispatcher.dispatcher.registerMessage(SendAdvancedFillPacketToItemMessage.Handler.class, SendAdvancedFillPacketToItemMessage.class, packetId++, Side.SERVER);
+		 PacketDispatcher.dispatcher.registerMessage(SendSimpleReplacePacketToItemMessage.Handler.class, SendSimpleReplacePacketToItemMessage.class, packetId++, Side.SERVER);
+		 PacketDispatcher.dispatcher.registerMessage(SendAdvancedReplacePacketToItemMessage.Handler.class, SendAdvancedReplacePacketToItemMessage.class, packetId++, Side.SERVER);
 		 
 	 // If you don't want to make a 'registerMessage' method, you can do it directly:
 	 //PacketDispatcher.dispatcher.registerMessage(OpenGuiMessage.OpenGuiMessageHandler.class, OpenGuiMessage.class, packetId++, Side.SERVER);

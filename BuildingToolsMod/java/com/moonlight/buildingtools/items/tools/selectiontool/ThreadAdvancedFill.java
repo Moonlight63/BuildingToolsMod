@@ -49,6 +49,7 @@ public class ThreadAdvancedFill implements BlockChangeBase, IShapeable{
 	public boolean selectionCalculated = false;
 	protected boolean currentlyCalculating = false;
 	protected List<IBlockState> fillBlockState = Lists.<IBlockState>newArrayList();
+	protected List<IBlockState> replaceBlockState = Lists.<IBlockState>newArrayList();
 	protected List<Integer> fillBlockChance = Lists.<Integer>newArrayList();
 	protected int count = 0;
 	
@@ -65,11 +66,28 @@ public class ThreadAdvancedFill implements BlockChangeBase, IShapeable{
 		this.fillBlockChance = fillChance;
 	}
 	
+	public ThreadAdvancedFill(BlockPos blockpos1, BlockPos blockpos2, World world, EntityPlayer player, List<IBlockState> fillBlock,List<IBlockState> replaceBlock, List<Integer> fillChance){
+		System.out.println("Thread Started");
+		if(blockpos1 != null && blockpos2 != null)
+			this.structureBoundingBox = new StructureBoundingBox(blockpos1, blockpos2);
+		else{
+			System.out.println(blockpos1 + "" + blockpos2); return;}
+		
+		this.world = world;		
+		this.entity = player;
+		this.fillBlockState = fillBlock;
+		this.fillBlockChance = fillChance;
+		this.replaceBlockState = replaceBlock;
+	}
+	
 	@Override
 	public void setBlock(BlockPos bpos){
 		//System.out.println(world);
 		
 		if(count < 4096){
+			
+			if(!replaceBlockState.isEmpty() && !replaceBlockState.contains(world.getBlockState(bpos)))
+				return;
 			
 			if(!checkList.contains(bpos)){
 				currentlyCalculating = true;

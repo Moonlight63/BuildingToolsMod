@@ -38,7 +38,7 @@ public class GUISelectionTool extends GuiScreen{
 	public static final GuiButton moveY = 				new GuiButton(12, 0, 0, 160, 20, "Y Movment: ");
 	public static final GuiButton moveZ = 				new GuiButton(13, 0, 0, 160, 20, "Z Movment: ");
 	public static final GuiButton fill = 				new GuiButton(14, 0, 0, 160, 20, "Fill Mode");
-	public static final GuiButton replace = 			new GuiButton(15, 0, 0, 160, 20, "Replace Mode (WIP)");
+	public static final GuiButton replace = 			new GuiButton(15, 0, 0, 160, 20, "Replace Mode");
 	public static final GuiButton file = 				new GuiButton(16, 0, 0, 160, 20, "File Save / Load (WIP)");
 	
 	
@@ -107,7 +107,7 @@ public class GUISelectionTool extends GuiScreen{
 		moveZ.displayString = "Z Movment: " + heldnbt.getInteger("repeatMovmentZ");
 		
 		fill.enabled = true;
-		replace.enabled = false;
+		replace.enabled = true;
 		
 		buttonsRight.add(clearsel);
 		buttonsRight.add(repeat);
@@ -162,7 +162,11 @@ public class GUISelectionTool extends GuiScreen{
 		}
 		else if (button.id == fill.id){
 			this.mc.displayGuiScreen((GuiScreen) null);
-			this.mc.displayGuiScreen(new GUIBlockSelectionContainter(this.player));
+			this.mc.displayGuiScreen(new GUIBlockSelectionFill(this.player));
+		}
+		else if (button.id == replace.id){
+			this.mc.displayGuiScreen((GuiScreen) null);
+			this.mc.displayGuiScreen(new GUIBlockSelectionReplace(this.player));
 		}
 	}
 	
