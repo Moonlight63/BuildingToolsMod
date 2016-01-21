@@ -12,6 +12,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityHanging;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -22,6 +23,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 
 import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.helpers.loaders.BlockLoader;
 import com.moonlight.buildingtools.helpers.shapes.GeometryUtils;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 import com.moonlight.buildingtools.items.tools.BlockChangeBase;
@@ -83,13 +85,17 @@ public class ThreadSimpleFill implements BlockChangeBase, IShapeable{
 			if(!checkList.contains(bpos)){
 				
 				if(replaceBlockState != null && world.getBlockState(bpos) != replaceBlockState)
-					return;
+					if(replaceBlockState == BlockLoader.tempBlock.getDefaultState() && !world.isAirBlock(bpos))
+						return;
+					else if (replaceBlockState != BlockLoader.tempBlock.getDefaultState())
+						return;
 			
 				currentlyCalculating = true;
 			
 				tempList.add(new ChangeBlockToThis(bpos, fillBlockState));
 				checkList.add(bpos);
 				count++;
+				
 			}
 		}
 		else{

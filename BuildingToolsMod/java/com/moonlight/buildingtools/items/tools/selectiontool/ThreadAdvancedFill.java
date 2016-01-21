@@ -25,6 +25,7 @@ import net.minecraft.world.gen.structure.StructureBoundingBox;
 
 import com.google.common.collect.Lists;
 import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.helpers.loaders.BlockLoader;
 import com.moonlight.buildingtools.helpers.shapes.GeometryUtils;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 import com.moonlight.buildingtools.items.tools.BlockChangeBase;
@@ -78,6 +79,8 @@ public class ThreadAdvancedFill implements BlockChangeBase, IShapeable{
 		this.fillBlockState = fillBlock;
 		this.fillBlockChance = fillChance;
 		this.replaceBlockState = replaceBlock;
+		if(replaceBlockState.contains(BlockLoader.tempBlock.getDefaultState()))
+			replaceBlockState.add(Blocks.air.getDefaultState());
 	}
 	
 	@Override
@@ -87,7 +90,8 @@ public class ThreadAdvancedFill implements BlockChangeBase, IShapeable{
 		if(count < 4096){
 			
 			if(!replaceBlockState.isEmpty() && !replaceBlockState.contains(world.getBlockState(bpos)))
-				return;
+				//if(replaceBlockState.contains(BlockLoader.tempBlock.getDefaultState()) && !world.isAirBlock(bpos))
+					return;
 			
 			if(!checkList.contains(bpos)){
 				currentlyCalculating = true;

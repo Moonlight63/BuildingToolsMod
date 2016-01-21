@@ -158,10 +158,10 @@ public class TileEntityGuide extends TileEntity implements IShapeable, IActivate
 	public boolean removeMarkers(Set<BlockPos> mrks){
 		if(mrks != null){
 			for (BlockPos markerPos : mrks){
-				if(worldObj.getBlockState(markerPos.add(pos)) == BlockLoader.markerBlock.getDefaultState()){
+//				if(worldObj.getBlockState(markerPos.add(pos)) == BlockLoader.markerBlock.getDefaultState()){  REMOVE COMMENT TO REACTIVATE BLOCK
 					worldObj.setBlockToAir(markerPos.add(pos));
 					//return false;
-				}
+//				} REMOVE COMMENT TO REACTIVATE BLOCK
 			}
 		}
 		return true;
@@ -193,7 +193,7 @@ public class TileEntityGuide extends TileEntity implements IShapeable, IActivate
 				if(pos != null){
 					if(worldObj.isAirBlock(bpos.add(pos))){
 					//if(worldObj.getBlockState(new BlockPos(coord.x, coord.y, coord.z)) == Blocks.air.getDefaultState()){
-						worldObj.setBlockState(bpos.add(pos), BlockLoader.markerBlock.getDefaultState());
+//						worldObj.setBlockState(bpos.add(pos), BlockLoader.markerBlock.getDefaultState()); REMOVE COMMENT TO REACTIVATE BLOCK
 						markers.add(bpos.add(pos));
 					}
 				}
