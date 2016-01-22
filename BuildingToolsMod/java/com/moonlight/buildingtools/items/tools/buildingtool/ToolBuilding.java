@@ -12,11 +12,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 
 import com.google.common.collect.Sets;
 import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.helpers.RayTracing;
 import com.moonlight.buildingtools.helpers.RenderHelper;
 import com.moonlight.buildingtools.helpers.Shapes;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
@@ -34,7 +36,7 @@ import com.moonlight.buildingtools.utils.KeyHelper;
 import com.moonlight.buildingtools.utils.RGBA;
 //import com.moonlight.buildingtools.utils.KeyBindsHandler.ETKeyBinding;
 
-public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, IItemBlockAffector, IShapeable, IGetGuiButtonPressed, IToolOverrideHitDistance{
+public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, IItemBlockAffector, IShapeable, IGetGuiButtonPressed{
 	
 	private static Set<Key.KeyCode> handledKeys;
 	
@@ -42,12 +44,13 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
 	
 	private boolean outlineing = true;
 	
-	private EnumFacing curside;
+	//private EnumFacing curside;
 	
 	public BlockPos targetBlock;
+	public EnumFacing targetFace;
 	public World world;
 	
-	public ItemStack thisStack;
+	public static ItemStack thisStack;
 	
 	static{
         handledKeys = new HashSet<Key.KeyCode>();
@@ -61,6 +64,34 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
 		setCreativeTab(BuildingTools.tabBT);
 	}
 	
+	
+	@Override
+	public void onUpdate(ItemStack itemstack, World world, Entity entity, int metadata, boolean bool){		
+		if(thisStack == null){
+			thisStack = itemstack;
+		}
+		
+		if(this.world == null){
+			this.world = world;
+		}
+		
+		RayTracing.instance().fire(1000, true);
+		MovingObjectPosition target = RayTracing.instance().getTarget();
+		
+		if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){
+			//System.out.println(target.getBlockPos() + "   " + world.getBlockState(target.getBlockPos()) + "    " + target.sideHit);
+			targetBlock = target.getBlockPos();
+			targetFace = target.sideHit;
+			
+		}
+		else{
+			targetBlock = null;
+			targetFace = null;
+		}
+		
+		//entity.worldObj.rayTraceBlocks(start, end, stopOnLiquid)
+	}
+	
 	public static NBTTagCompound getNBT(ItemStack stack) {
 	    if (stack.getTagCompound() == null) {
 	        stack.setTagCompound(new NBTTagCompound());
@@ -68,6 +99,7 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
 	        stack.getTagCompound().setInteger("radiusZ", 1);
 	        stack.getTagCompound().setBoolean("placeAll", true);
 	    }
+	    thisStack = stack;
 	    return stack.getTagCompound();	    
 	}
 	
@@ -95,9 +127,31 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
 	@Override
 	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
     {
-		if(playerIn.isSneaking())
-			playerIn.openGui(BuildingTools.instance, GuiHandler.GUIBuildingTool, worldIn, 0, 0, 0);
-        return itemStackIn;
+		if (targetBlock != null) {
+			if (playerIn.isSneaking()) {
+				playerIn.openGui(BuildingTools.instance,
+						GuiHandler.GUIBuildingTool, worldIn, 0, 0, 0);
+			} else {
+				if (!worldIn.isRemote) {
+					this.world = worldIn;
+
+					outlineing = false;
+					PlayerWrapper player = BuildingTools.getPlayerRegistry()
+							.getPlayer(playerIn).get();
+
+					player.addPending(new ThreadBuildersTool(worldIn,
+							targetBlock, getNBT(itemStackIn).getInteger(
+									"radiusX"), getNBT(itemStackIn).getBoolean(
+									"placeAll"), getNBT(itemStackIn)
+									.getInteger("radiusZ"), targetFace,
+							playerIn));
+
+					outlineing = true;
+					return itemStackIn;
+				}
+			}
+		}
+		return itemStackIn;
     }
 		
 	public boolean onItemUse(ItemStack stack,
@@ -109,24 +163,9 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
             float hitY,
             float hitZ){
 		
-		if(playerIn.isSneaking()){
-			playerIn.openGui(BuildingTools.instance, GuiHandler.GUIBuildingTool, worldIn, 0, 0, 0);
-		}
-		else{
-			if(!worldIn.isRemote){
-				this.world = worldIn;			
-				
-				outlineing = false;
-				PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
-				
-				player.addPending(new ThreadBuildersTool(worldIn, pos, getNBT(stack).getInteger("radiusX"),	getNBT(stack).getBoolean("placeAll"), getNBT(stack).getInteger("radiusZ"), side, playerIn));
-				
-				outlineing = true;
-				return true;
-			}
-		}
-		
+		onItemRightClick(stack, worldIn, playerIn);
 		return true;
+		
 	}
     
 	@Override
@@ -196,30 +235,27 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
 	
 	@Override
     public boolean drawOutline(DrawBlockHighlightEvent event)
-    {
-		BlockPos target = event.target.getBlockPos();
-        world = event.player.worldObj;
-        curside = event.target.sideHit;
-        thisStack = event.currentItem;
-
-        if (event.player.isSneaking())
-        {
-            RenderHelper.renderBlockOutline(event.context, event.player, target, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
-            return true;
-        }
-        
-        if(outlineing){
-        
-	        Set<BlockPos> blocks = this.blocksAffected(event.currentItem, world, target, event.target.sideHit, getNBT(event.currentItem).getInteger("radiusX") < 25 ? getNBT(event.currentItem).getInteger("radiusX") : 25, false);
-	        if (blocks == null || blocks.size() == 0) return false;
-	        for (BlockPos blockPos : blocks){
-	        	//if(world.isAirBlock(blockPos.add(target)))
-	        		RenderHelper.renderBlockOutline(event.context, event.player, blockPos, RGBA.White.setAlpha(150), 2.0f, event.partialTicks);
+    {        
+        if(targetBlock != null){
+	        if (event.player.isSneaking())
+	        {
+	            RenderHelper.renderBlockOutline(event.context, event.player, targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
+	            return true;
 	        }
-        
+	        
+	        if(outlineing){
+	        
+		        Set<BlockPos> blocks = this.blocksAffected(event.currentItem, world, targetBlock, targetFace, getNBT(event.currentItem).getInteger("radiusX") < 25 ? getNBT(event.currentItem).getInteger("radiusX") : 25, false);
+		        if (blocks == null || blocks.size() == 0) return false;
+		        for (BlockPos blockPos : blocks){
+		        	RenderHelper.renderBlockOutline(event.context, event.player, blockPos, RGBA.White.setAlpha(150), 2.0f, event.partialTicks);
+		        }
+	        
+	        }
         }
         return true;
     }
+	
 	
 	@Override
     public Set<BlockPos> blocksAffected(ItemStack item, World world, BlockPos origin, EnumFacing side, int radius, boolean fill)
@@ -252,40 +288,40 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
 			
 			//if(!blocksForOutline.contains(bpos.add(targetBlock)))
 						
-			if (curside == EnumFacing.UP || curside == EnumFacing.DOWN){
-				if(!world.isAirBlock(new BlockPos(bpos.getX(), curside == EnumFacing.UP ? bpos.getY() : -bpos.getY(), bpos.getZ()).add(targetBlock).offset(curside))){
+			if (targetFace == EnumFacing.UP || targetFace == EnumFacing.DOWN){
+				if(!world.isAirBlock(new BlockPos(bpos.getX(), targetFace == EnumFacing.UP ? bpos.getY() : -bpos.getY(), bpos.getZ()).add(targetBlock).offset(targetFace))){
 					return;
 				}
-				if(world.isAirBlock(new BlockPos(bpos.getX(), curside == EnumFacing.UP ? bpos.getY() : -bpos.getY(), bpos.getZ()).add(targetBlock))){
+				if(world.isAirBlock(new BlockPos(bpos.getX(), targetFace == EnumFacing.UP ? bpos.getY() : -bpos.getY(), bpos.getZ()).add(targetBlock))){
 					return;
 				}
-				if(!getNBT(thisStack).getBoolean("placeAll") && world.getBlockState(new BlockPos(bpos.getX(), curside == EnumFacing.UP ? bpos.getY() : -bpos.getY(), bpos.getZ()).add(targetBlock)) != world.getBlockState(targetBlock))
+				if(!getNBT(thisStack).getBoolean("placeAll") && world.getBlockState(new BlockPos(bpos.getX(), targetFace == EnumFacing.UP ? bpos.getY() : -bpos.getY(), bpos.getZ()).add(targetBlock)) != world.getBlockState(targetBlock))
             		return;
-				blocksForOutline.add(new BlockPos(bpos.getX(), curside == EnumFacing.UP ? bpos.getY() : -bpos.getY(), bpos.getZ()).add(targetBlock).offset(curside));
+				blocksForOutline.add(new BlockPos(bpos.getX(), targetFace == EnumFacing.UP ? bpos.getY() : -bpos.getY(), bpos.getZ()).add(targetBlock).offset(targetFace));
 			}
-			else if (curside == EnumFacing.NORTH || curside == EnumFacing.SOUTH){
+			else if (targetFace == EnumFacing.NORTH || targetFace == EnumFacing.SOUTH){
 				
-				if(!world.isAirBlock(new BlockPos(bpos.getX(), bpos.getZ(), curside == EnumFacing.NORTH ? -bpos.getY() : bpos.getY()).add(targetBlock).offset(curside))){
+				if(!world.isAirBlock(new BlockPos(bpos.getX(), bpos.getZ(), targetFace == EnumFacing.NORTH ? -bpos.getY() : bpos.getY()).add(targetBlock).offset(targetFace))){
 					return;
 				}
-				if(world.isAirBlock(new BlockPos(bpos.getX(), bpos.getZ(), curside == EnumFacing.NORTH ? -bpos.getY() : bpos.getY()).add(targetBlock))){
+				if(world.isAirBlock(new BlockPos(bpos.getX(), bpos.getZ(), targetFace == EnumFacing.NORTH ? -bpos.getY() : bpos.getY()).add(targetBlock))){
 					return;
 				}
-				if(!getNBT(thisStack).getBoolean("placeAll") && world.getBlockState(new BlockPos(bpos.getX(), bpos.getZ(), curside == EnumFacing.NORTH ? -bpos.getY() : bpos.getY()).add(targetBlock)) != world.getBlockState(targetBlock))
+				if(!getNBT(thisStack).getBoolean("placeAll") && world.getBlockState(new BlockPos(bpos.getX(), bpos.getZ(), targetFace == EnumFacing.NORTH ? -bpos.getY() : bpos.getY()).add(targetBlock)) != world.getBlockState(targetBlock))
             		return;
-				blocksForOutline.add(new BlockPos(bpos.getX(), bpos.getZ(), curside == EnumFacing.NORTH ? -bpos.getY() : bpos.getY()).add(targetBlock).offset(curside));
+				blocksForOutline.add(new BlockPos(bpos.getX(), bpos.getZ(), targetFace == EnumFacing.NORTH ? -bpos.getY() : bpos.getY()).add(targetBlock).offset(targetFace));
 			}
-			else if (curside == EnumFacing.EAST || curside == EnumFacing.WEST){
+			else if (targetFace == EnumFacing.EAST || targetFace == EnumFacing.WEST){
 				
-				if(!world.isAirBlock(new BlockPos(curside == EnumFacing.WEST ? -bpos.getY() : bpos.getY(), bpos.getX(), bpos.getZ()).add(targetBlock).offset(curside))){
+				if(!world.isAirBlock(new BlockPos(targetFace == EnumFacing.WEST ? -bpos.getY() : bpos.getY(), bpos.getX(), bpos.getZ()).add(targetBlock).offset(targetFace))){
 					return;
 				}
-				if(world.isAirBlock(new BlockPos(curside == EnumFacing.WEST ? -bpos.getY() : bpos.getY(), bpos.getX(), bpos.getZ()).add(targetBlock))){
+				if(world.isAirBlock(new BlockPos(targetFace == EnumFacing.WEST ? -bpos.getY() : bpos.getY(), bpos.getX(), bpos.getZ()).add(targetBlock))){
 					return;
 				}
-				if(!getNBT(thisStack).getBoolean("placeAll") && world.getBlockState(new BlockPos(curside == EnumFacing.WEST ? -bpos.getY() : bpos.getY(), bpos.getX(), bpos.getZ()).add(targetBlock)) != world.getBlockState(targetBlock))
+				if(!getNBT(thisStack).getBoolean("placeAll") && world.getBlockState(new BlockPos(targetFace == EnumFacing.WEST ? -bpos.getY() : bpos.getY(), bpos.getX(), bpos.getZ()).add(targetBlock)) != world.getBlockState(targetBlock))
             		return;
-				blocksForOutline.add(new BlockPos(curside == EnumFacing.WEST ? -bpos.getY() : bpos.getY(), bpos.getX(), bpos.getZ()).add(targetBlock).offset(curside));
+				blocksForOutline.add(new BlockPos(targetFace == EnumFacing.WEST ? -bpos.getY() : bpos.getY(), bpos.getX(), bpos.getZ()).add(targetBlock).offset(targetFace));
 			}
 			
 				//blocksForOutline.add(bpos.add(targetBlock));

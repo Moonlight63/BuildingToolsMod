@@ -11,6 +11,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -24,7 +25,7 @@ public class CommonProxy {
 	 */
 	
 	public void preinit(FMLPreInitializationEvent event){
-		FMLCommonHandler.instance().bus().register(new WorldEventHandler());
+		MinecraftForge.EVENT_BUS.register(new WorldEventHandler());
 	}
 	
 	

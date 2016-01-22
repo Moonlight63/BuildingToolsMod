@@ -13,8 +13,8 @@ public class DrawBlockHighlightEventHandler
     @SubscribeEvent
     public void onDrawBlockHighlightEvent(DrawBlockHighlightEvent event)
     {
-        if (event.target.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) return;
-        Block block = event.player.worldObj.getBlockState(event.target.getBlockPos()).getBlock();
+//        if (event.target.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) return;
+//        Block block = event.player.worldObj.getBlockState(event.target.getBlockPos()).getBlock();
 
         boolean cancelEvent = false;
         boolean drewItem = false;
@@ -30,10 +30,10 @@ public class DrawBlockHighlightEventHandler
             }
         }
 
-        if (!drewItem && block instanceof IOutlineDrawer)
-        {
-            cancelEvent = ((IOutlineDrawer) block).drawOutline(event);
-        }
+//        if (!drewItem && block instanceof IOutlineDrawer)
+//        {
+//            cancelEvent = ((IOutlineDrawer) block).drawOutline(event);
+//        }
 
         event.setCanceled(cancelEvent);
     }

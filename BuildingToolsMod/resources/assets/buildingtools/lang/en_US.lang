@@ -11,7 +11,7 @@ itemGroup.buildingToolsMainTab=Building Tools
 
 item.brushTool.name=Brush Tool
 item.buildingTool.name=Building Tool
-item.filterTool.name=Filter Tool (Topsoil only right now)
+item.filterTool.name=Filter Tool
 item.tempblockplacer.name=Temporary Block Tool
 item.selectionTool.name=Selection Tool
 item.smoothTool.name=Terrain Smooth Tool

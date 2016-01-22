@@ -53,7 +53,7 @@ public class BuildingTools
     	BlockLoader.loadBlocks();
     	
     	if (FMLCommonHandler.instance().getSide().isClient()){
-    		FMLCommonHandler.instance().bus().register(new KeyBindsHandler());
+    		MinecraftForge.EVENT_BUS.register(new KeyBindsHandler());
     		MinecraftForge.EVENT_BUS.register(new DrawBlockHighlightEventHandler());
             KeyBindsHandler.init();
             

@@ -20,7 +20,7 @@ import net.minecraft.item.ItemBow;
 
 public class ItemLoader {
 	public static Item toolBrush;
-	public static Item toolTerrainSmoother;
+	//public static Item toolTerrainSmoother;
 	public static Item toolSelection;
 	public static Item toolBuilding;
 	public static Item toolTempBlockPlacer;
@@ -29,8 +29,8 @@ public class ItemLoader {
 	public static Item toolTapeMeasure;
 	public static Item toolErosion;
 	
-	public static Item idAdvancer;
-	public static ItemBow autobow;
+	//public static Item idAdvancer;
+	//public static ItemBow autobow;
 	
 	public static Set<Item> itemsToRegister;
 	
@@ -38,8 +38,8 @@ public class ItemLoader {
 		toolBrush = new ToolBrush();
 		RegisterHelper.registerItem(toolBrush);
 		
-		toolTerrainSmoother = new ToolTerrainSmooth();
-		RegisterHelper.registerItem(toolTerrainSmoother);
+		//toolTerrainSmoother = new ToolTerrainSmooth();
+		//RegisterHelper.registerItem(toolTerrainSmoother);
 		
 		toolSelection = new ToolSelection();
 		RegisterHelper.registerItem(toolSelection);
@@ -53,11 +53,11 @@ public class ItemLoader {
 		toolFilter = new ToolFilter();
 		RegisterHelper.registerItem(toolFilter);
 		
-		idAdvancer = new IdAdvancer();
-		RegisterHelper.registerItem(idAdvancer);
+		//idAdvancer = new IdAdvancer();
+		//RegisterHelper.registerItem(idAdvancer);
 		
-		autobow = new AutoBow();
-		RegisterHelper.registerItem(autobow);
+		//autobow = new AutoBow();
+		//RegisterHelper.registerItem(autobow);
 		
 		toolUndo = new ToolUndo();
 		RegisterHelper.registerItem(toolUndo);
@@ -70,12 +70,12 @@ public class ItemLoader {
 		
 		itemsToRegister = Sets.newHashSet();
 		itemsToRegister.add(toolBrush);
-		itemsToRegister.add(toolTerrainSmoother);
+		//itemsToRegister.add(toolTerrainSmoother);
 		itemsToRegister.add(toolSelection);
 		itemsToRegister.add(toolBuilding);
 		itemsToRegister.add(toolTempBlockPlacer);
 		itemsToRegister.add(toolFilter);
-		itemsToRegister.add(idAdvancer);
+		//itemsToRegister.add(idAdvancer);
 		itemsToRegister.add(toolUndo);
 		itemsToRegister.add(toolTapeMeasure);
 		itemsToRegister.add(toolErosion);

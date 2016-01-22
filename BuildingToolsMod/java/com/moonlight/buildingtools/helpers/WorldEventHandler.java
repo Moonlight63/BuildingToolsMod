@@ -4,11 +4,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import com.google.common.base.Optional;
 import com.moonlight.buildingtools.BuildingTools;
@@ -17,6 +23,8 @@ import com.moonlight.buildingtools.items.tools.IToolOverrideHitDistance;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
 public class WorldEventHandler{
+	
+	private Minecraft mc = Minecraft.getMinecraft();
 	
 	
 	@SubscribeEvent
@@ -60,6 +68,24 @@ public class WorldEventHandler{
 		//event.world.setRainStrength(0);
 		//event.world.setThunderStrength(0);
 		//event.world.setWorldTime(1600);
+		
+	}
+	
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void onClientTick(TickEvent.ClientTickEvent event) {
+		
+		World world = mc.theWorld;
+		EntityPlayer player = mc.thePlayer;			
+		if (world != null && player != null){
+			RayTracing.instance().fire(4, true);
+			MovingObjectPosition target = RayTracing.instance().getTarget();
+			
+			if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){
+				
+			}
+			
+		}
 		
 	}
 	

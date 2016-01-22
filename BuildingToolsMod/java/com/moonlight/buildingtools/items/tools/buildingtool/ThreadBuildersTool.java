@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import net.minecraft.block.BlockDoor;
+import net.minecraft.block.material.MaterialLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -19,6 +20,7 @@ import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 import com.moonlight.buildingtools.items.tools.BlockChangeBase;
 import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
 import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
+import com.sun.prism.Material;
 
 public class ThreadBuildersTool implements IShapeable, BlockChangeBase {
 	

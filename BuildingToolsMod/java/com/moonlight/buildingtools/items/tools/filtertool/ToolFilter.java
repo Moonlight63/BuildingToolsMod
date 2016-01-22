@@ -8,6 +8,7 @@ package com.moonlight.buildingtools.items.tools.filtertool;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.helpers.RayTracing;
 import com.moonlight.buildingtools.helpers.RenderHelper;
 import com.moonlight.buildingtools.helpers.Shapes;
 import com.moonlight.buildingtools.helpers.shapes.IShapeGenerator;
@@ -19,10 +20,14 @@ import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerRegistry;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.*;
+import com.moonlight.buildingtools.utils.Key.KeyCode;
+
 import java.io.PrintStream;
 import java.util.*;
+
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -36,8 +41,24 @@ import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 //            ThreadTopsoil, ThreadClearWater, ThreadClearFoliage
 
 public class ToolFilter extends Item
-    implements IKeyHandler, IOutlineDrawer, IItemBlockAffector, IShapeable, IGetGuiButtonPressed, IToolOverrideHitDistance
+    implements IKeyHandler, IOutlineDrawer, IItemBlockAffector, IShapeable, IGetGuiButtonPressed
 {
+	
+	public EnumFacing targetFace;
+	private static Set handledKeys;
+    public Set blocksForOutline;
+    private boolean outlineing;
+    public BlockPos targetBlock;
+    public World world;
+    public static ItemStack thisStack;
+
+    static 
+    {
+        handledKeys = new HashSet();
+        handledKeys.add(com.moonlight.buildingtools.utils.Key.KeyCode.TOOL_INCREASE);
+        handledKeys.add(com.moonlight.buildingtools.utils.Key.KeyCode.TOOL_DECREASE);
+    }
+    
 
     public ToolFilter()
     {
@@ -58,8 +79,36 @@ public class ToolFilter extends Item
             stack.getTagCompound().setInteger("topsoildepth", 1);
             stack.getTagCompound().setInteger("fillorclear", 1);
         }
+        thisStack = stack;
         return stack.getTagCompound();
     }
+    
+    @Override
+	public void onUpdate(ItemStack itemstack, World world, Entity entity, int metadata, boolean bool){		
+		if(thisStack == null){
+			thisStack = itemstack;
+		}
+		
+		if(this.world == null){
+			this.world = world;
+		}
+		
+		RayTracing.instance().fire(1000, true);
+		MovingObjectPosition target = RayTracing.instance().getTarget();
+		
+		if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){
+			//System.out.println(target.getBlockPos() + "   " + world.getBlockState(target.getBlockPos()) + "    " + target.sideHit);
+			targetBlock = target.getBlockPos();
+			targetFace = target.sideHit;
+			
+		}
+		else{
+			targetBlock = null;
+			targetFace = null;
+		}
+		
+		//entity.worldObj.rayTraceBlocks(start, end, stopOnLiquid)
+	}
 
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean check)
     {
@@ -70,39 +119,41 @@ public class ToolFilter extends Item
 
     public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
     {
-        if(playerIn.isSneaking())
-            playerIn.openGui(BuildingTools.instance, 3, worldIn, 0, 0, 0);
+
+    	if(targetBlock != null){
+    		if(playerIn.isSneaking())
+	            playerIn.openGui(BuildingTools.instance, 3, worldIn, 0, 0, 0);
+	        else
+	        if(!worldIn.isRemote)
+	        {
+	            world = worldIn;
+	            outlineing = false;
+	            PlayerWrapper player = (PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
+	            System.out.println("FilterToolUsed");
+	            if(itemStackIn.getTagCompound().getInteger("filter") == 1)
+	                player.addPending(new ThreadTopsoil(worldIn, targetBlock, getNBT(itemStackIn).getInteger("radiusX"), getNBT(itemStackIn).getInteger("radiusY"), getNBT(itemStackIn).getInteger("radiusZ"), getNBT(itemStackIn).getInteger("topsoildepth"), targetFace, playerIn));
+	            else
+	            if(itemStackIn.getTagCompound().getInteger("filter") == 2)
+	                player.addPending(new ThreadClearWater(worldIn, targetBlock, getNBT(itemStackIn).getInteger("radiusX"), getNBT(itemStackIn).getInteger("radiusY"), getNBT(itemStackIn).getInteger("radiusZ"), getNBT(itemStackIn).getInteger("fillorclear") != 1, targetFace, playerIn));
+	            else
+	            if(itemStackIn.getTagCompound().getInteger("filter") == 3)
+	                player.addPending(new ThreadClearFoliage(worldIn, targetBlock, getNBT(itemStackIn).getInteger("radiusX"), getNBT(itemStackIn).getInteger("radiusY"), getNBT(itemStackIn).getInteger("radiusZ"), getNBT(itemStackIn).getInteger("fillorclear") != 1, targetFace, playerIn));
+	            System.out.println(world.getBlockState(targetBlock).getBlock().getClass());
+	            outlineing = true;
+	        }
+    	}
+    	
         return itemStackIn;
     }
 
     public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumFacing side, float hitX, float hitY, 
             float hitZ)
     {
-        if(playerIn.isSneaking())
-            playerIn.openGui(BuildingTools.instance, 3, worldIn, 0, 0, 0);
-        else
-        if(!worldIn.isRemote)
-        {
-            world = worldIn;
-            outlineing = false;
-            PlayerWrapper player = (PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
-            System.out.println("FilterToolUsed");
-            if(stack.getTagCompound().getInteger("filter") == 1)
-                player.addPending(new ThreadTopsoil(worldIn, pos, getNBT(stack).getInteger("radiusX"), getNBT(stack).getInteger("radiusY"), getNBT(stack).getInteger("radiusZ"), getNBT(stack).getInteger("topsoildepth"), side, playerIn));
-            else
-            if(stack.getTagCompound().getInteger("filter") == 2)
-                player.addPending(new ThreadClearWater(worldIn, pos, getNBT(stack).getInteger("radiusX"), getNBT(stack).getInteger("radiusY"), getNBT(stack).getInteger("radiusZ"), getNBT(stack).getInteger("fillorclear") != 1, side, playerIn));
-            else
-            if(stack.getTagCompound().getInteger("filter") == 3)
-                player.addPending(new ThreadClearFoliage(worldIn, pos, getNBT(stack).getInteger("radiusX"), getNBT(stack).getInteger("radiusY"), getNBT(stack).getInteger("radiusZ"), getNBT(stack).getInteger("fillorclear") != 1, side, playerIn));
-            System.out.println(world.getBlockState(targetBlock).getBlock().getClass());
-            outlineing = true;
-            return true;
-        }
+        onItemRightClick(stack, worldIn, playerIn);
         return true;
     }
 
-    public void handleKey(EntityPlayer player, ItemStack itemStack, com.moonlight.buildingtools.utils.Key.KeyCode key)
+    public void handleKey(EntityPlayer player, ItemStack itemStack, KeyCode key)
     {
         int radius = getNBT(itemStack).getInteger("radiusX");
         float yMult = 0.0F;
@@ -121,14 +172,14 @@ public class ToolFilter extends Item
         } else
         if(getNBT(itemStack).getInteger("radiusX") > 0)
             zMult = getNBT(itemStack).getInteger("radiusZ") / getNBT(itemStack).getInteger("radiusX");
-        if(key == com.moonlight.buildingtools.utils.Key.KeyCode.TOOL_INCREASE)
+        if(key == KeyCode.TOOL_INCREASE)
         {
             if(player.isSneaking())
                 radius += 10;
             else
                 radius++;
         } else
-        if(key == com.moonlight.buildingtools.utils.Key.KeyCode.TOOL_DECREASE)
+        if(key == KeyCode.TOOL_DECREASE)
             if(player.isSneaking())
                 radius -= 10;
             else
@@ -151,24 +202,27 @@ public class ToolFilter extends Item
     {
         return handledKeys;
     }
-
+    
+    @Override
     public boolean drawOutline(DrawBlockHighlightEvent event)
-    {
-        BlockPos target = event.target.getBlockPos();
-        world = event.player.worldObj;
-        thisStack = event.currentItem;
-        if(event.player.isSneaking())
-        {
-            RenderHelper.renderBlockOutline(event.context, event.player, target, RGBA.Green.setAlpha(150), 2.0F, event.partialTicks);
-            return true;
+    {        
+        if(targetBlock != null){
+	        if (event.player.isSneaking())
+	        {
+	            RenderHelper.renderBlockOutline(event.context, event.player, targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
+	            return true;
+	        }
+	        
+	        if(outlineing){
+	        
+		        Set<BlockPos> blocks = this.blocksAffected(event.currentItem, world, targetBlock, targetFace, getNBT(event.currentItem).getInteger("radiusX") < 25 ? getNBT(event.currentItem).getInteger("radiusX") : 25, false);
+		        if (blocks == null || blocks.size() == 0) return false;
+		        for (BlockPos blockPos : blocks){
+		        	RenderHelper.renderBlockOutline(event.context, event.player, blockPos, RGBA.White.setAlpha(150), 2.0f, event.partialTicks);
+		        }
+	        
+	        }
         }
-        Set blocks = blocksAffected(event.currentItem, world, target, event.target.sideHit, getNBT(event.currentItem).getInteger("radiusX") >= 25 ? 25 : getNBT(event.currentItem).getInteger("radiusX"), false);
-        if(blocks == null || blocks.size() == 0)
-            return false;
-        BlockPos blockPos;
-        for(Iterator iterator = blocks.iterator(); iterator.hasNext(); RenderHelper.renderBlockOutline(event.context, event.player, blockPos, RGBA.Green.setAlpha(150), 2.0F, event.partialTicks))
-            blockPos = (BlockPos)iterator.next();
-
         return true;
     }
 
@@ -198,7 +252,9 @@ public class ToolFilter extends Item
             } else
             if(getNBT(thisStack).getInteger("filter") == 2)
             {
-                if(!world.isAirBlock(bpos.add(targetBlock)) && (world.getBlockState(bpos.add(targetBlock)) == Blocks.water.getDefaultState() || world.getBlockState(bpos.add(targetBlock)) == Blocks.flowing_water.getDefaultState()) && world.getBlockState(bpos.add(targetBlock).up()) != Blocks.water.getDefaultState() && world.getBlockState(bpos.add(targetBlock).up()) != Blocks.flowing_water.getDefaultState())
+                if(!world.isAirBlock(bpos.add(targetBlock)) && (
+                		world.getBlockState(bpos.add(targetBlock)) == Blocks.water.getDefaultState() || world.getBlockState(bpos.add(targetBlock)) == Blocks.flowing_water.getDefaultState() || world.getBlockState(bpos.add(targetBlock)) == Blocks.lava.getDefaultState() || world.getBlockState(bpos.add(targetBlock)) == Blocks.flowing_lava.getDefaultState())
+                		&& world.getBlockState(bpos.add(targetBlock).up()) != Blocks.water.getDefaultState() && world.getBlockState(bpos.add(targetBlock).up()) != Blocks.flowing_water.getDefaultState() && world.getBlockState(bpos.add(targetBlock).up()) != Blocks.lava.getDefaultState() && world.getBlockState(bpos.add(targetBlock).up()) != Blocks.flowing_lava.getDefaultState())
                     blocksForOutline.add(new BlockPos(bpos.add(targetBlock)));
             } else
             if(getNBT(thisStack).getInteger("filter") == 3 && ((world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockDoublePlant) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockLeaves) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockBush) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockTallGrass) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockCrops) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockFlower) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockVine) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockReed) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockSapling) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockWeb) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockCactus) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockLilyPad) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockSign) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockStem)))
@@ -284,17 +340,4 @@ public class ToolFilter extends Item
         PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(stack)));
     }
 
-    private static Set handledKeys;
-    public Set blocksForOutline;
-    private boolean outlineing;
-    public BlockPos targetBlock;
-    public World world;
-    public ItemStack thisStack;
-
-    static 
-    {
-        handledKeys = new HashSet();
-        handledKeys.add(com.moonlight.buildingtools.utils.Key.KeyCode.TOOL_INCREASE);
-        handledKeys.add(com.moonlight.buildingtools.utils.Key.KeyCode.TOOL_DECREASE);
-    }
 }
