@@ -15,8 +15,11 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
@@ -96,8 +99,10 @@ public class GUIBlockSelectionReplace extends GuiContainer{
         
         if (mode == 0){
 	        if(clickedButton == 0){
-	        	System.out.println(blockReplaceList);
+	        	
 	        	if(clickType == 0){
+	        		if(slotIn.getStack() == null)
+	        			return;
 	        		blockReplaceList.clear();
 	        		blockReplaceList.add(0, slotIn.getStack());
 	        	}
@@ -105,14 +110,41 @@ public class GUIBlockSelectionReplace extends GuiContainer{
 	        		//((ContainerBlockSelMenu.CustomSlot) slotIn).setColor(RGBA.Red.setAlpha(100));;
 	        		//slotIn.setColor(RGBA.Red.setAlpha(100));
 	        	}
+	        	System.out.println(blockReplaceList);
 	        }
 	        else if(clickedButton == 1){
 	        	if(clickType == 0){
+	        		if(slotIn.getStack() == null)
+	        			return;
 	        		if(!blockReplaceList.isEmpty()){
-		        		int currID = Block.getIdFromBlock(Block.getBlockFromItem(slotIn.getStack().getItem()));
-		        		int currDATA = slotIn.getStack().getItem().getMetadata(slotIn.getStack());
-		        		int currID2 = Block.getIdFromBlock(Block.getBlockFromItem(blockReplaceList.get(0).getItem()));
-		        		int currDATA2 = blockReplaceList.get(0).getItem().getMetadata(blockReplaceList.get(0));
+	        			
+	        			int currID;
+		        		int currDATA;
+		        		if(slotIn.getStack().getItem() instanceof ItemBucket){
+		        			currID = ((ItemBucket)slotIn.getStack().getItem()) == Items.lava_bucket ? Block.getIdFromBlock(Blocks.flowing_lava) : Block.getIdFromBlock(Blocks.flowing_water);
+		        			currDATA = 0;
+		        		}
+		        		else{
+			        		currID = Block.getIdFromBlock(Block.getBlockFromItem(slotIn.getStack().getItem()));
+			        		currDATA = slotIn.getStack().getItem().getMetadata(slotIn.getStack());
+		        		}
+		        		
+		        		int currID2;
+		        		int currDATA2;
+		        		if(blockReplaceList.get(0).getItem() instanceof ItemBucket){
+		        			System.out.println(blockReplaceList);
+		        			currID2 = ((ItemBucket)blockReplaceList.get(0).getItem()) == Items.lava_bucket ? Block.getIdFromBlock(Blocks.flowing_lava) : Block.getIdFromBlock(Blocks.flowing_water);
+		        			currDATA2 = 0;
+		        		}
+		        		else{
+		        			currID2 = Block.getIdFromBlock(Block.getBlockFromItem(blockReplaceList.get(0).getItem()));
+		        			currDATA2 = blockReplaceList.get(0).getItem().getMetadata(blockReplaceList.get(0));
+		        		}
+		        		
+		        		System.out.println(currID + "   " + currID2);
+	        			
+//		        		int currID2 = Block.getIdFromBlock(Block.getBlockFromItem(blockReplaceList.get(0).getItem()));
+//		        		int currDATA2 = blockReplaceList.get(0).getItem().getMetadata(blockReplaceList.get(0));
 		        		PacketDispatcher.sendToServer(new SendSimpleReplacePacketToItemMessage(currID, currDATA, currID2, currDATA2));
 		        		this.mc.thePlayer.closeScreen();
 	        		}
@@ -125,6 +157,8 @@ public class GUIBlockSelectionReplace extends GuiContainer{
         else{
         	if(clickedButton == 0){
 	        	if(clickType == 0){
+	        		if(slotIn.getStack() == null)
+	        			return;
 	        		if(blockReplaceList.contains(slotIn.getStack())){
 	        			blockReplaceList.remove(slotIn.getStack());
 	        		}
@@ -150,6 +184,8 @@ public class GUIBlockSelectionReplace extends GuiContainer{
 	        	}
 	        }
 	        else if(clickedButton == 1){
+	        	if(slotIn.getStack() == null)
+        			return;
 	        	//if(clickType == 0){
 	        		if(!blockFillList.contains(slotIn.getStack())){
 	        			//((ContainerBlockSelMenu.CustomSlot) slotIn).setColor(RGBA.White.setAlpha(0));
@@ -214,6 +250,12 @@ public class GUIBlockSelectionReplace extends GuiContainer{
     			Item.getItemFromBlock(b).getSubItems(Item.getItemFromBlock(b), null, blockListMeta);
     	}
         
+        blockList.add(new ItemStack(Items.water_bucket));
+        blockList.add(new ItemStack(Items.lava_bucket));
+        
+        blockListMeta.add(new ItemStack(Items.water_bucket));
+        blockListMeta.add(new ItemStack(Items.lava_bucket));
+        
         this.updateCreativeSearch();        
     }
 
@@ -233,9 +275,12 @@ public class GUIBlockSelectionReplace extends GuiContainer{
 	        	List<Integer> CHANCE = Lists.<Integer>newArrayList();
 	        	
 	        	for(int i = 0; i < blockFillList.size(); i++){
-	        		
 	        		System.out.println("SIZE = " + blockFillList.size());
-	        		ID.add(i, Block.getIdFromBlock(Block.getBlockFromItem(blockFillList.get(i).getItem())));
+	        		ID.add(i, 
+	        				blockFillList.get(i).getItem() instanceof ItemBucket ? (
+	        						blockFillList.get(i).getItem() == Items.lava_bucket ? Block.getIdFromBlock(Blocks.flowing_lava) : Block.getIdFromBlock(Blocks.flowing_water)) :
+	        				Block.getIdFromBlock(Block.getBlockFromItem(blockFillList.get(i).getItem()))
+	        				);
 	        		META.add(i, blockFillList.get(i).getMetadata());
 	        		CHANCE.add(i, blockFillList.get(i).stackSize);
 	        	}
@@ -244,10 +289,24 @@ public class GUIBlockSelectionReplace extends GuiContainer{
 	        	List<Integer> META2 = Lists.<Integer>newArrayList();
 	        	
 	        	for(int i = 0; i < blockReplaceList.size(); i++){
-	        		
 	        		System.out.println("SIZE = " + blockFillList.size());
-	        		ID2.add(i, Block.getIdFromBlock(Block.getBlockFromItem(blockReplaceList.get(i).getItem())));
-	        		META2.add(i, blockReplaceList.get(i).getMetadata());
+	        		if(blockReplaceList.get(i).getItem() == Items.lava_bucket){
+	        			ID2.add(Block.getIdFromBlock(Blocks.flowing_lava));
+	        			ID2.add(Block.getIdFromBlock(Blocks.lava));
+	        			META2.add(i, blockReplaceList.get(i).getMetadata());
+	        			META2.add(i, blockReplaceList.get(i).getMetadata());
+	        		}
+	        		else if(blockReplaceList.get(i).getItem() == Items.water_bucket){
+	        			ID2.add(Block.getIdFromBlock(Blocks.flowing_water));
+	        			ID2.add(Block.getIdFromBlock(Blocks.water));
+	        			META2.add(i, blockReplaceList.get(i).getMetadata());
+	        			META2.add(i, blockReplaceList.get(i).getMetadata());
+	        		}
+	        		else{
+	        			ID2.add(i, Block.getIdFromBlock(Block.getBlockFromItem(blockReplaceList.get(i).getItem())));
+	        			META2.add(i, blockReplaceList.get(i).getMetadata());
+	        		}
+	        		
 	        	}
 	        	
 	        	System.out.println(ID + "   " + META + "   " + CHANCE);

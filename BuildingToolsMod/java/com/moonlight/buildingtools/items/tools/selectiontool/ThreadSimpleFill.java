@@ -84,11 +84,26 @@ public class ThreadSimpleFill implements BlockChangeBase, IShapeable{
 			
 			if(!checkList.contains(bpos)){
 				
-				if(replaceBlockState != null && world.getBlockState(bpos) != replaceBlockState)
-					if(replaceBlockState == BlockLoader.tempBlock.getDefaultState() && !world.isAirBlock(bpos))
-						return;
-					else if (replaceBlockState != BlockLoader.tempBlock.getDefaultState())
-						return;
+				System.out.println(world.getBlockState(bpos) + "         " + replaceBlockState);
+				
+				if(replaceBlockState != null){
+					if(replaceBlockState.getBlock() == Blocks.flowing_water){
+						if(!(world.getBlockState(bpos).getBlock() == Blocks.flowing_water || world.getBlockState(bpos).getBlock() == Blocks.water)){
+							return;
+						}
+					}
+					else if(replaceBlockState.getBlock() == Blocks.flowing_lava){
+						if(!(world.getBlockState(bpos).getBlock() != Blocks.flowing_lava || world.getBlockState(bpos).getBlock() != Blocks.lava))
+							return;
+					}
+					else{
+						if(world.getBlockState(bpos) != replaceBlockState)
+							if(replaceBlockState == BlockLoader.tempBlock.getDefaultState() && !world.isAirBlock(bpos))
+								return;
+							else if (replaceBlockState != BlockLoader.tempBlock.getDefaultState())
+								return;
+					}
+				}
 			
 				currentlyCalculating = true;
 			

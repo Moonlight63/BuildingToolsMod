@@ -3,6 +3,11 @@ package com.moonlight.buildingtools.helpers.loaders;
 import java.util.Set;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.init.Blocks;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import com.google.common.collect.Sets;
 import com.moonlight.buildingtools.buildingGuide.BlockGuide;
@@ -18,6 +23,7 @@ public final class BlockLoader {
 		public static BlockTemporary tempBlock;
 		//public static Block alwaysdaynorain;
 		public static Set<Block> blocksToRegister;
+		
 		
 		public static void loadBlocks(){
 			//guideBlock = new BlockGuide();
@@ -39,5 +45,6 @@ public final class BlockLoader {
 			//RegisterHelper.registerBlock(markerBlock);
 			RegisterHelper.registerBlock(tempBlock);
 			//RegisterHelper.registerBlock(alwaysdaynorain);
+			
 		}	
 }

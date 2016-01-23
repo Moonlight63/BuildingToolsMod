@@ -15,12 +15,16 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.client.config.GuiCheckBox;
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.relauncher.Side;
@@ -94,8 +98,18 @@ public class GUIBlockSelectionFill extends GuiContainer{
         if (mode == 0){
 	        if(clickedButton == 0){
 	        	if(clickType == 0){
-	        		int currID = Block.getIdFromBlock(Block.getBlockFromItem(slotIn.getStack().getItem()));
-	        		int currDATA = slotIn.getStack().getItem().getMetadata(slotIn.getStack());
+	        		if(slotIn.getStack() == null)
+	        			return;
+	        		int currID;
+	        		int currDATA;
+	        		if(slotIn.getStack().getItem() instanceof ItemBucket){
+	        			currID = ((ItemBucket)slotIn.getStack().getItem()) == Items.lava_bucket ? Block.getIdFromBlock(Blocks.flowing_lava) : Block.getIdFromBlock(Blocks.flowing_water);
+	        			currDATA = 0;
+	        		}
+	        		else{
+		        		currID = Block.getIdFromBlock(Block.getBlockFromItem(slotIn.getStack().getItem()));
+		        		currDATA = slotIn.getStack().getItem().getMetadata(slotIn.getStack());
+	        		}
 	        		PacketDispatcher.sendToServer(new SendSimpleFillPacketToItemMessage(currID, currDATA));
 	        		this.mc.thePlayer.closeScreen();
 	        	}
@@ -116,6 +130,8 @@ public class GUIBlockSelectionFill extends GuiContainer{
         else{
         	if(clickedButton == 0){
 	        	if(clickType == 0){
+	        		if(slotIn.getStack() == null)
+	        			return;
 	        		if(!blockFillList.contains(slotIn.getStack())){
 	        			blockFillList.add(slotIn.getStack());
 	        		}
@@ -133,6 +149,8 @@ public class GUIBlockSelectionFill extends GuiContainer{
 	        }
 	        else if(clickedButton == 1){
 	        	if(clickType == 0){
+	        		if(slotIn.getStack() == null)
+	        			return;
 	        		if(!blockFillList.contains(slotIn.getStack())){
 	        			//((ContainerBlockSelMenu.CustomSlot) slotIn).setColor(RGBA.White.setAlpha(0));
 	        			//blockFillList.add(slotIn.getStack());
@@ -196,6 +214,13 @@ public class GUIBlockSelectionFill extends GuiContainer{
     			Item.getItemFromBlock(b).getSubItems(Item.getItemFromBlock(b), null, blockListMeta);
     	}
         
+        blockList.add(new ItemStack(Items.water_bucket));
+        blockList.add(new ItemStack(Items.lava_bucket));
+        
+        blockListMeta.add(new ItemStack(Items.water_bucket));
+        blockListMeta.add(new ItemStack(Items.lava_bucket));
+        
+        
         this.updateCreativeSearch();        
     }
 
@@ -217,7 +242,11 @@ public class GUIBlockSelectionFill extends GuiContainer{
 	        	for(int i = 0; i < blockFillList.size(); i++){
 	        		
 	        		System.out.println("SIZE = " + blockFillList.size());
-	        		ID.add(i, Block.getIdFromBlock(Block.getBlockFromItem(blockFillList.get(i).getItem())));
+	        		ID.add(i, 
+	        				blockFillList.get(i).getItem() instanceof ItemBucket ? (
+	        						blockFillList.get(i).getItem() == Items.lava_bucket ? Block.getIdFromBlock(Blocks.flowing_lava) : Block.getIdFromBlock(Blocks.flowing_water)) :
+	        				Block.getIdFromBlock(Block.getBlockFromItem(blockFillList.get(i).getItem()))
+	        				);
 	        		META.add(i, blockFillList.get(i).getMetadata());
 	        		CHANCE.add(i, blockFillList.get(i).stackSize);
 	        	}

@@ -93,6 +93,23 @@ public class ThreadAdvancedFill implements BlockChangeBase, IShapeable{
 				//if(replaceBlockState.contains(BlockLoader.tempBlock.getDefaultState()) && !world.isAirBlock(bpos))
 					return;
 			
+			
+//			if(!replaceBlockState.isEmpty()){
+//				if(replaceBlockState.contains(Blocks.flowing_water.getDefaultState())){
+//					if(!(world.getBlockState(bpos).getBlock() == Blocks.flowing_water || world.getBlockState(bpos).getBlock() == Blocks.water)){
+//						return;
+//					}
+//				}
+//				else if(replaceBlockState.contains(Blocks.flowing_lava.getDefaultState())){
+//					if(!(world.getBlockState(bpos).getBlock() != Blocks.flowing_lava || world.getBlockState(bpos).getBlock() != Blocks.lava))
+//						return;
+//				}
+//				else{
+//					if(!replaceBlockState.contains(world.getBlockState(bpos)))
+//						return;
+//				}
+//			}
+			
 			if(!checkList.contains(bpos)){
 				currentlyCalculating = true;
 				

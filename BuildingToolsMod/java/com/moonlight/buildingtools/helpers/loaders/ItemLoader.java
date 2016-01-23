@@ -15,6 +15,7 @@ import com.moonlight.buildingtools.items.tools.tapeMeasure.ToolTapeMeasure;
 import com.moonlight.buildingtools.items.tools.terrainsmoother.ToolTerrainSmooth;
 import com.moonlight.buildingtools.items.tools.undoTool.ToolUndo;
 
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBow;
 
@@ -28,6 +29,9 @@ public class ItemLoader {
 	public static Item toolUndo;
 	public static Item toolTapeMeasure;
 	public static Item toolErosion;
+	
+	//public static Item testBucket = new ItemBucketTest();
+	
 	
 	//public static Item idAdvancer;
 	//public static ItemBow autobow;
