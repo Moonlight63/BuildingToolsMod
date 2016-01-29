@@ -42,15 +42,7 @@ public class CommonProxy {
 		return new PlayerRegistry(new PlayerRegistryProviderServer());
 	}
 	
-	public void registerRenderInformation() {}	
-	
-	public void setExtraReach(EntityLivingBase entity, float reach) {
-		if(entity instanceof EntityPlayerMP)
-			((EntityPlayerMP) entity).theItemInWorldManager.setBlockReachDistance(Math.max(5, 5+reach));
-			//((EntityPlayerMP) entity).theItemInWorldManager.setBlockReachDistance(Math.max(5, ((EntityPlayerMP) entity).theItemInWorldManager.getBlockReachDistance() + reach));
-	}
-	
-	
+	public void registerRenderInformation() {}		
 	
 	private class PlayerRegistryProviderServer implements PlayerRegistryProvider{
 

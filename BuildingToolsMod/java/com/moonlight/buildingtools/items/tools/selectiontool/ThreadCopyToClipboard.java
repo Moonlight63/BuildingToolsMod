@@ -22,6 +22,7 @@ import com.moonlight.buildingtools.helpers.shapes.GeometryUtils;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 import com.moonlight.buildingtools.items.tools.BlockChangeBase;
 import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
+import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
 public class ThreadCopyToClipboard implements BlockChangeBase, IShapeable{
@@ -127,7 +128,9 @@ public class ThreadCopyToClipboard implements BlockChangeBase, IShapeable{
 				
 				PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(entity).get();
 				player.currentCopyClipboard.clear();
-				player.currentCopyClipboard = selectionSet;
+				for(ChangeBlockToThis change : selectionSet){
+					player.currentCopyClipboard.add(new BlockInfoContainer(change));
+				}
 				player.currentClipboardEntities = entitySet;
 				player.clipboardMaxPos = new BlockPos(structureBoundingBox.maxX, structureBoundingBox.maxY, structureBoundingBox.maxZ).add(new BlockPos(-structureBoundingBox.minX, -structureBoundingBox.minY, -structureBoundingBox.minZ));
 				

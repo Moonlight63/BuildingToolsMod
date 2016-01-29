@@ -19,7 +19,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import com.google.common.base.Optional;
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.UpdateHandler;
-import com.moonlight.buildingtools.items.tools.IToolOverrideHitDistance;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
 public class WorldEventHandler{
@@ -104,40 +103,7 @@ public class WorldEventHandler{
 	private boolean checkflag = true;
 	@SubscribeEvent
 	public void onPlayerTick(TickEvent.PlayerTickEvent event){
-//		if(event.phase == TickEvent.Phase.START){
-//			if(checkflag){
-//				if(event.player.getCurrentEquippedItem()!=null){
-					if(event.player.getCurrentEquippedItem()!=null && event.player.getCurrentEquippedItem().getItem() instanceof IToolOverrideHitDistance){
-						//System.out.println("CurrentItemIsTool");
-						//System.out.println(event.side);
-//						if(event.side == Side.SERVER)
-//							checkflag = false;
-						BuildingTools.proxy.setExtraReach(event.player, 200);
-					}
-					else{
-						BuildingTools.proxy.setExtraReach(event.player, 0);
-					}
-//				}
-//			}
-//			else{
-//				if(event.player.getCurrentEquippedItem()!=null){
-//					if(!(event.player.getCurrentEquippedItem().getItem() instanceof IToolOverrideHitDistance)){
-//						//System.out.println("NoToolFound");
-//						//System.out.println(event.side);
-///						if(event.side == Side.SERVER)
-//							checkflag = true;
-//						BuildingTools.proxy.setExtraReach(event.player, 0);
-//					}
-//				}
-//				else{
-//					System.out.println("NoItem");
-//						//System.out.println(event.side);
-//						if(event.side == Side.SERVER)
-//							checkflag = true;
-//						BuildingTools.proxy.setExtraReach(event.player, 0);
-//				}
-//			}
-//		}
+
 	}
 		
 	public static

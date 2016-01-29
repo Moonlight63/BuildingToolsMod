@@ -11,8 +11,10 @@ import com.moonlight.buildingtools.helpers.Shapes;
 import com.moonlight.buildingtools.helpers.shapes.IShapeGenerator;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 import com.moonlight.buildingtools.items.tools.*;
+import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerRegistry;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
+import com.moonlight.buildingtools.utils.MiscUtils;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -120,7 +122,7 @@ public class ThreadClearWater implements IShapeable, BlockChangeBase{
             {
                 if(this.tempList != null)
                 {
-                    ((PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(entity).get()).tempUndoList.addAll(CalcUndoList(this.tempList));
+                    ((PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(entity).get()).tempUndoList.addAll(MiscUtils.CalcUndoList(tempList, world));
                     ((PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(entity).get()).pendingChangeQueue = new BlockChangeQueue(this.tempList, world, true);
                 }
             } else
@@ -130,13 +132,12 @@ public class ThreadClearWater implements IShapeable, BlockChangeBase{
                 if(filledList != null)
                 {
                     Set<ChangeBlockToThis> tempList = ClearBlocks();
-                    ((PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(entity).get()).tempUndoList.addAll(CalcUndoList(tempList));
+                    ((PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(entity).get()).tempUndoList.addAll(MiscUtils.CalcUndoList(tempList, world));
                     ((PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(entity).get()).pendingChangeQueue = new BlockChangeQueue(tempList, world, true);
                 }
             } else
             {
-                if(((PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(entity).get()).undolist.add(new LinkedHashSet<ChangeBlockToThis>(((PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(entity).get()).tempUndoList)))
-                    ((PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(entity).get()).tempUndoList.clear();
+            	MiscUtils.dumpUndoList(entity);
                 isFinished = true;
             }
             currentlyCalculating = false;
@@ -144,33 +145,6 @@ public class ThreadClearWater implements IShapeable, BlockChangeBase{
         }
     }
 
-    public Set<ChangeBlockToThis> CalcUndoList(Set<ChangeBlockToThis> tempList)
-    {
-        Set<ChangeBlockToThis> newTempList = new LinkedHashSet<ChangeBlockToThis>();
-        ChangeBlockToThis pos;
-        for(Iterator<ChangeBlockToThis> iterator = tempList.iterator(); iterator.hasNext(); newTempList.add(addBlockWithNBT(pos.getBlockPos(), world.getBlockState(pos.getBlockPos()), pos.getBlockPos())))
-            pos = (ChangeBlockToThis)iterator.next();
-
-        return newTempList;
-    }
-
-    public ChangeBlockToThis addBlockWithNBT(BlockPos oldPosOrNull, IBlockState blockState, BlockPos newPos)
-    {
-        if(oldPosOrNull != null && world.getTileEntity(oldPosOrNull) != null)
-        {
-            NBTTagCompound compound = new NBTTagCompound();
-            world.getTileEntity(oldPosOrNull).writeToNBT(compound);
-            return new ChangeBlockToThis(newPos, blockState, compound);
-        }
-        if(blockState.getBlock() instanceof BlockDoor)
-        {
-            if(blockState.getValue(BlockDoor.HALF) == net.minecraft.block.BlockDoor.EnumDoorHalf.LOWER)
-                return new ChangeBlockToThis(newPos, blockState.withProperty(BlockDoor.HINGE, (net.minecraft.block.BlockDoor.EnumHingePosition)world.getBlockState(oldPosOrNull.up()).getValue(BlockDoor.HINGE)));
-            if(blockState.getValue(BlockDoor.HALF) == net.minecraft.block.BlockDoor.EnumDoorHalf.UPPER)
-                return new ChangeBlockToThis(newPos, blockState.withProperty(BlockDoor.FACING, (EnumFacing)world.getBlockState(oldPosOrNull.down()).getValue(BlockDoor.FACING)));
-        }
-        return new ChangeBlockToThis(newPos, blockState);
-    }
 
     public World getWorld()
     {

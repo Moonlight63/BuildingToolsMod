@@ -3,18 +3,8 @@ package com.moonlight.buildingtools.helpers.loaders;
 import java.util.Set;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.init.Blocks;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-
 import com.google.common.collect.Sets;
-import com.moonlight.buildingtools.buildingGuide.BlockGuide;
-import com.moonlight.buildingtools.buildingGuide.BlockMarker;
-import com.moonlight.buildingtools.buildingGuide.TileEntityGuide;
 import com.moonlight.buildingtools.items.tools.placetempblock.BlockTemporary;
-import com.moonlight.buildingtools.neverrainalwaysdayblock.debugblock;
 
 public final class BlockLoader {
 

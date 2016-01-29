@@ -39,6 +39,7 @@ import com.google.gson.GsonBuilder;
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.items.tools.BlockChangeBase;
 import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
+import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerRegistry;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
@@ -104,7 +105,9 @@ public class ThreadLoadClipboard implements BlockChangeBase{
 				PlayerWrapper playerwrap = BuildingTools.getPlayerRegistry().getPlayer(player).get();
 				
 				playerwrap.currentCopyClipboard.clear();
-				playerwrap.currentCopyClipboard.addAll(newChangeList);
+				for (ChangeBlockToThis changeBlockToThis : newChangeList) {
+					playerwrap.currentCopyClipboard.add(new BlockInfoContainer(changeBlockToThis));
+				}
 				playerwrap.clipboardMaxPos = new BlockPos(JSONDATA.maxPos[0], JSONDATA.maxPos[1], JSONDATA.maxPos[2]);
 				
 				

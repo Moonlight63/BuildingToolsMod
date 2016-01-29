@@ -20,6 +20,8 @@ import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 import com.moonlight.buildingtools.items.tools.BlockChangeBase;
 import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
 import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
+import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
+import com.moonlight.buildingtools.utils.MiscUtils;
 import com.sun.prism.Material;
 
 public class ThreadBuildersTool implements IShapeable, BlockChangeBase {
@@ -100,13 +102,12 @@ public class ThreadBuildersTool implements IShapeable, BlockChangeBase {
 			Shapes.Cuboid.generator.generateShape(radiusX, 0, radiusZ, this, true);
 			
 			if(!tempList.isEmpty() && tempList != null){
-				BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(CalcUndoList(tempList));
+				BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(tempList, world));
 				BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue = new BlockChangeQueue(tempList, world, Blocks.air.getDefaultState());
 			}
 			
 			if(count < 4096){
-				if(BuildingTools.getPlayerRegistry().getPlayer(entity).get().undolist.add(new LinkedHashSet<ChangeBlockToThis>((BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList))))
-					BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.clear();
+				MiscUtils.dumpUndoList(entity);
 				isFinished = true;
 			}
 			
@@ -115,37 +116,6 @@ public class ThreadBuildersTool implements IShapeable, BlockChangeBase {
 			count = 0;
 		}
 
-	}
-	
-	public Set<ChangeBlockToThis> CalcUndoList(Set<ChangeBlockToThis> tempList){
-		Set<ChangeBlockToThis> newTempList = new LinkedHashSet<ChangeBlockToThis>();
-		
-		for(ChangeBlockToThis pos : tempList){
-			newTempList.add(addBlockWithNBT(pos.getBlockPos(), world.getBlockState(pos.getBlockPos()), pos.getBlockPos()));
-		}
-		
-		return newTempList;
-	}
-	
-	public ChangeBlockToThis addBlockWithNBT(BlockPos oldPosOrNull, IBlockState blockState, BlockPos newPos){
-		if(oldPosOrNull != null && world.getTileEntity(oldPosOrNull) != null){
-    		NBTTagCompound compound = new NBTTagCompound();
-    		world.getTileEntity(oldPosOrNull).writeToNBT(compound);
-    		//tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
-    		return new ChangeBlockToThis(newPos, blockState, compound);
-		}
-    	else{
-    		//tempList.add(new ChangeBlockToThis(newPos, blockState));
-    		if(blockState.getBlock() instanceof BlockDoor){
-    			if(blockState.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.LOWER){
-					return new ChangeBlockToThis(newPos, blockState.withProperty(BlockDoor.HINGE, world.getBlockState(oldPosOrNull.up()).getValue(BlockDoor.HINGE)));
-				}
-    			else if(blockState.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.UPPER){
-					return new ChangeBlockToThis(newPos, blockState.withProperty(BlockDoor.FACING, world.getBlockState(oldPosOrNull.down()).getValue(BlockDoor.FACING)));
-				}
-    		}
-    		return new ChangeBlockToThis(newPos, blockState);
-    	}
 	}
 	
 	/**

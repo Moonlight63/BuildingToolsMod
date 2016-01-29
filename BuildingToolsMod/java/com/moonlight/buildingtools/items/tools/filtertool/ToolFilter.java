@@ -5,37 +5,52 @@
 
 package com.moonlight.buildingtools.items.tools.filtertool;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Sets;
-import com.moonlight.buildingtools.BuildingTools;
-import com.moonlight.buildingtools.helpers.RayTracing;
-import com.moonlight.buildingtools.helpers.RenderHelper;
-import com.moonlight.buildingtools.helpers.Shapes;
-import com.moonlight.buildingtools.helpers.shapes.IShapeGenerator;
-import com.moonlight.buildingtools.helpers.shapes.IShapeable;
-import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
-import com.moonlight.buildingtools.items.tools.IToolOverrideHitDistance;
-import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
-import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
-import com.moonlight.buildingtools.network.playerWrapper.PlayerRegistry;
-import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
-import com.moonlight.buildingtools.utils.*;
-import com.moonlight.buildingtools.utils.Key.KeyCode;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import java.io.PrintStream;
-import java.util.*;
-
-import net.minecraft.block.*;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockBush;
+import net.minecraft.block.BlockCactus;
+import net.minecraft.block.BlockCrops;
+import net.minecraft.block.BlockDoublePlant;
+import net.minecraft.block.BlockFlower;
+import net.minecraft.block.BlockLeaves;
+import net.minecraft.block.BlockLilyPad;
+import net.minecraft.block.BlockReed;
+import net.minecraft.block.BlockSapling;
+import net.minecraft.block.BlockSign;
+import net.minecraft.block.BlockStem;
+import net.minecraft.block.BlockTallGrass;
+import net.minecraft.block.BlockVine;
+import net.minecraft.block.BlockWeb;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.*;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+
+import com.google.common.collect.Sets;
+import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.helpers.RayTracing;
+import com.moonlight.buildingtools.helpers.RenderHelper;
+import com.moonlight.buildingtools.helpers.Shapes;
+import com.moonlight.buildingtools.helpers.shapes.IShapeable;
+import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
+import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
+import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
+import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
+import com.moonlight.buildingtools.utils.IItemBlockAffector;
+import com.moonlight.buildingtools.utils.IKeyHandler;
+import com.moonlight.buildingtools.utils.IOutlineDrawer;
+import com.moonlight.buildingtools.utils.Key.KeyCode;
+import com.moonlight.buildingtools.utils.KeyHelper;
+import com.moonlight.buildingtools.utils.RGBA;
 
 // Referenced classes of package com.moonlight.buildingtools.items.tools.filtertool:
 //            ThreadTopsoil, ThreadClearWater, ThreadClearFoliage

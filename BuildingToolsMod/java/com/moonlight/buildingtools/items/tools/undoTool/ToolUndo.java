@@ -8,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
@@ -58,9 +59,16 @@ public class ToolUndo extends Item{
 		if(!worldIn.isRemote){
 			System.out.println("Used Undo Tool");
 			PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
-			if(!player.undolist.isEmpty())
-				player.addPending(new ThreadPasteClipboard(worldIn, playerIn, player.undolist.pollLast(), new LinkedHashSet<Entity>()));
-			//player.addPending(new UndoThread(worldIn, playerIn));
+			//System.out.println(player.undolist);
+			if(!player.undolist.isEmpty() && player.UndoIsSaved){
+				player.addPending(new ThreadPasteClipboard(worldIn, playerIn, /*player.lastUndo, */new LinkedHashSet<Entity>()));				
+			}
+			if(!player.UndoIsSaved){
+				playerIn.addChatComponentMessage(new ChatComponentText("The last operation is not finished saving. Please Wait!"));
+			}
+			else if (player.undolist.isEmpty()){
+				playerIn.addChatComponentMessage(new ChatComponentText("No Undo operations are recorded"));
+			}
 		}
         return itemStackIn;
     }
@@ -74,12 +82,7 @@ public class ToolUndo extends Item{
             float hitY,
             float hitZ){
 		
-		if(!worldIn.isRemote){
-			System.out.println("Used Undo Tool");
-			PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
-			if(!player.undolist.isEmpty())
-				player.addPending(new ThreadPasteClipboard(worldIn, playerIn, player.undolist.pollLast(), new LinkedHashSet<Entity>()));
-		}
+		onItemRightClick(stack, worldIn, playerIn);
 		
 		return true;
 	}

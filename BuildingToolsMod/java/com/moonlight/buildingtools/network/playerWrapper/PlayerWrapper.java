@@ -6,6 +6,7 @@ import java.lang.ref.WeakReference;
 import java.util.Deque;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 
@@ -13,10 +14,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockPos;
 
-import com.google.common.base.Optional;
 import com.moonlight.buildingtools.items.tools.BlockChangeBase;
 import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
 import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
+import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
 
 public class PlayerWrapper {
 	
@@ -24,7 +25,7 @@ public class PlayerWrapper {
 	
 	public BlockChangeQueue pendingChangeQueue = null;
 	
-	public Set<ChangeBlockToThis> currentCopyClipboard = new LinkedHashSet<ChangeBlockToThis>();
+	public Set<BlockInfoContainer> currentCopyClipboard = new LinkedHashSet<BlockInfoContainer>();
 	
 	public Set<Entity> currentClipboardEntities = new LinkedHashSet<Entity>();
 	
@@ -32,8 +33,9 @@ public class PlayerWrapper {
 	
 	private final WeakReference<EntityPlayer> reference;
 	
-	public Set<ChangeBlockToThis> tempUndoList = new LinkedHashSet<ChangeBlockToThis>();
-	public Deque<Set<ChangeBlockToThis>> undolist = new LinkedList<Set<ChangeBlockToThis>>();
+	public Set<BlockInfoContainer> tempUndoList = new LinkedHashSet<BlockInfoContainer>();
+	public Deque<Set<BlockInfoContainer>> undolist = new LinkedList<Set<BlockInfoContainer>>();
+	public boolean UndoIsSaved = false;
 	
 	public PlayerWrapper(EntityPlayer player){
 		this.reference = new WeakReference<EntityPlayer>(player);
@@ -61,7 +63,7 @@ public class PlayerWrapper {
 	
 	public Optional<BlockChangeBase> getNextPendingChange()
     {
-        return Optional.fromNullable(pendingChanges.peek());
+        return Optional.ofNullable(pendingChanges.peek());
     }
 	
 	public void addPending(BlockChangeBase queue)
@@ -71,13 +73,10 @@ public class PlayerWrapper {
         pendingChanges.add(queue);
     }
 	
-	public void clearNextPending()
+	public void clearNextPending(boolean force)
     {
-        if (!pendingChanges.isEmpty() && pendingChanges.peek().isFinished())
-        {
-        	//System.out.println(pendingChanges);
+        if (!pendingChanges.isEmpty() && (pendingChanges.peek().isFinished() || force))
             pendingChanges.remove();
-        }
     }
 
 }

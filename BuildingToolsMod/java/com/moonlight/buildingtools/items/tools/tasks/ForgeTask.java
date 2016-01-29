@@ -1,7 +1,5 @@
 package com.moonlight.buildingtools.items.tools.tasks;
 
-
-
 public class ForgeTask extends Task
 {
 
@@ -9,6 +7,7 @@ public class ForgeTask extends Task
 
     private ForgeSchedulerService scheduler;
     private int ticks = 0;
+    
 
     /**
      * Creates a new {@link ForgeTask}.

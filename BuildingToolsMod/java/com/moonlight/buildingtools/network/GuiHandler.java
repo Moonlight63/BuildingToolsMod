@@ -4,12 +4,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-
-
-
-
-
-
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.items.tools.brushtool.GUIToolBrush;
 import com.moonlight.buildingtools.items.tools.buildingtool.GUIBuildersTool;
@@ -18,7 +12,6 @@ import com.moonlight.buildingtools.items.tools.filtertool.GUIToolFilter;
 import com.moonlight.buildingtools.items.tools.selectiontool.GUIBlockSelectionFill;
 import com.moonlight.buildingtools.items.tools.selectiontool.GUISaveLoadClipboard;
 import com.moonlight.buildingtools.items.tools.selectiontool.GUISelectionTool;
-import com.moonlight.buildingtools.items.tools.terrainsmoother.GUITerrainSmooth;
 
 
 public class GuiHandler implements IGuiHandler {
@@ -27,10 +20,9 @@ public class GuiHandler implements IGuiHandler {
 	public static final int GUIBuildingTool = 2;
 	public static final int GUIFilterTool = 3;
 	public static final int GUISelectionTool = 4;
-	public static final int GUITerrainSmoothTool = 5;
-	public static final int GUIErosionTool = 6;
-	public static final int GUIFileSave = 7;
-	public static final int GUIBlockSelection = 8;
+	public static final int GUIErosionTool = 5;
+	public static final int GUIFileSave = 6;
+	public static final int GUIBlockSelection = 7;
 	
 	public GuiHandler(){
 		NetworkRegistry.INSTANCE.registerGuiHandler(BuildingTools.instance, this);
@@ -55,8 +47,6 @@ public class GuiHandler implements IGuiHandler {
 			return new GUIToolFilter(player);
 		case GUISelectionTool:
 			return new GUISelectionTool(player);
-		case GUITerrainSmoothTool:
-			return new GUITerrainSmooth(player);
 		case GUIErosionTool:
 			return new GUIErosionTool(player);
 		case GUIFileSave:
@@ -68,8 +58,6 @@ public class GuiHandler implements IGuiHandler {
 			break;
 		}
 		
-		
-		// TODO Auto-generated method stub
 		return null;
 	}
 

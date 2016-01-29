@@ -11,10 +11,14 @@ import com.moonlight.buildingtools.helpers.Shapes;
 import com.moonlight.buildingtools.helpers.shapes.IShapeGenerator;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 import com.moonlight.buildingtools.items.tools.*;
+import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerRegistry;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
+import com.moonlight.buildingtools.utils.MiscUtils;
+
 import java.io.PrintStream;
 import java.util.*;
+
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -76,46 +80,17 @@ public class ThreadTopsoil
             Shapes.Cuboid.generator.generateShape(radiusX, radiusY, radiusZ, this, true);
             if(!tempList.isEmpty() && tempList != null)
             {
-                ((PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(entity).get()).tempUndoList.addAll(CalcUndoList(tempList));
+                ((PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(entity).get()).tempUndoList.addAll(MiscUtils.CalcUndoList(tempList, world));
                 ((PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(entity).get()).pendingChangeQueue = new BlockChangeQueue(tempList, world, true);
             }
             if(count < 4096)
             {
-                if(((PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(entity).get()).undolist.add(new LinkedHashSet(((PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(entity).get()).tempUndoList)))
-                    ((PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(entity).get()).tempUndoList.clear();
+            	MiscUtils.dumpUndoList(entity);
                 isFinished = true;
             }
             currentlyCalculating = false;
             count = 0;
         }
-    }
-
-    public Set CalcUndoList(Set tempList)
-    {
-        Set newTempList = new LinkedHashSet();
-        ChangeBlockToThis pos;
-        for(Iterator iterator = tempList.iterator(); iterator.hasNext(); newTempList.add(addBlockWithNBT(pos.getBlockPos(), world.getBlockState(pos.getBlockPos()), pos.getBlockPos())))
-            pos = (ChangeBlockToThis)iterator.next();
-
-        return newTempList;
-    }
-
-    public ChangeBlockToThis addBlockWithNBT(BlockPos oldPosOrNull, IBlockState blockState, BlockPos newPos)
-    {
-        if(oldPosOrNull != null && world.getTileEntity(oldPosOrNull) != null)
-        {
-            NBTTagCompound compound = new NBTTagCompound();
-            world.getTileEntity(oldPosOrNull).writeToNBT(compound);
-            return new ChangeBlockToThis(newPos, blockState, compound);
-        }
-        if(blockState.getBlock() instanceof BlockDoor)
-        {
-            if(blockState.getValue(BlockDoor.HALF) == net.minecraft.block.BlockDoor.EnumDoorHalf.LOWER)
-                return new ChangeBlockToThis(newPos, blockState.withProperty(BlockDoor.HINGE, (net.minecraft.block.BlockDoor.EnumHingePosition)world.getBlockState(oldPosOrNull.up()).getValue(BlockDoor.HINGE)));
-            if(blockState.getValue(BlockDoor.HALF) == net.minecraft.block.BlockDoor.EnumDoorHalf.UPPER)
-                return new ChangeBlockToThis(newPos, blockState.withProperty(BlockDoor.FACING, (EnumFacing)world.getBlockState(oldPosOrNull.down()).getValue(BlockDoor.FACING)));
-        }
-        return new ChangeBlockToThis(newPos, blockState);
     }
 
     public World getWorld()

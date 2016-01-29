@@ -3,21 +3,16 @@ package com.moonlight.buildingtools.helpers.loaders;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
-import com.moonlight.buildingtools.items.tools.bowTest.AutoBow;
 import com.moonlight.buildingtools.items.tools.brushtool.ToolBrush;
 import com.moonlight.buildingtools.items.tools.buildingtool.ToolBuilding;
 import com.moonlight.buildingtools.items.tools.erosionTool.ToolErosion;
 import com.moonlight.buildingtools.items.tools.filtertool.ToolFilter;
-import com.moonlight.buildingtools.items.tools.idAdvancer.IdAdvancer;
 import com.moonlight.buildingtools.items.tools.placetempblock.ToolPlaceTempBlock;
 import com.moonlight.buildingtools.items.tools.selectiontool.ToolSelection;
 import com.moonlight.buildingtools.items.tools.tapeMeasure.ToolTapeMeasure;
-import com.moonlight.buildingtools.items.tools.terrainsmoother.ToolTerrainSmooth;
 import com.moonlight.buildingtools.items.tools.undoTool.ToolUndo;
 
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBow;
 
 public class ItemLoader {
 	public static Item toolBrush;

@@ -1,26 +1,15 @@
 package com.moonlight.buildingtools.network;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.PlayerControllerMP;
-import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.WorldSettings.GameType;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import com.google.common.base.Optional;
-import com.moonlight.buildingtools.helpers.WorldEventHandler;
 import com.moonlight.buildingtools.helpers.loaders.BlockRenderRegister;
 import com.moonlight.buildingtools.helpers.loaders.ItemRenderRegister;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerRegistry;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerRegistryProvider;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
-import com.moonlight.buildingtools.network.playercontroller.BuildingtoolsPlayerController;
-import com.moonlight.buildingtools.network.playercontroller.IExtendedPlayerController;
-import com.moonlight.buildingtools.network.playercontroller.LibObfuscation;
 import com.moonlight.buildingtools.utils.Pair;
 //import com.moonlight.buildingtools.buildingGuide.TileEntityGuideRenderer;
 
@@ -45,28 +34,7 @@ public class ClientProxy extends CommonProxy {
 		BlockRenderRegister.registerBlockRenderer();
 		ItemRenderRegister.registerItemRenderer();
 	}
-	
-	
-	@Override
-	public void setExtraReach(EntityLivingBase entity, float reach) {
-		super.setExtraReach(entity, reach);
-		Minecraft mc = Minecraft.getMinecraft();
-		EntityPlayer player = mc.thePlayer;
-		if(entity == player) {
-			if(!(mc.playerController instanceof IExtendedPlayerController)) {
-				GameType type = ReflectionHelper.getPrivateValue(PlayerControllerMP.class, mc.playerController, LibObfuscation.CURRENT_GAME_TYPE);
-				NetHandlerPlayClient net = ReflectionHelper.getPrivateValue(PlayerControllerMP.class, mc.playerController, LibObfuscation.NET_CLIENT_HANDLER);
-				BuildingtoolsPlayerController controller = new BuildingtoolsPlayerController(mc, net);
-				controller.setGameType(type);
-				mc.playerController = controller;
-			}
-
-			((IExtendedPlayerController) mc.playerController).setReachDistanceExtension(reach);
 		
-			//((IExtendedPlayerController) mc.playerController).setReachDistanceExtension(Math.max(0, ((IExtendedPlayerController) mc.playerController).getReachDistanceExtension() + reach));
-		}
-	}
-	
 	
 	private class PlayerRegistryProviderClient implements PlayerRegistryProvider{
 

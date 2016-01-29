@@ -1,11 +1,6 @@
 package com.moonlight.buildingtools.items.tools.selectiontool;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.List;
-import java.util.zip.GZIPOutputStream;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -16,15 +11,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import com.google.common.collect.Lists;
 import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.helpers.RayTracing;
 import com.moonlight.buildingtools.helpers.RenderHelper;
 import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
-import com.moonlight.buildingtools.items.tools.IToolOverrideHitDistance;
 import com.moonlight.buildingtools.network.GuiHandler;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
@@ -32,12 +27,13 @@ import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.IOutlineDrawer;
 import com.moonlight.buildingtools.utils.RGBA;
 
-public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButtonPressed, IToolOverrideHitDistance{
+public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButtonPressed{
 	
 	public BlockPos targetBlock;
+	public EnumFacing targetFace;
 	public World world;
 	public EntityPlayer currPlayer;
-	public ItemStack thisStack;
+	public static ItemStack thisStack;
 	
 	public BlockPos blockpos1;
 	public BlockPos blockpos2;
@@ -69,6 +65,7 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 	        stack.getTagCompound().setInteger("repeatMovmentY", 0);
 	        stack.getTagCompound().setInteger("repeatMovmentZ", 0);
 	    }
+	    thisStack = stack;
 	    return stack.getTagCompound();	    
 	}
 
@@ -82,14 +79,50 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 		if(this.world == null){
 			this.world = world;
 		}
+		
+		RayTracing.instance().fire(1000, true);
+		MovingObjectPosition target = RayTracing.instance().getTarget();
+		
+		if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){
+			targetBlock = target.getBlockPos();
+			targetFace = target.sideHit;
+		}
+		else{
+			targetBlock = null;
+			targetFace = null;
+		}
 	}
 	
 	@Override
 	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
     {
-		if(playerIn.isSneaking()){
-			getNBT(itemStackIn).setBoolean("bpos1Set", false);
-			getNBT(itemStackIn).setBoolean("bpos2Set", false);
+		currPlayer = playerIn;
+		if(targetBlock == null){
+			if(playerIn.isSneaking()){
+				getNBT(itemStackIn).setBoolean("bpos1Set", false);
+				getNBT(itemStackIn).setBoolean("bpos2Set", false);
+			}
+		}
+		else{
+			if(playerIn.isSneaking()){
+				playerIn.openGui(BuildingTools.instance, GuiHandler.GUISelectionTool, worldIn, 0, 0, 0);
+			}
+			else{
+		
+				if(!worldIn.isRemote){
+				
+					if(!getNBT(itemStackIn).getBoolean("bpos1Set") && !getNBT(itemStackIn).getBoolean("bpos2Set")){
+						setBlockPos1(itemStackIn, targetBlock);
+					}
+					else if(getNBT(itemStackIn).getBoolean("bpos1Set") && !getNBT(itemStackIn).getBoolean("bpos2Set")){
+						setBlockPos2(itemStackIn, targetBlock);
+					}
+					else if(getNBT(itemStackIn).getBoolean("bpos1Set") && getNBT(itemStackIn).getBoolean("bpos2Set")){
+						setBlockPos1(itemStackIn, targetBlock);
+					}
+					
+				}
+			}
 		}
         return itemStackIn;
     }
@@ -103,41 +136,7 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
             float hitY,
             float hitZ){
 		
-		currPlayer = playerIn;
-		world = worldIn;
-		targetBlock = pos;
-		thisStack = stack;
-		if(playerIn.isSneaking()){
-				
-				playerIn.openGui(BuildingTools.instance, GuiHandler.GUISelectionTool, worldIn, 0, 0, 0);
-				//playerIn.openGui(BuildingTools.instance, GuiHandler.GUIBlockSelection, worldIn, 0, 0, 0);
-			}
-		
-		if(!worldIn.isRemote){
-			
-			if(playerIn.isSneaking()){
-				
-				//playerIn.openGui(BuildingTools.instance, GuiHandler.GUISelectionTool, worldIn, 0, 0, 0);
-				//playerIn.openGui(BuildingTools.instance, GuiHandler.GUIBlockSelection, worldIn, 0, 0, 0);
-			}
-			else{
-			
-			
-				thisStack = stack;
-			
-				if(!getNBT(stack).getBoolean("bpos1Set") && !getNBT(stack).getBoolean("bpos2Set")){
-					setBlockPos1(stack, pos);
-				}
-				else if(getNBT(stack).getBoolean("bpos1Set") && !getNBT(stack).getBoolean("bpos2Set")){
-					setBlockPos2(stack, pos);
-				}
-				else if(getNBT(stack).getBoolean("bpos1Set") && getNBT(stack).getBoolean("bpos2Set")){
-					setBlockPos1(stack, pos);
-				}
-			
-			}
-			
-		}
+		onItemRightClick(stack, worldIn, playerIn);
 		
 		return true;
 	}
@@ -187,25 +186,29 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 	@Override
     public boolean drawOutline(DrawBlockHighlightEvent event)
     {
-		BlockPos target = event.target.getBlockPos();
+		//BlockPos target = event.target.getBlockPos();
 
-        if (event.player.isSneaking())
-        {
-            RenderHelper.renderBlockOutline(event.context, event.player, target, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
-            return true;
-        }
-        
-        if (getNBT(event.currentItem).getBoolean("bpos1Set")){
-        	RenderHelper.renderBlockOutline(event.context, event.player, getBlockPos1(event.currentItem), RGBA.Blue, 1.0f, event.partialTicks);
-        }
-        
-        if (getNBT(event.currentItem).getBoolean("bpos2Set")){
-        	RenderHelper.renderBlockOutline(event.context, event.player, getBlockPos2(event.currentItem), RGBA.Blue, 1.0f, event.partialTicks);
-        }
-        
-        if (getNBT(event.currentItem).getBoolean("bpos1Set") && getNBT(event.currentItem).getBoolean("bpos2Set")){
-        	RenderHelper.renderSelectionBox(event.context, event.player, getBlockPos1(event.currentItem), getBlockPos2(event.currentItem), RGBA.Red, 1.5f, event.partialTicks);
-        }
+		if(targetBlock!=null){
+			
+	        if (event.player.isSneaking())
+	        {
+	            RenderHelper.renderBlockOutline(event.context, event.player, targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
+	            return true;
+	        }
+	        
+	        if (getNBT(event.currentItem).getBoolean("bpos1Set")){
+	        	RenderHelper.renderBlockOutline(event.context, event.player, getBlockPos1(event.currentItem), RGBA.Blue, 1.0f, event.partialTicks);
+	        }
+	        
+	        if (getNBT(event.currentItem).getBoolean("bpos2Set")){
+	        	RenderHelper.renderBlockOutline(event.context, event.player, getBlockPos2(event.currentItem), RGBA.Blue, 1.0f, event.partialTicks);
+	        }
+	        
+	        if (getNBT(event.currentItem).getBoolean("bpos1Set") && getNBT(event.currentItem).getBoolean("bpos2Set")){
+	        	RenderHelper.renderSelectionBox(event.context, event.player, getBlockPos1(event.currentItem), getBlockPos2(event.currentItem), RGBA.Red, 1.5f, event.partialTicks);
+	        }
+	        
+		}
 	        
         
         return true;
@@ -306,19 +309,13 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 		} else if (buttonID == 13) {
 			getNBT(stack).setInteger("repeatMovmentZ", getNBT(stack).getInteger("repeatMovmentZ") + amount);
 		} else if (buttonID == 14){
-			System.out.println("Opening Gui Blocks");
-			currPlayer.openGui(BuildingTools.instance, GuiHandler.GUIBlockSelection, world, 0, 0, 0);
-		}
-		
-		else if (buttonID == 16) {
-			if(mouseButton == 0){
-				//OpenSaveGUI();
-			}
+			
+		} else if (buttonID == 16) {
+			
 		} else if (buttonID == 17) {
-			if(mouseButton == 0){
-				System.out.println("Got Test Packet");
-			}
+			
 		} else {
+			
 		}
 		
 	}

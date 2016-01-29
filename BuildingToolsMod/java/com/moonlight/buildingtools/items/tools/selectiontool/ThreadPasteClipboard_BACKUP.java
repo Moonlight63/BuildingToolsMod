@@ -43,12 +43,10 @@ import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.items.tools.BlockChangeBase;
 import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
 import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
-import com.moonlight.buildingtools.items.tools.selectiontool.ThreadPasteClipboard_BACKUP.SecondPass;
-import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.MiscUtils;
 
-public class ThreadPasteClipboard implements BlockChangeBase{
+public class ThreadPasteClipboard_BACKUP implements BlockChangeBase{
 	
 	protected AxisAlignedBB entityDetectionBox;
 	protected World world;
@@ -62,7 +60,7 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 	protected Set<Entity> entitySet = new CopyOnWriteArraySet<Entity>();
 	protected Set<EntityPass> entityPassSet = new CopyOnWriteArraySet<EntityPass>();
 	
-	protected Set<BlockInfoContainer> selectionSet = new CopyOnWriteArraySet<BlockInfoContainer>();
+	protected Set<ChangeBlockToThis> selectionSet = new CopyOnWriteArraySet<ChangeBlockToThis>();
 	
 	protected boolean currentlyCalculating = false;
 	
@@ -74,14 +72,14 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 	
 	protected boolean saveUndo = true;
 	
-	public ThreadPasteClipboard(World world, EntityPlayer player, BlockPos copyTo, int rot, boolean flipx, boolean flipy, boolean flipz){
+	public ThreadPasteClipboard_BACKUP(World world, EntityPlayer player, BlockPos copyTo, int rot, boolean flipx, boolean flipy, boolean flipz){
 		
 		this.world = world;
 		this.copyToPos = copyTo;		
 		this.entity = player;
 		
 		PlayerWrapper playerwrap = BuildingTools.getPlayerRegistry().getPlayer(player).get();
-		selectionSet.addAll(playerwrap.currentCopyClipboard);
+		//selectionSet.addAll(playerwrap.currentCopyClipboard);
 		entitySet.addAll(playerwrap.currentClipboardEntities);
 		this.rotation = rot;
 		
@@ -91,21 +89,12 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 		
 	}
 	
-	public ThreadPasteClipboard(World world, EntityPlayer player, /*Set<BlockInfoContainer> selection,*/ Set<Entity> entities){
+	public ThreadPasteClipboard_BACKUP(World world, EntityPlayer player, Set<ChangeBlockToThis> selection, Set<Entity> entities){
 		
 		this.world = world;
 		this.entity = player;
 		
-//		for (ChangeBlockToThis change : selection) {
-//			selectionSet.add(new BlockInfoContainer(change));
-//		}
-		
-		PlayerWrapper playerwrap = BuildingTools.getPlayerRegistry().getPlayer(player).get();
-		if(!playerwrap.undolist.isEmpty())
-			selectionSet.addAll(playerwrap.undolist.pollLast());
-		
-		//System.out.println(selection);
-		//selectionSet.addAll(selection);
+		selectionSet.addAll(selection);
 		entitySet.addAll(entities);
 		
 		this.copyToPos = new BlockPos(0, 0, 0);		
@@ -383,13 +372,13 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 		
 		currentlyCalculating = true;
 		
-		for(BlockInfoContainer bpos : selectionSet){
+		for(ChangeBlockToThis bpos : selectionSet){
 			
 			if(firstPassCount < 4096){
 				//System.out.println(firstPassCount);
 				
-				IBlockState blockState = bpos.change.getBlockState();//world.getBlockState(bpos);
-				NBTTagCompound compound = bpos.change.getNBTTag();
+				IBlockState blockState = bpos.getBlockState();//world.getBlockState(bpos);
+				NBTTagCompound compound = bpos.getNBTTag();
 				Block block = blockState.getBlock();
 				
 				ImmutableMap<?, ?> properties = blockState.getProperties();
@@ -398,137 +387,114 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 				IProperty<EnumType>   quartzPillerProperty = PropertyEnum.create("variant", BlockQuartz.EnumType.class);
 				IProperty<Integer>    bannerStandingRotation = PropertyInteger.create("rotation", 0, 15);
 				
-				BlockPos normalizedPos = bpos.change.getBlockPos();
+				BlockPos normalizedPos = bpos.getBlockPos();
 				BlockPos adjustedPos = getAdjustedBlockPos(normalizedPos);
-				BlockPos newPos = adjustedPos.add(copyToPos);
+				BlockPos newPos = adjustedPos.add(copyToPos);				
 				
-				EnumFacing facing;
-				
-				switch (bpos.blockType) {
-				case Standard:
+				//GET BLOCKS THAT HAVE A ROTATION STATE
+				if(properties.containsKey(directionalBlockProperty)){
+					EnumFacing facing = (EnumFacing)blockState.getValue(directionalBlockProperty);
 					
-					if(flipY){
-						System.out.println("NON-SLABS");
-                		tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
-					}
-					else{
-						tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
-					}
+					//SPECIAL BLOCK CASES THAT NEED A SECOND PASS
 					
-					break;
-					
-				case Door:
-					System.out.println("DOORS");
-					facing = (EnumFacing)blockState.getValue(directionalBlockProperty);
-					
-					if(!flipY){
-						if(blockState.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.LOWER){
-							secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound), newPos.down()));
-						}
-					}
-					else{
-						if(blockState.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.UPPER){
-							secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound), newPos.down()));
-						}
-					}
-					break;
-					
-				case TrapDoor:
-					System.out.println("TRAPDOOR");
-					facing = (EnumFacing)blockState.getValue(directionalBlockProperty);
-					
-					if(flipY){
-            			if(blockState.getValue(BlockTrapDoor.HALF) == BlockTrapDoor.DoorHalf.TOP){
-            				secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState.withProperty(BlockTrapDoor.HALF, BlockTrapDoor.DoorHalf.BOTTOM).withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound), newPos.offset(getAdjustedRotation(facing))));
-            			}
-            			else{
-            				secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState.withProperty(BlockTrapDoor.HALF, BlockTrapDoor.DoorHalf.TOP).withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound), newPos.offset(getAdjustedRotation(facing))));
-            			}
-					}
-					else{
-						secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound), newPos.offset(getAdjustedRotation(facing).getOpposite())));
-					}
-					
-					break;
-					
-				case Torch:
-					System.out.println("TORCHES");
-					facing = (EnumFacing)blockState.getValue(directionalBlockProperty);
-					
-					if(facing != EnumFacing.UP && facing != EnumFacing.DOWN){
-						secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound), newPos.offset(getAdjustedRotation(facing).getOpposite())));
-					}
-					else{
-						secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState, compound), newPos.offset(getAdjustedRotation(facing).getOpposite())));
-					}
-					
-					break;
-					
-				case BannerHanging:
-					System.out.println("BANNERS");
-					facing = (EnumFacing)blockState.getValue(directionalBlockProperty);
-					secondPassSet.add(new SecondPass(new ChangeBlockToThis(flipY ? newPos.up():newPos, blockState.withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound), (flipY ? newPos.up():newPos).offset(getAdjustedRotation(facing).getOpposite())));
-				
-					break;
-					
-				case Stairs:
-					System.out.println("STAIRS");
-					facing = (EnumFacing)blockState.getValue(directionalBlockProperty);
-					if(facing != EnumFacing.UP && facing != EnumFacing.DOWN){
-						if(flipY){
-							if(blockState.getValue(BlockStairs.HALF) == BlockStairs.EnumHalf.TOP){
-                				tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(BlockStairs.HALF, BlockStairs.EnumHalf.BOTTOM).withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound));
-                			}
-                			else{
-                				tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(BlockStairs.HALF, BlockStairs.EnumHalf.TOP).withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound));
-                			}
+					//Doors
+					if(block instanceof BlockDoor){
+						System.out.println("DOORS");
+						if(!flipY){
+							if(blockState.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.LOWER){
+								secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound), newPos.down()));
+							}
 						}
 						else{
-							System.out.println("NOT FLIP Y");
-							System.out.println(newPos);
-							tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound));
+							if(blockState.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.UPPER){
+								secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound), newPos.down()));
+							}
 						}
 					}
-					else{
-						if(flipY)
-                			tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, facing.getOpposite()), compound));
-                		else
-                			tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
-					}
 					
-					break;
 					
-				case Skull:
-					System.out.println("SKULLS");
-					facing = (EnumFacing)blockState.getValue(directionalBlockProperty);
-					if(facing != EnumFacing.UP && facing != EnumFacing.DOWN){
+					//TrapDoors
+					else if(block instanceof BlockTrapDoor){
+						System.out.println("TRAPDOOR");
 						if(flipY){
-							tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound));
+	            			if(blockState.getValue(BlockTrapDoor.HALF) == BlockTrapDoor.DoorHalf.TOP){
+	            				secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState.withProperty(BlockTrapDoor.HALF, BlockTrapDoor.DoorHalf.BOTTOM).withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound), newPos.offset(getAdjustedRotation(facing))));
+	            			}
+	            			else{
+	            				secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState.withProperty(BlockTrapDoor.HALF, BlockTrapDoor.DoorHalf.TOP).withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound), newPos.offset(getAdjustedRotation(facing))));
+	            			}
 						}
 						else{
-							tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound));
+							secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound), newPos.offset(getAdjustedRotation(facing).getOpposite())));
 						}
+            		}
+					
+					//Torches
+					else if (block instanceof BlockTorch){
+						System.out.println("TORCHES");
+						if(facing != EnumFacing.UP && facing != EnumFacing.DOWN){
+							secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound), newPos.offset(getAdjustedRotation(facing).getOpposite())));
+						}
+						else{
+							secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState, compound), newPos.offset(getAdjustedRotation(facing).getOpposite())));
+						}
+						
 					}
+					
+					//Hanging Banners
+					else if (block instanceof BlockBannerHanging){
+						System.out.println("BANNERS");
+						secondPassSet.add(new SecondPass(new ChangeBlockToThis(flipY ? newPos.up():newPos, blockState.withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound), (flipY ? newPos.up():newPos).offset(getAdjustedRotation(facing).getOpposite())));
+					}
+					
+					//Any Other 'Rotatable' Block
 					else{
-						NBTTagCompound tempNBT = compound;
-            			tempNBT.setByte("Rot", getSkullRotation(tempNBT.getByte("Rot")));
-            			tempList.add(new ChangeBlockToThis(newPos, blockState, tempNBT));
+						if(facing != EnumFacing.UP && facing != EnumFacing.DOWN){
+							if(flipY){
+								if(block instanceof BlockStairs){
+									System.out.println("STAIRS");
+		                			if(blockState.getValue(BlockStairs.HALF) == BlockStairs.EnumHalf.TOP){
+		                				tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(BlockStairs.HALF, BlockStairs.EnumHalf.BOTTOM).withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound));
+		                			}
+		                			else{
+		                				tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(BlockStairs.HALF, BlockStairs.EnumHalf.TOP).withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound));
+		                			}
+		                		}
+		                		else{
+		                			System.out.println("NOT STAIRS");
+		                			tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound));
+		                		}
+							}
+							else{
+								System.out.println("NOT FLIP Y");
+								System.out.println(newPos);
+								tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, getAdjustedRotation(facing)), compound));
+							}
+						}
+						else{
+							//SKULL EXCEPTION
+	                		if(block instanceof BlockSkull){
+	                			System.out.println("SKULLS");
+	                			NBTTagCompound tempNBT = compound;
+	                			tempNBT.setByte("Rot", getSkullRotation(tempNBT.getByte("Rot")));
+	                			tempList.add(new ChangeBlockToThis(newPos, blockState, tempNBT));
+	                		}
+	                		if(flipY){
+	                			System.out.println("FLIP Y BLOCKS");
+	                			tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, facing.getOpposite()), compound));
+	                		}
+	                		else{
+	                			System.out.println("ANY OTHER ROTATABLE BLOCK");
+	                			tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
+	                		}
+						}
+						
 					}
-					break;
-					
-				case Rotating:
-					facing = (EnumFacing)blockState.getValue(directionalBlockProperty);
-					if(flipY){
-            			System.out.println("FLIP Y BLOCKS");
-            			tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(directionalBlockProperty, facing.getOpposite()), compound));
-            		}
-            		else{
-            			System.out.println("ANY OTHER ROTATABLE BLOCK");
-            			tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
-            		}
-					break;
-					
-				case Logs:
+								
+				}
+				
+				//LOGS
+				else if(properties.containsKey(logDirectionProperty)){
 					System.out.println("LOGS");
 					if(blockState.getValue(logDirectionProperty) == BlockLog.EnumAxis.X){
 						tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(logDirectionProperty, BlockLog.EnumAxis.Z), compound));
@@ -539,9 +505,10 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 					else{
 						tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
 					}
-					break;
-					
-				case Quartz_Pillar:
+				}
+				
+				//Quartz Pillar
+				else if(properties.containsKey(quartzPillerProperty)){
 					System.out.println("QUARTZ");
 					if(blockState.getValue(quartzPillerProperty) == BlockQuartz.EnumType.LINES_X){
 						tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(quartzPillerProperty, BlockQuartz.EnumType.LINES_Z), compound));
@@ -552,11 +519,15 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 					else{
 						tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
 					}
-					break;
-					
-				case Signs:
+				}
+				
+				//STANDING BANNERS AND SIGNS
+				else if (properties.containsKey(bannerStandingRotation)){
 					if(!flipY){
 						System.out.println("SIGNS AND BANNERS");
+						
+						
+						
 						int tempInt = (Integer) blockState.getValue(bannerStandingRotation);
 						
 						System.out.println(tempInt);
@@ -565,16 +536,19 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 								withProperty(bannerStandingRotation, getSkullRotation(tempInt)),
 								compound), newPos.down()));
 					}
-					break;
-					
-				case Carpet:
+				}
+				
+				//CARPET
+				else if (block instanceof BlockCarpet || block instanceof BlockFlowerPot){
 					if(!flipY){
 						System.out.println("Carpet");
 						secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState, compound), newPos.down()));
 					}
-					break;
+				}
+				
+				//LEVERS
+				else if(block instanceof BlockLever){
 					
-				case Lever:
 					EnumFacing updownface = (((BlockLever.EnumOrientation) blockState.getValue(BlockLever.FACING)).getFacing()).getOpposite();
 					
 					if(this.rotation == 1 || this.rotation == 3){
@@ -619,26 +593,31 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 							flipY ? getAdjustedRotation(((BlockLever.EnumOrientation) blockState.getValue(BlockLever.FACING)).getFacing()) : 
 								getAdjustedRotation(((BlockLever.EnumOrientation) blockState.getValue(BlockLever.FACING)).getFacing()).getOpposite()
 									)));
-					break;
+				
+				}
+				
+				else{
 					
-				case Slab:
 					if(flipY){
-						System.out.println("SLABS");
-            			if(blockState.getValue(BlockSlab.HALF) == BlockSlab.EnumBlockHalf.TOP){
-            				tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.BOTTOM), compound));
-            			}
-            			else{
-            				tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.TOP), compound));
-            			}
+                		if(block instanceof BlockSlab){
+                			System.out.println("SLABS");
+                			if(blockState.getValue(BlockSlab.HALF) == BlockSlab.EnumBlockHalf.TOP){
+                				tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.BOTTOM), compound));
+                			}
+                			else{
+                				tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.TOP), compound));
+                			}
+                		}
+                		else{
+                			System.out.println("NON-SLABS");
+                			tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
+                		}
 					}
 					else{
 						System.out.println("NON-ROTATABLE");
 						tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
 					}
-					break;
-
-				default:
-					break;
+					
 				}
 				
 				if(!entitySet.isEmpty()){
@@ -655,7 +634,7 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 					}
 				}
 			
-				//System.out.println("REMOVING BPOS");
+				System.out.println("REMOVING BPOS");
 				firstPassCount++;
 				selectionSet.remove(bpos);
 				

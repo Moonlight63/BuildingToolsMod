@@ -14,7 +14,6 @@ import com.moonlight.buildingtools.helpers.FontHelper;
 import com.moonlight.buildingtools.items.tools.brushtool.ToolBrush;
 import com.moonlight.buildingtools.items.tools.buildingtool.ToolBuilding;
 import com.moonlight.buildingtools.items.tools.filtertool.ToolFilter;
-import com.moonlight.buildingtools.items.tools.terrainsmoother.ToolTerrainSmooth;
 
 public class BlockChangerGuiHelper extends Gui
 {
@@ -75,11 +74,6 @@ public class BlockChangerGuiHelper extends Gui
         else if ((player.inventory.getCurrentItem().getItem() instanceof ToolFilter)){
         	ItemStack currItem = player.inventory.getCurrentItem();
         	FontHelper.renderText(mc.fontRendererObj, 25, 8, 1.0, "Radius: " + ToolFilter.getNBT(currItem).getInteger("radiusX") + ",  " + ToolFilter.getNBT(currItem).getInteger("radiusY") + ",  " + ToolFilter.getNBT(currItem).getInteger("radiusZ") + ", Depth: " +  ToolFilter.getNBT(currItem).getInteger("topsoildepth"));
-        }
-        
-        else if ((player.inventory.getCurrentItem().getItem() instanceof ToolTerrainSmooth)){
-        	ItemStack currItem = player.inventory.getCurrentItem();
-	        FontHelper.renderText(mc.fontRendererObj, 25, 8, 1.0, "Radius: " + ((ToolTerrainSmooth)currItem.getItem()).getTargetRadius(currItem));
         }
         
         else{

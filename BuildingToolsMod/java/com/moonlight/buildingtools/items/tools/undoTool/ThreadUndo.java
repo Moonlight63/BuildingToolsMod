@@ -29,8 +29,8 @@ public class ThreadUndo implements BlockChangeBase {
 		this.entity = entity;
 		
 		PlayerWrapper playerwrap = BuildingTools.getPlayerRegistry().getPlayer(entity).get();
-		if(!playerwrap.undolist.isEmpty())
-			undoSet.addAll(playerwrap.undolist.pollLast());
+		//if(!playerwrap.undolist.isEmpty())
+			//undoSet.addAll(playerwrap.undolist.pollLast());
 		
 		System.out.println(undoSet.size());
 	}

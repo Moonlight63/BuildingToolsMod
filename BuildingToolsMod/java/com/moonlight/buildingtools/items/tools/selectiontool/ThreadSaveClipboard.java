@@ -29,6 +29,7 @@ import com.google.gson.GsonBuilder;
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.items.tools.BlockChangeBase;
 import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
+import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
 public class ThreadSaveClipboard implements BlockChangeBase{
@@ -64,17 +65,17 @@ public class ThreadSaveClipboard implements BlockChangeBase{
 				NBTTagCompound test = new NBTTagCompound();
 				test.getKeySet();
 			    
-			    for(ChangeBlockToThis change : playerwrap.currentCopyClipboard){
+			    for(BlockInfoContainer change : playerwrap.currentCopyClipboard){
 			    	
 			    	BlockData data = new BlockData();
 			    	
-			    	data.pos = new int[]{change.getBlockPos().getX(), change.getBlockPos().getY(), change.getBlockPos().getZ()};
-			    	data.block = Block.getIdFromBlock(change.getBlockState().getBlock());
-			    	data.data = change.getBlockState().getBlock().getMetaFromState(change.getBlockState());	
-			    	if(change.getNBTTag() != null){
-				    	data.nbt = NBTCompoundPhraser(change.getNBTTag());	
+			    	data.pos = new int[]{change.change.getBlockPos().getX(), change.change.getBlockPos().getY(), change.change.getBlockPos().getZ()};
+			    	data.block = Block.getIdFromBlock(change.change.getBlockState().getBlock());
+			    	data.data = change.change.getBlockState().getBlock().getMetaFromState(change.change.getBlockState());	
+			    	if(change.change.getNBTTag() != null){
+				    	data.nbt = NBTCompoundPhraser(change.change.getNBTTag());	
 			    	}
-			    	player.addChatMessage(new ChatComponentText(change.getBlockPos().getX() + "  " + change.getBlockPos().getY() + "  " + change.getBlockPos().getZ()));
+			    	player.addChatMessage(new ChatComponentText(change.change.getBlockPos().getX() + "  " + change.change.getBlockPos().getY() + "  " + change.change.getBlockPos().getZ()));
 			    	
 			    	COPYDATA.blocks.add(data);
 		    	
