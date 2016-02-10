@@ -11,6 +11,7 @@ public class ShapeDomeGenerator implements IShapeGenerator {
 		//}
 		
 		GeometryUtils.makeSphere(xSize, ySize, zSize, shapeable, Octant.TOP, fillmode);
+		shapeable.shapeFinished();
 	}
 
 }

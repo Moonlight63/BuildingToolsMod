@@ -4,6 +4,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class RayTracing {
 
@@ -16,8 +18,9 @@ public class RayTracing {
 	}
 	
 	private MovingObjectPosition target = null;
+	@SideOnly(Side.CLIENT)
 	private Minecraft mc = Minecraft.getMinecraft();
-	
+	@SideOnly(Side.CLIENT)
 	public void fire(double distance, boolean hitLiquids){
 		if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY){
 			this.target = mc.objectMouseOver;

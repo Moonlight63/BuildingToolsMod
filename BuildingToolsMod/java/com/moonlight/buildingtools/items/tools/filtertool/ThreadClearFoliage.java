@@ -154,4 +154,9 @@ public class ThreadClearFoliage
     protected Set tempList;
     protected Set filledList;
     protected Set checkedList;
+	@Override
+	public void shapeFinished() {
+		// TODO Auto-generated method stub
+		
+	}
 }

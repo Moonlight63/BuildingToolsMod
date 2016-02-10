@@ -156,5 +156,11 @@ public class ThreadClearWater implements IShapeable, BlockChangeBase{
         return isFinished;
     }
 
+	@Override
+	public void shapeFinished() {
+		// TODO Auto-generated method stub
+		
+	}
+
     
 }

@@ -94,7 +94,7 @@ public class ThreadSimpleFill implements BlockChangeBase, IShapeable{
 						}
 					}
 					else if(replaceBlockState.getBlock() == Blocks.flowing_lava){
-						if(!(world.getBlockState(bpos).getBlock() != Blocks.flowing_lava || world.getBlockState(bpos).getBlock() != Blocks.lava))
+						if(!(world.getBlockState(bpos).getBlock() == Blocks.flowing_lava || world.getBlockState(bpos).getBlock() == Blocks.lava))
 							return;
 					}
 					else{
@@ -155,6 +155,12 @@ public class ThreadSimpleFill implements BlockChangeBase, IShapeable{
 	
 	public boolean isFinished(){
 		return isFinished;
+	}
+
+	@Override
+	public void shapeFinished() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

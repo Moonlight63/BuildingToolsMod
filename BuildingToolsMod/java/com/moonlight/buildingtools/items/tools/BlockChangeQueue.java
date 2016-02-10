@@ -1,12 +1,17 @@
 package com.moonlight.buildingtools.items.tools;
 
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 
 import com.moonlight.buildingtools.helpers.loaders.BlockLoader;
 
@@ -14,33 +19,35 @@ public class BlockChangeQueue {
 	
 	protected World world;
 	protected boolean isFinished = false;
-	public Set<ChangeBlockToThis> blockpos;
+	public Set<ChangeBlockToThis> blockpos = new CopyOnWriteArraySet<ChangeBlockToThis>();
 	protected IBlockState blockStateToPlace = Blocks.stone.getDefaultState();
 	protected IBlockState blockStateToReplace = Blocks.air.getDefaultState();
 	protected boolean replaceAll = false;
 	
 	public BlockChangeQueue(Set<ChangeBlockToThis> tempList, World world, IBlockState stateToReplace){
-		this.blockpos = tempList;
+		this.blockpos.addAll(tempList);
 		this.world = world;
 		this.blockStateToReplace = stateToReplace;
 	}
 	
 	public BlockChangeQueue(Set<ChangeBlockToThis> tempList, World world, boolean replaceAll){
-		this.blockpos = tempList;
+		this.blockpos.addAll(tempList);
 		this.world = world;
 		this.replaceAll = replaceAll;
 		
 	}
 	
-	public void perform(){		
+	public void perform(){
 		for(ChangeBlockToThis bpos : blockpos){
 			
-			if(replaceAll)
-				world.setBlockState(bpos.getBlockPos(), bpos.getBlockState() != BlockLoader.tempBlock.getDefaultState() ? bpos.getBlockState() : Blocks.air.getDefaultState());
-			if(!replaceAll)
-				if(world.getBlockState(bpos.getBlockPos()) == blockStateToReplace){
-					world.setBlockState(bpos.getBlockPos(), bpos.getBlockState() != BlockLoader.tempBlock.getDefaultState() ? bpos.getBlockState() : Blocks.air.getDefaultState());
-				}
+			if(bpos.getBlockState() != BlockLoader.tempBlock.getDefaultState()){
+				if(replaceAll)
+					world.setBlockState(bpos.getBlockPos(), bpos.getBlockState());
+				if(!replaceAll)
+					if(world.getBlockState(bpos.getBlockPos()) == blockStateToReplace){
+						world.setBlockState(bpos.getBlockPos(), bpos.getBlockState());
+					}
+			}
 			
 			if(!world.isAirBlock(bpos.getBlockPos())){
 				TileEntity tileentity = world.getTileEntity(bpos.getBlockPos());

@@ -92,13 +92,19 @@ public class BuildingTools
     		MinecraftForge.EVENT_BUS.register(new BlockChangerGuiHelper(Minecraft.getMinecraft()));
     	
     	scheduler = new ForgeSchedulerService();
+    	
+    	startThreads();
+    	
+    	//playerregistry = proxy.getPlayerRegistry();
+    	System.out.println("\n\n\n\n\n\n\n\n POST INIT \n\n\n\n\n\n\n\n");
+    	//playerregistry.init();
+    	
+    }
+    
+    public static void startThreads(){
     	scheduler.init();
     	scheduler.startAsynchronousTask(new ChangeQueueTask(), 1000);
     	scheduler.startSynchronousTask(new BlockChangeTask(), 0);
-    	
-    	playerregistry = proxy.getPlayerRegistry();
-    	playerregistry.init();
-    	
     }
     
     
@@ -107,7 +113,7 @@ public class BuildingTools
     		return playerregistry;
     	}else{
     		playerregistry = proxy.getPlayerRegistry();
-        	playerregistry.init();
+        	//playerregistry.init();
         	return playerregistry;
     	}
     }

@@ -425,6 +425,12 @@ public class TileEntityGuide extends TileEntity implements IShapeable, IActivate
 		//recreateShape();
 	}
 
+	@Override
+	public void shapeFinished() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	/*@Override
 	public void onNeighbourChanged(Block block) {
 		if (Config.guideRedstone != 0) {

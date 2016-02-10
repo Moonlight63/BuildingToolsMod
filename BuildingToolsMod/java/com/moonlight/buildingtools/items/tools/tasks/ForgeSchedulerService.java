@@ -43,7 +43,7 @@ public class ForgeSchedulerService
     /**
      * {@inheritDoc}
      */
-    protected void destroy()
+    public void destroy()
     {
         stopAllTasks();
         this.tasks = null;
@@ -72,8 +72,9 @@ public class ForgeSchedulerService
         //Thread newthread = new Thread(task, this.getName());
     	//Thread test = new Thread (runnable, "asyncTask");
         //newthread.start();
-        this.exec.execute(task);
         this.asyncTasks.add(task);
+        this.exec.execute(task);
+        
         return Optional.of(task);
     }
 

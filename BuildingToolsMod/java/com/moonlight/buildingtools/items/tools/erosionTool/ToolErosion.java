@@ -22,6 +22,7 @@ import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
 import com.moonlight.buildingtools.items.tools.brushtool.GUIToolBrush;
 import com.moonlight.buildingtools.network.GuiHandler;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
+import com.moonlight.buildingtools.network.packethandleing.SendRaytraceResult;
 import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.IKeyHandler;
@@ -35,6 +36,8 @@ public class ToolErosion extends Item implements IKeyHandler, IOutlineDrawer, IG
 	public BlockPos targetBlock;
 	public EnumFacing targetFace;
 	
+	private RenderHelper renderer;
+	
 	static
     {
         handledKeys = new HashSet<Key.KeyCode>();
@@ -46,33 +49,31 @@ public class ToolErosion extends Item implements IKeyHandler, IOutlineDrawer, IG
 		super();
 		setUnlocalizedName("erosionTool");
 		setCreativeTab(BuildingTools.tabBT);
+		setMaxStackSize(1);
 	}
 	
 	@Override
 	public void onUpdate(ItemStack itemstack, World world, Entity entity, int metadata, boolean bool){		
-//		if(thisStack == null){
-//			thisStack = itemstack;
-//		}
-//		
-//		if(this.world == null){
-//			this.world = world;
-//		}
+		if(world.isRemote){
+			RayTracing.instance().fire(1000, true);
+			MovingObjectPosition target = RayTracing.instance().getTarget();
 		
-		RayTracing.instance().fire(1000, true);
-		MovingObjectPosition target = RayTracing.instance().getTarget();
-		
-		if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){
-			//System.out.println(target.getBlockPos() + "   " + world.getBlockState(target.getBlockPos()) + "    " + target.sideHit);
-			targetBlock = target.getBlockPos();
-			targetFace = target.sideHit;
-			
+			if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){				
+				PacketDispatcher.sendToServer(new SendRaytraceResult(target.getBlockPos(), target.sideHit));
+				this.targetBlock = target.getBlockPos();
+				this.targetFace = target.sideHit;
+			}
+			else{
+				PacketDispatcher.sendToServer(new SendRaytraceResult(null, null));
+				this.targetBlock = null;
+				this.targetFace = null;
+			}
 		}
-		else{
-			targetBlock = null;
-			targetFace = null;
-		}
-		
-		//entity.worldObj.rayTraceBlocks(start, end, stopOnLiquid)
+	}
+	
+	public void setTargetBlock(BlockPos pos, EnumFacing side){
+		this.targetBlock = pos;
+		this.targetFace = side;
 	}
 	
 	public static NBTTagCompound getNBT(ItemStack stack) {
@@ -215,18 +216,26 @@ public class ToolErosion extends Item implements IKeyHandler, IOutlineDrawer, IG
 
 	@Override
 	public boolean drawOutline(DrawBlockHighlightEvent event) {
-		//BlockPos target = event.target.getBlockPos();
 		
 		if(targetBlock != null){
 			ErosionVisuallizer visuallizer = new ErosionVisuallizer(getTargetRadius(event.currentItem), event.player.worldObj, targetBlock, getNBT(event.currentItem).getInteger("preset"));
 			
+			if(renderer == null){
+	    		renderer = new RenderHelper();
+	    	}
+			renderer.startDraw();
+			
 			for(BlockPos pos : visuallizer.getErosionData()){
-				RenderHelper.renderBlockOutline(event.context, event.player, pos, RGBA.Red.setAlpha(150), 2.0f, event.partialTicks);
+				renderer.addOutlineToBuffer(event.player, pos, RGBA.Red.setAlpha(1500), event.partialTicks);
+				//RenderHelper.renderBlockOutline(event.context, event.player, pos, RGBA.Red.setAlpha(150), 2.0f, event.partialTicks);
 			}
 			
 			for(BlockPos pos : visuallizer.getFillData()){
-				RenderHelper.renderBlockOutline(event.context, event.player, pos, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
+				renderer.addOutlineToBuffer(event.player, pos, RGBA.Green.setAlpha(1500), event.partialTicks);
+				//RenderHelper.renderBlockOutline(event.context, event.player, pos, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
 			}
+			
+			renderer.finalizeDraw();
 		}
 		
 		return true;

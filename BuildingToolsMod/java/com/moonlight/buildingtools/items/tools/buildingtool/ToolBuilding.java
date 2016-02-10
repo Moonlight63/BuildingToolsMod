@@ -23,8 +23,11 @@ import com.moonlight.buildingtools.helpers.RenderHelper;
 import com.moonlight.buildingtools.helpers.Shapes;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
+import com.moonlight.buildingtools.items.tools.brushtool.BrushShapeVisualizer;
+import com.moonlight.buildingtools.items.tools.filtertool.FilterShapeVisualizer;
 import com.moonlight.buildingtools.network.GuiHandler;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
+import com.moonlight.buildingtools.network.packethandleing.SendRaytraceResult;
 import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.IItemBlockAffector;
@@ -35,21 +38,19 @@ import com.moonlight.buildingtools.utils.KeyHelper;
 import com.moonlight.buildingtools.utils.RGBA;
 //import com.moonlight.buildingtools.utils.KeyBindsHandler.ETKeyBinding;
 
-public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, IItemBlockAffector, IShapeable, IGetGuiButtonPressed{
+public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, IGetGuiButtonPressed{
 	
 	private static Set<Key.KeyCode> handledKeys;
 	
 	public Set<BlockPos> blocksForOutline;
 	
-	private boolean outlineing = true;
-	
-	//private EnumFacing curside;
-	
 	public BlockPos targetBlock;
 	public EnumFacing targetFace;
 	public World world;
 	
-	public static ItemStack thisStack;
+	public boolean updateVisualizer = true;
+	private BuildingShapeVisualizer visualizer;
+	private RenderHelper renderer;
 	
 	static{
         handledKeys = new HashSet<Key.KeyCode>();
@@ -61,34 +62,36 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
 		super();
 		setUnlocalizedName("buildingTool");
 		setCreativeTab(BuildingTools.tabBT);
+		setMaxStackSize(1);
 	}
 	
 	
 	@Override
 	public void onUpdate(ItemStack itemstack, World world, Entity entity, int metadata, boolean bool){		
-		if(thisStack == null){
-			thisStack = itemstack;
-		}
-		
 		if(this.world == null){
 			this.world = world;
 		}
 		
-		RayTracing.instance().fire(1000, true);
-		MovingObjectPosition target = RayTracing.instance().getTarget();
+		if(world.isRemote){
+			RayTracing.instance().fire(1000, true);
+			MovingObjectPosition target = RayTracing.instance().getTarget();
 		
-		if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){
-			//System.out.println(target.getBlockPos() + "   " + world.getBlockState(target.getBlockPos()) + "    " + target.sideHit);
-			targetBlock = target.getBlockPos();
-			targetFace = target.sideHit;
-			
+			if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){				
+				PacketDispatcher.sendToServer(new SendRaytraceResult(target.getBlockPos(), target.sideHit));
+				this.targetBlock = target.getBlockPos();
+				this.targetFace = target.sideHit;
+			}
+			else{
+				PacketDispatcher.sendToServer(new SendRaytraceResult(null, null));
+				this.targetBlock = null;
+				this.targetFace = null;
+			}
 		}
-		else{
-			targetBlock = null;
-			targetFace = null;
-		}
-		
-		//entity.worldObj.rayTraceBlocks(start, end, stopOnLiquid)
+	}
+	
+	public void setTargetBlock(BlockPos pos, EnumFacing side){
+		this.targetBlock = pos;
+		this.targetFace = side;
 	}
 	
 	public static NBTTagCompound getNBT(ItemStack stack) {
@@ -98,7 +101,6 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
 	        stack.getTagCompound().setInteger("radiusZ", 1);
 	        stack.getTagCompound().setBoolean("placeAll", true);
 	    }
-	    thisStack = stack;
 	    return stack.getTagCompound();	    
 	}
 	
@@ -134,10 +136,11 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
 				if (!worldIn.isRemote) {
 					this.world = worldIn;
 
-					outlineing = false;
 					PlayerWrapper player = BuildingTools.getPlayerRegistry()
 							.getPlayer(playerIn).get();
 
+					
+					System.out.println(getNBT(itemStackIn).getInteger("radiusX"));
 					player.addPending(new ThreadBuildersTool(worldIn,
 							targetBlock, getNBT(itemStackIn).getInteger(
 									"radiusX"), getNBT(itemStackIn).getBoolean(
@@ -145,7 +148,6 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
 									.getInteger("radiusZ"), targetFace,
 							playerIn));
 
-					outlineing = true;
 					return itemStackIn;
 				}
 			}
@@ -210,17 +212,11 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
         
         getNBT(itemStack).setInteger("radiusX", radius);
         
-        //System.out.println(radius + "\n" + yMult + "\n" + (radius * yMult) + "\n" + (Math.round(radius * yMult)));
-        
         if(getNBT(itemStack).getInteger("radiusX") > getNBT(itemStack).getInteger("radiusZ"))
         	getNBT(itemStack).setInteger("radiusZ", (int) zMult == 0 ? 1 : (int) (radius / zMult));
         else
         	getNBT(itemStack).setInteger("radiusZ", (int) zMult == 0 ? 0 : (int) (radius * zMult));
         
-        //if (radius > 25){radius = 25;}
-
-        //getNBT(itemStack).setInteger("radius", radius);
-        //this.setTargetRadius(itemStack, radius);
         PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(itemStack)));
         
     }
@@ -231,101 +227,71 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
     {
         return ToolBuilding.handledKeys;
     }
-	
-	@Override
+    
+    @Override
     public boolean drawOutline(DrawBlockHighlightEvent event)
-    {        
+    {
+
+    	if(visualizer==null){
+    		visualizer = new BuildingShapeVisualizer();
+    	}
+    	if(renderer == null){
+    		renderer = new RenderHelper();
+    	}
+    	
+    	
+    	
         if(targetBlock != null){
+        	
+        	renderer.startDraw();
+        	
 	        if (event.player.isSneaking())
 	        {
-	            RenderHelper.renderBlockOutline(event.context, event.player, targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
+	        	renderer.addOutlineToBuffer(event.player, targetBlock, RGBA.Green.setAlpha(150), event.partialTicks);
+	        	renderer.finalizeDraw();
+	            //RenderHelper.renderBlockOutline(event.context, event.player, targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
 	            return true;
 	        }
-	        
-	        if(outlineing){
-	        
-		        Set<BlockPos> blocks = this.blocksAffected(event.currentItem, world, targetBlock, targetFace, getNBT(event.currentItem).getInteger("radiusX") < 25 ? getNBT(event.currentItem).getInteger("radiusX") : 25, false);
-		        if (blocks == null || blocks.size() == 0) return false;
-		        for (BlockPos blockPos : blocks){
-		        	RenderHelper.renderBlockOutline(event.context, event.player, blockPos, RGBA.White.setAlpha(150), 2.0f, event.partialTicks);
-		        }
-	        
-	        }
+	        	
+        	if(checkVisualizer(visualizer, event.currentItem)){
+                visualizer.RegenShape(
+            			Shapes.Cuboid.generator, 
+            			getNBT(event.currentItem).getInteger("radiusX"),
+            			getNBT(event.currentItem).getInteger("radiusZ"),
+            			true
+        		);
+                updateVisualizer = false;
+        	}
+        	
+        	if(visualizer.finishedGenerating){
+	        	Set<BlockPos> blockData = visualizer.GetBlocks();
+	        	
+	        	if(blockData != null){
+		        	for(BlockPos pos : blockData){
+		        		BlockPos newPos = visualizer.CalcOffset(pos, targetBlock, targetFace, world);
+		        		
+		        		if(newPos != null){
+		        			renderer.addOutlineToBuffer(event.player, newPos, RGBA.White.setAlpha(150), event.partialTicks);
+		        			//RenderHelper.renderBlockOutline(event.context, event.player, newPos, RGBA.White.setAlpha(150), 1.0f, event.partialTicks);
+		        		}
+		        	}
+	        	}
+        	}
+	        renderer.finalizeDraw();
         }
         return true;
     }
-	
-	
-	@Override
-    public Set<BlockPos> blocksAffected(ItemStack item, World world, BlockPos origin, EnumFacing side, int radius, boolean fill)
-    {
-        if (!(item.getItem() instanceof ToolBuilding)) return null;
-        
-        targetBlock = origin;        
-        
-    	blocksForOutline = Sets.newHashSet();
-    	Shapes.Cuboid.generator.generateShape(
-    			getNBT(item).getInteger("radiusX"),
-    			0,
-    			getNBT(item).getInteger("radiusZ"),
-    			this, true);
+    
+    public boolean checkVisualizer(BuildingShapeVisualizer vis, ItemStack stack){
     	
-        if(outlineing){
-        	return blocksForOutline;
-        }
-        else{
-        	return null;
-        }        
+    	return (
+    			(visualizer.replaceblock != getNBT(stack).getBoolean("placeAll")) ||
+    			(visualizer.x != getNBT(stack).getInteger("radiusX")) ||
+    			(visualizer.z != getNBT(stack).getInteger("radiusZ")) ||
+    			updateVisualizer
+    			);
+    	
     }
-
-	@Override
-	public void setBlock(BlockPos bpos) {
-		if(outlineing){
-			if(blocksForOutline == null){
-				blocksForOutline = Sets.newHashSet();
-			}		
-			
-			//if(!blocksForOutline.contains(bpos.add(targetBlock)))
-						
-			if (targetFace == EnumFacing.UP || targetFace == EnumFacing.DOWN){
-				if(!world.isAirBlock(new BlockPos(bpos.getX(), targetFace == EnumFacing.UP ? bpos.getY() : -bpos.getY(), bpos.getZ()).add(targetBlock).offset(targetFace))){
-					return;
-				}
-				if(world.isAirBlock(new BlockPos(bpos.getX(), targetFace == EnumFacing.UP ? bpos.getY() : -bpos.getY(), bpos.getZ()).add(targetBlock))){
-					return;
-				}
-				if(!getNBT(thisStack).getBoolean("placeAll") && world.getBlockState(new BlockPos(bpos.getX(), targetFace == EnumFacing.UP ? bpos.getY() : -bpos.getY(), bpos.getZ()).add(targetBlock)) != world.getBlockState(targetBlock))
-            		return;
-				blocksForOutline.add(new BlockPos(bpos.getX(), targetFace == EnumFacing.UP ? bpos.getY() : -bpos.getY(), bpos.getZ()).add(targetBlock).offset(targetFace));
-			}
-			else if (targetFace == EnumFacing.NORTH || targetFace == EnumFacing.SOUTH){
-				
-				if(!world.isAirBlock(new BlockPos(bpos.getX(), bpos.getZ(), targetFace == EnumFacing.NORTH ? -bpos.getY() : bpos.getY()).add(targetBlock).offset(targetFace))){
-					return;
-				}
-				if(world.isAirBlock(new BlockPos(bpos.getX(), bpos.getZ(), targetFace == EnumFacing.NORTH ? -bpos.getY() : bpos.getY()).add(targetBlock))){
-					return;
-				}
-				if(!getNBT(thisStack).getBoolean("placeAll") && world.getBlockState(new BlockPos(bpos.getX(), bpos.getZ(), targetFace == EnumFacing.NORTH ? -bpos.getY() : bpos.getY()).add(targetBlock)) != world.getBlockState(targetBlock))
-            		return;
-				blocksForOutline.add(new BlockPos(bpos.getX(), bpos.getZ(), targetFace == EnumFacing.NORTH ? -bpos.getY() : bpos.getY()).add(targetBlock).offset(targetFace));
-			}
-			else if (targetFace == EnumFacing.EAST || targetFace == EnumFacing.WEST){
-				
-				if(!world.isAirBlock(new BlockPos(targetFace == EnumFacing.WEST ? -bpos.getY() : bpos.getY(), bpos.getX(), bpos.getZ()).add(targetBlock).offset(targetFace))){
-					return;
-				}
-				if(world.isAirBlock(new BlockPos(targetFace == EnumFacing.WEST ? -bpos.getY() : bpos.getY(), bpos.getX(), bpos.getZ()).add(targetBlock))){
-					return;
-				}
-				if(!getNBT(thisStack).getBoolean("placeAll") && world.getBlockState(new BlockPos(targetFace == EnumFacing.WEST ? -bpos.getY() : bpos.getY(), bpos.getX(), bpos.getZ()).add(targetBlock)) != world.getBlockState(targetBlock))
-            		return;
-				blocksForOutline.add(new BlockPos(targetFace == EnumFacing.WEST ? -bpos.getY() : bpos.getY(), bpos.getX(), bpos.getZ()).add(targetBlock).offset(targetFace));
-			}
-			
-				//blocksForOutline.add(bpos.add(targetBlock));
-		}
-	}
 
 	@Override
 	public void GetGuiButtonPressed(byte buttonID, int mouseButton,
@@ -365,5 +331,14 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
 		//System.out.println(getNBT(stack).getInteger("generator"));
 		
 		PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(stack)));
+		
 	}
+	
+	@Override
+	public int getMetadata(int damage)
+    {
+		updateVisualizer = true;
+        return super.getMetadata(damage);
+    }
+
 }

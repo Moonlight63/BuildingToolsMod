@@ -20,15 +20,14 @@ public class DrawBlockHighlightEventHandler
         boolean drewItem = false;
         
 
-        if (event.currentItem != null)
-        {
-            Item item = event.currentItem.getItem();
-            if (item instanceof IOutlineDrawer)
-            {
-                cancelEvent = ((IOutlineDrawer) item).drawOutline(event);
-                drewItem = !cancelEvent;
-            }
-        }
+		if (event.currentItem != null)
+		{
+			Item item = event.currentItem.getItem();
+			if (item instanceof IOutlineDrawer){
+				cancelEvent = ((IOutlineDrawer) item).drawOutline(event);
+				drewItem = !cancelEvent;
+			}
+		}
 
 //        if (!drewItem && block instanceof IOutlineDrawer)
 //        {

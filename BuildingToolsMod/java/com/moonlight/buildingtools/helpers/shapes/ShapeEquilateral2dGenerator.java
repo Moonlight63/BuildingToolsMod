@@ -54,6 +54,7 @@ public class ShapeEquilateral2dGenerator implements IShapeGenerator {
 			GeometryUtils.line2D(y0, previousX, previousZ, firstX, firstZ, shapeable, fillmode);
 		}
 		
+		shapeable.shapeFinished();
 	}
 
 }

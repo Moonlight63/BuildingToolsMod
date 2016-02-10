@@ -7,6 +7,6 @@ import com.moonlight.buildingtools.utils.Pair;
 
 public interface PlayerRegistryProvider {
 
-	Optional<Pair<EntityPlayer, PlayerWrapper>> get(String name);
+	Optional<Pair<String, PlayerWrapper>> get(String name);
 
 }

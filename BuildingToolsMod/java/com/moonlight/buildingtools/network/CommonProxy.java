@@ -49,12 +49,12 @@ public class CommonProxy {
         /**
          * {@inheritDoc}
          */
-        public Optional<Pair<EntityPlayer, PlayerWrapper>> get(String name)
+        public Optional<Pair<String, PlayerWrapper>> get(String name)
         {
             EntityPlayer player = null;
             for (Object e : MinecraftServer.getServer().getConfigurationManager().playerEntityList)
             {
-            	//System.out.println("\n\n\n\n" + e + "\n\n\n\n");
+            	System.out.println("\n\n\n\n" + e + "\n\n\n\n");
                 EntityPlayer entity = (EntityPlayer) e;
                 if (entity.getName().equals(name))
                 {
@@ -66,7 +66,7 @@ public class CommonProxy {
             {
                 return Optional.absent();
             }
-            return Optional.of(new Pair<EntityPlayer, PlayerWrapper>(player, new PlayerWrapper(player)));
+            return Optional.of(new Pair<String, PlayerWrapper>(player.getName(), new PlayerWrapper(player)));
         }
 
     }

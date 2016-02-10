@@ -616,8 +616,7 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 						}
 					}
 					secondPassSet.add(new SecondPass(new ChangeBlockToThis(newPos, blockState.withProperty(BlockLever.FACING, newfacing), compound), newPos.offset(
-							flipY ? getAdjustedRotation(((BlockLever.EnumOrientation) blockState.getValue(BlockLever.FACING)).getFacing()) : 
-								getAdjustedRotation(((BlockLever.EnumOrientation) blockState.getValue(BlockLever.FACING)).getFacing()).getOpposite()
+							getAdjustedRotation(((BlockLever.EnumOrientation) blockState.getValue(BlockLever.FACING)).getFacing()).getOpposite()
 									)));
 					break;
 					

@@ -19,7 +19,7 @@ public class ForgeTaskAsync extends Task implements Runnable
     {
     	super(runnable, interval);
     	//System.out.println("ForgeTaskAsync.ForgeTaskAsync()");
-       
+        this.scheduler = scheduler;
         this.running = true;
         
         

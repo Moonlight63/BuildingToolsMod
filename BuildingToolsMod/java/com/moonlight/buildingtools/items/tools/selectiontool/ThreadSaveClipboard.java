@@ -21,6 +21,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.ChatComponentText;
 
 import com.google.gson.FieldNamingPolicy;
@@ -83,6 +84,15 @@ public class ThreadSaveClipboard implements BlockChangeBase{
 			    
 			    COPYDATA.maxPos = new int[]{playerwrap.clipboardMaxPos.getX(), playerwrap.clipboardMaxPos.getY(), playerwrap.clipboardMaxPos.getZ()}; 
 			    
+			    
+//			    List<List<NBTData>> tempdata = new LinkedList<List<NBTData>>();
+//			    for(Entity e : playerwrap.currentClipboardEntities){
+//			    	//NBTData data = new NBTData();
+//			    	NBTTagCompound tag = new NBTTagCompound();
+//			    	e.writeToNBTOptional(tag);
+//			    	tempdata.add(NBTCompoundPhraser(tag));
+//			    }
+			    
 			    JSONDATA = gson.toJson(COPYDATA);
 			    
 				File savedirectory = BuildingTools.clipboardSaveDir;
@@ -90,6 +100,7 @@ public class ThreadSaveClipboard implements BlockChangeBase{
 				BufferedWriter os = new BufferedWriter(new FileWriter(new File(savedirectory, savename)));
 				player.addChatMessage(new ChatComponentText("Writing data"));
 				os.write(JSONDATA);
+//				os.write(gson.toJson(tempdata));
 				os.close();
 				player.addChatMessage(new ChatComponentText("Done"));
 				
@@ -208,6 +219,7 @@ public class ThreadSaveClipboard implements BlockChangeBase{
 class CopyData{
 	public int[] maxPos;
 	public List<BlockData> blocks;
+	public List<List<NBTData>> entities;
 }
 
 class BlockData{

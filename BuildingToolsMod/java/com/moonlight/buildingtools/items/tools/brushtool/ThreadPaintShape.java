@@ -245,6 +245,12 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 	public boolean isFinished(){
 		return isFinished;
 	}
+
+	@Override
+	public void shapeFinished() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 
 	

@@ -76,4 +76,10 @@ public class ThreadClearSelection implements BlockChangeBase, IShapeable{
 		return isFinished;
 	}
 
+	@Override
+	public void shapeFinished() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

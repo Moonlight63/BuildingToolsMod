@@ -13,24 +13,27 @@ import com.moonlight.buildingtools.utils.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class PlayerRegistry {
+public class PlayerRegistry_Backup {
 	
-	Map<String, PlayerWrapper> registry;
+	Map<EntityPlayer, PlayerWrapper> registry;
+	Map<String, EntityPlayer> nameRegistry;
 	
 	private PlayerRegistryProvider provider;
 	
 	
-	public PlayerRegistry(PlayerRegistryProvider provider){
+	public PlayerRegistry_Backup(PlayerRegistryProvider provider){
 		this.provider = provider;
 	}
 	
 	public void init(){
 		this.registry = new MapMaker().weakKeys().makeMap();
+        this.nameRegistry = new MapMaker().weakValues().makeMap();
 	}
 	
 	protected void destroy()
     {
         this.registry = null;
+        this.nameRegistry = null;
     }
 	
 	public Optional<PlayerWrapper> getPlayer(String name)
@@ -41,13 +44,13 @@ public class PlayerRegistry {
 	public Optional<PlayerWrapper> getPlayer(EntityPlayer player)
     {
 		//System.out.println("GettingPlayer:  " + player);
-        return this.get(player.getName());
+        return this.getValueFromKey(player);
     }
 	
 	public Iterable<PlayerWrapper> getPlayers()
     {
         List<PlayerWrapper> players = Lists.newArrayList();
-        for (Map.Entry<String, PlayerWrapper> e : this.getRegisteredValues())
+        for (Map.Entry<EntityPlayer, PlayerWrapper> e : this.getRegisteredValues())
         {
             players.add(e.getValue());
         }
@@ -57,26 +60,51 @@ public class PlayerRegistry {
 	public void invalidate(String name)
     {
         this.remove(name);
-    }	
+    }
+	
+	public void invalidate(EntityPlayer player)
+    {
+        this.remove(player);
+    }
 	
 	
-	public void register(String key, PlayerWrapper value)
+	
+	public void register(String name, EntityPlayer key, PlayerWrapper value)
     {
         checkNotNull(key);
         checkNotNull(value);
         this.registry.put(key, value);
+        if (name != null)
+        {
+            this.nameRegistry.put(name, key);
+        }
     }
 	
-	public Optional<PlayerWrapper> getValueFromKey(String key)
+	public Optional<PlayerWrapper> getValueFromKey(EntityPlayer key)
     {
         checkNotNull(key);
         return Optional.fromNullable(this.registry.get(key));
     }
 	
+	public Optional<PlayerWrapper> getValueFromName(String name)
+    {
+        if (!this.nameRegistry.containsKey(name))
+        {
+            return Optional.absent();
+        }
+        EntityPlayer key = this.nameRegistry.get(name);
+        if (!this.registry.containsKey(key))
+        {
+            this.nameRegistry.remove(name);
+            return Optional.absent();
+        }
+        return Optional.of(this.registry.get(key));
+    }
+	
 	public Optional<String> getNameForValue(PlayerWrapper value)
     {
-		String key = null;
-        for (Map.Entry<String, PlayerWrapper> entry : this.registry.entrySet())
+		EntityPlayer key = null;
+        for (Map.Entry<EntityPlayer, PlayerWrapper> entry : this.registry.entrySet())
         {
             if (entry.getValue() == value)
             {
@@ -86,12 +114,23 @@ public class PlayerRegistry {
         }
         if (key != null)
         {
-        	return Optional.of(key);
+            for (Map.Entry<String, EntityPlayer> entry : this.nameRegistry.entrySet())
+            {
+                if (entry.getValue() == key)
+                {
+                    return Optional.of(entry.getKey());
+                }
+            }
         }
         return Optional.absent();
     }
 	
-	public Set<Entry<String, PlayerWrapper>> getRegisteredValues()
+	public Iterable<String> getRegisteredNames()
+    {
+        return this.nameRegistry.keySet();
+    }
+	
+	public Set<Entry<EntityPlayer, PlayerWrapper>> getRegisteredValues()
     {
 		if(this.registry != null)
 			return this.registry.entrySet();
@@ -101,7 +140,12 @@ public class PlayerRegistry {
 		}
     }
 	
-	public void remove(String key)
+	public void remove(String name)
+    {
+        this.nameRegistry.remove(name);
+    }
+	
+	public void remove(EntityPlayer key)
     {
         this.registry.remove(key);
     }
@@ -110,13 +154,13 @@ public class PlayerRegistry {
 	
 	public Optional<PlayerWrapper> get(String name)
     {
-        Optional<PlayerWrapper> value = this.getValueFromKey(name);
+        Optional<PlayerWrapper> value = this.getValueFromName(name);
         if (!value.isPresent())
         {
-            Optional<Pair<String, PlayerWrapper>> v = this.provider.get(name);
+            Optional<Pair<EntityPlayer, PlayerWrapper>> v = this.provider.get(name);
             if (v.isPresent())
             {
-                register(v.get().getKey(), v.get().getValue());
+                register(name, v.get().getKey(), v.get().getValue());
                 return Optional.of(v.get().getValue());
             }
             return Optional.absent();

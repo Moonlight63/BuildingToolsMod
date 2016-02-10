@@ -19,12 +19,10 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.client.config.GuiCheckBox;
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.relauncher.Side;
@@ -46,7 +44,7 @@ public class GUIBlockSelectionFill extends GuiContainer{
     private static final ResourceLocation creativeInventoryTabs = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
     /** Amount scrolled in Creative mode inventory (0 = top, 1 = bottom) */
     private float currentScroll;
-    /** True if the scrollbar is being dragged */
+    /** True if the scroll bar is being dragged */
     private boolean isScrolling;
     /** True if the left mouse button was held down last time drawScreen was called. */
     private boolean wasClicking;
@@ -102,8 +100,20 @@ public class GUIBlockSelectionFill extends GuiContainer{
 	        			return;
 	        		int currID;
 	        		int currDATA;
-	        		if(slotIn.getStack().getItem() instanceof ItemBucket){
-	        			currID = ((ItemBucket)slotIn.getStack().getItem()) == Items.lava_bucket ? Block.getIdFromBlock(Blocks.flowing_lava) : Block.getIdFromBlock(Blocks.flowing_water);
+//	        		if(slotIn.getStack().getItem() instanceof ItemBucket){
+//	        			currID = ((ItemBucket)slotIn.getStack().getItem()) == Items.lava_bucket ? Block.getIdFromBlock(Blocks.flowing_lava) : Block.getIdFromBlock(Blocks.flowing_water);
+//	        			currDATA = 0;
+//	        		}
+	        		if(slotIn.getStack().getIsItemStackEqual(new ItemStack(Items.bucket).setStackDisplayName("Air"))){
+	        			currID = Block.getIdFromBlock(Blocks.air);
+	        			currDATA = 0;
+	        		}
+	        		else if(slotIn.getStack().getIsItemStackEqual(new ItemStack(Items.water_bucket).setStackDisplayName("Water"))){
+	        			currID = Block.getIdFromBlock(Blocks.flowing_water);
+	        			currDATA = 0;
+	        		}
+	        		else if(slotIn.getStack().getIsItemStackEqual(new ItemStack(Items.lava_bucket).setStackDisplayName("Lava"))){
+	        			currID = Block.getIdFromBlock(Blocks.flowing_lava);
 	        			currDATA = 0;
 	        		}
 	        		else{
@@ -214,11 +224,14 @@ public class GUIBlockSelectionFill extends GuiContainer{
     			Item.getItemFromBlock(b).getSubItems(Item.getItemFromBlock(b), null, blockListMeta);
     	}
         
-        blockList.add(new ItemStack(Items.water_bucket));
-        blockList.add(new ItemStack(Items.lava_bucket));
         
-        blockListMeta.add(new ItemStack(Items.water_bucket));
-        blockListMeta.add(new ItemStack(Items.lava_bucket));
+        blockList.add(new ItemStack(Items.bucket).setStackDisplayName("Air"));
+        blockList.add(new ItemStack(Items.water_bucket).setStackDisplayName("Water"));
+        blockList.add(new ItemStack(Items.lava_bucket).setStackDisplayName("Lava"));
+        
+        blockListMeta.add(new ItemStack(Items.bucket).setStackDisplayName("Air"));
+        blockListMeta.add(new ItemStack(Items.water_bucket).setStackDisplayName("Water"));
+        blockListMeta.add(new ItemStack(Items.lava_bucket).setStackDisplayName("Lava"));
         
         
         this.updateCreativeSearch();        
@@ -242,11 +255,25 @@ public class GUIBlockSelectionFill extends GuiContainer{
 	        	for(int i = 0; i < blockFillList.size(); i++){
 	        		
 	        		System.out.println("SIZE = " + blockFillList.size());
-	        		ID.add(i, 
-	        				blockFillList.get(i).getItem() instanceof ItemBucket ? (
-	        						blockFillList.get(i).getItem() == Items.lava_bucket ? Block.getIdFromBlock(Blocks.flowing_lava) : Block.getIdFromBlock(Blocks.flowing_water)) :
-	        				Block.getIdFromBlock(Block.getBlockFromItem(blockFillList.get(i).getItem()))
-	        				);
+	        		
+	        		if(blockFillList.get(i).getIsItemStackEqual(new ItemStack(Items.bucket).setStackDisplayName("Air"))){
+	        			ID.add(i, Block.getIdFromBlock(Blocks.air));
+	        		}
+	        		else if(blockFillList.get(i).getIsItemStackEqual(new ItemStack(Items.water_bucket).setStackDisplayName("Water"))){
+	        			ID.add(i, Block.getIdFromBlock(Blocks.flowing_water));
+	        		}
+	        		else if(blockFillList.get(i).getIsItemStackEqual(new ItemStack(Items.lava_bucket).setStackDisplayName("Lava"))){
+	        			ID.add(i, Block.getIdFromBlock(Blocks.flowing_lava));
+	        		}
+	        		else{
+	        			ID.add(i, Block.getIdFromBlock(Block.getBlockFromItem(blockFillList.get(i).getItem())));
+	        		}
+	        		
+//	        		ID.add(i, 
+//	        				blockFillList.get(i).getItem() instanceof ItemBucket ? (
+//	        						blockFillList.get(i).getItem() == Items.lava_bucket ? Block.getIdFromBlock(Blocks.flowing_lava) : Block.getIdFromBlock(Blocks.flowing_water)) :
+//	        				Block.getIdFromBlock(Block.getBlockFromItem(blockFillList.get(i).getItem()))
+//	        				);
 	        		META.add(i, blockFillList.get(i).getMetadata());
 	        		CHANCE.add(i, blockFillList.get(i).stackSize);
 	        	}

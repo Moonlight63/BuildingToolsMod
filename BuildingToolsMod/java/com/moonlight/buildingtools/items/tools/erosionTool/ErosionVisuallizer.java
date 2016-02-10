@@ -259,4 +259,10 @@ public class ErosionVisuallizer implements IShapeable{
 	    }
 	}
 
+	@Override
+	public void shapeFinished() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

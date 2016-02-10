@@ -21,7 +21,7 @@ public class ShapeCylinderGenerator implements IShapeGenerator {
 		}*/
 		
 		gen(radX, radZ, height, fillmode, shapeable);
-
+		shapeable.shapeFinished();
 	}
 	
 	public void gen(int radiusX, int radiusZ, int height, boolean fill, IShapeable shapeable){

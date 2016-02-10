@@ -116,4 +116,9 @@ public class ThreadTopsoil
     protected boolean currentlyCalculating;
     protected Set tempList;
     protected Set checkedList;
+	@Override
+	public void shapeFinished() {
+		// TODO Auto-generated method stub
+		
+	}
 }

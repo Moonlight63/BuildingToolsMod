@@ -8,6 +8,9 @@ import net.minecraft.block.BlockDoor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityHanging;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityItemFrame;
+import net.minecraft.entity.item.EntityPainting;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -101,10 +104,24 @@ public class ThreadCopyToClipboard implements BlockChangeBase, IShapeable{
 				if(!entitiesInBox.isEmpty()){
 					for(Entity e : entitiesInBox){
 						if (e instanceof EntityHanging){
+							//Class<? extends EntityHanging> tempEntclass = e.getClass();
+							
+							//e.setDead();
+							
+							
 							EntityHanging tempEnt = (EntityHanging) e;
+//							if(e instanceof EntityItemFrame){
+//								tempEnt = new EntityItemFrame(world, e.getPosition(), e.func_181012_aH());
+//							}
+//							else{
+//								tempEnt = new EntityPainting(world, e.getPosition(), e.func_181012_aH(), ((EntityPainting)e).art.title);
+//							}
+//							
+							
+									//(EntityHanging) e;
 							NBTTagCompound entNBT = new NBTTagCompound();
 							
-							((EntityHanging) e).writeEntityToNBT(entNBT);
+							tempEnt.writeEntityToNBT(entNBT);
 							
 							entNBT.setInteger("TileX", ((EntityHanging) e).getHangingPosition().getX() - structureBoundingBox.minX);
 							entNBT.setInteger("TileY", ((EntityHanging) e).getHangingPosition().getY() - structureBoundingBox.minY);
@@ -113,6 +130,8 @@ public class ThreadCopyToClipboard implements BlockChangeBase, IShapeable{
 							tempEnt.readEntityFromNBT(entNBT);
 							
 							entitySet.add(tempEnt);
+							
+							world.spawnEntityInWorld(e);
 							//if(!checkedEntityPos.contains(((EntityHanging)e).func_174857_n().subtract(new BlockPos(structureBoundingBox.minX, structureBoundingBox.minY, structureBoundingBox.minZ)).add(copyToPos))){
 							//	checkedEntityPos.add(((EntityHanging)e).func_174857_n().subtract(new BlockPos(structureBoundingBox.minX, structureBoundingBox.minY, structureBoundingBox.minZ)).add(copyToPos));
 								//entitySet.add(new EntityPass(((EntityHanging)e).func_174857_n().subtract(new BlockPos(structureBoundingBox.minX, structureBoundingBox.minY, structureBoundingBox.minZ)), e, e.getHorizontalFacing().getOpposite()));
@@ -127,13 +146,16 @@ public class ThreadCopyToClipboard implements BlockChangeBase, IShapeable{
 				selectionCalculated = true;
 				
 				PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(entity).get();
+				entity.addChatComponentMessage(new ChatComponentText(player.toString()));
+				entity.addChatComponentMessage(new ChatComponentText(player.currentCopyClipboard.toString()));
 				player.currentCopyClipboard.clear();
 				for(ChangeBlockToThis change : selectionSet){
 					player.currentCopyClipboard.add(new BlockInfoContainer(change));
 				}
+				entity.addChatComponentMessage(new ChatComponentText(player.currentCopyClipboard.toString()));
 				player.currentClipboardEntities = entitySet;
 				player.clipboardMaxPos = new BlockPos(structureBoundingBox.maxX, structureBoundingBox.maxY, structureBoundingBox.maxZ).add(new BlockPos(-structureBoundingBox.minX, -structureBoundingBox.minY, -structureBoundingBox.minZ));
-				
+				entity.addChatComponentMessage(new ChatComponentText(player.clipboardMaxPos.toString()));
 				currentlyCalculating = false;
 				
 			}
@@ -158,6 +180,12 @@ public class ThreadCopyToClipboard implements BlockChangeBase, IShapeable{
 	
 	public boolean isFinished(){
 		return isFinished;
+	}
+
+	@Override
+	public void shapeFinished() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

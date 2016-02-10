@@ -25,6 +25,7 @@ public class ToolUndo extends Item{
 		super();
 		setUnlocalizedName("undoTool");
 		setCreativeTab(BuildingTools.tabBT);
+		setMaxStackSize(1);
 	}
 	
 	@SuppressWarnings("unchecked")

@@ -1,8 +1,3 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   ToolFilter.java
-
 package com.moonlight.buildingtools.items.tools.filtertool;
 
 import java.util.HashSet;
@@ -42,34 +37,36 @@ import com.moonlight.buildingtools.helpers.RenderHelper;
 import com.moonlight.buildingtools.helpers.Shapes;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
+import com.moonlight.buildingtools.items.tools.buildingtool.BuildingShapeVisualizer;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
+import com.moonlight.buildingtools.network.packethandleing.SendRaytraceResult;
 import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.IItemBlockAffector;
 import com.moonlight.buildingtools.utils.IKeyHandler;
 import com.moonlight.buildingtools.utils.IOutlineDrawer;
+import com.moonlight.buildingtools.utils.Key;
 import com.moonlight.buildingtools.utils.Key.KeyCode;
 import com.moonlight.buildingtools.utils.KeyHelper;
 import com.moonlight.buildingtools.utils.RGBA;
 
-// Referenced classes of package com.moonlight.buildingtools.items.tools.filtertool:
-//            ThreadTopsoil, ThreadClearWater, ThreadClearFoliage
-
 public class ToolFilter extends Item
-    implements IKeyHandler, IOutlineDrawer, IItemBlockAffector, IShapeable, IGetGuiButtonPressed
+    implements IKeyHandler, IOutlineDrawer, /*IItemBlockAffector, IShapeable,*/ IGetGuiButtonPressed
 {
 	
 	public EnumFacing targetFace;
-	private static Set handledKeys;
-    public Set blocksForOutline;
-    private boolean outlineing;
+	private static Set<Key.KeyCode> handledKeys;
     public BlockPos targetBlock;
     public World world;
-    public static ItemStack thisStack;
+    
+    public boolean updateVisualizer = true;
+	private FilterShapeVisualizer visualizer;
+	
+	private RenderHelper renderer;
 
     static 
     {
-        handledKeys = new HashSet();
+        handledKeys = new HashSet<KeyCode>();
         handledKeys.add(com.moonlight.buildingtools.utils.Key.KeyCode.TOOL_INCREASE);
         handledKeys.add(com.moonlight.buildingtools.utils.Key.KeyCode.TOOL_DECREASE);
     }
@@ -77,9 +74,9 @@ public class ToolFilter extends Item
 
     public ToolFilter()
     {
-        outlineing = true;
         setUnlocalizedName("filterTool");
         setCreativeTab(BuildingTools.tabBT);
+        setMaxStackSize(1);
     }
 
     public static NBTTagCompound getNBT(ItemStack stack)
@@ -94,35 +91,35 @@ public class ToolFilter extends Item
             stack.getTagCompound().setInteger("topsoildepth", 1);
             stack.getTagCompound().setInteger("fillorclear", 1);
         }
-        thisStack = stack;
         return stack.getTagCompound();
     }
     
     @Override
 	public void onUpdate(ItemStack itemstack, World world, Entity entity, int metadata, boolean bool){		
-		if(thisStack == null){
-			thisStack = itemstack;
-		}
-		
 		if(this.world == null){
 			this.world = world;
 		}
 		
-		RayTracing.instance().fire(1000, true);
-		MovingObjectPosition target = RayTracing.instance().getTarget();
+		if(world.isRemote){
+			RayTracing.instance().fire(1000, true);
+			MovingObjectPosition target = RayTracing.instance().getTarget();
 		
-		if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){
-			//System.out.println(target.getBlockPos() + "   " + world.getBlockState(target.getBlockPos()) + "    " + target.sideHit);
-			targetBlock = target.getBlockPos();
-			targetFace = target.sideHit;
-			
+			if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){				
+				PacketDispatcher.sendToServer(new SendRaytraceResult(target.getBlockPos(), target.sideHit));
+				this.targetBlock = target.getBlockPos();
+				this.targetFace = target.sideHit;
+			}
+			else{
+				PacketDispatcher.sendToServer(new SendRaytraceResult(null, null));
+				this.targetBlock = null;
+				this.targetFace = null;
+			}
 		}
-		else{
-			targetBlock = null;
-			targetFace = null;
-		}
-		
-		//entity.worldObj.rayTraceBlocks(start, end, stopOnLiquid)
+	}
+    
+    public void setTargetBlock(BlockPos pos, EnumFacing side){
+		this.targetBlock = pos;
+		this.targetFace = side;
 	}
 
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean check)
@@ -142,11 +139,11 @@ public class ToolFilter extends Item
 	        if(!worldIn.isRemote)
 	        {
 	            world = worldIn;
-	            outlineing = false;
 	            PlayerWrapper player = (PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
 	            System.out.println("FilterToolUsed");
 	            if(itemStackIn.getTagCompound().getInteger("filter") == 1)
-	                player.addPending(new ThreadTopsoil(worldIn, targetBlock, getNBT(itemStackIn).getInteger("radiusX"), getNBT(itemStackIn).getInteger("radiusY"), getNBT(itemStackIn).getInteger("radiusZ"), getNBT(itemStackIn).getInteger("topsoildepth"), targetFace, playerIn));
+	            	player.addPending(new ThreadBonemeal(worldIn, targetBlock, getNBT(itemStackIn).getInteger("radiusX"), getNBT(itemStackIn).getInteger("radiusY"), getNBT(itemStackIn).getInteger("radiusZ"), targetFace, playerIn));
+	                //player.addPending(new ThreadTopsoil(worldIn, targetBlock, getNBT(itemStackIn).getInteger("radiusX"), getNBT(itemStackIn).getInteger("radiusY"), getNBT(itemStackIn).getInteger("radiusZ"), getNBT(itemStackIn).getInteger("topsoildepth"), targetFace, playerIn));
 	            else
 	            if(itemStackIn.getTagCompound().getInteger("filter") == 2)
 	                player.addPending(new ThreadClearWater(worldIn, targetBlock, getNBT(itemStackIn).getInteger("radiusX"), getNBT(itemStackIn).getInteger("radiusY"), getNBT(itemStackIn).getInteger("radiusZ"), getNBT(itemStackIn).getInteger("fillorclear") != 1, targetFace, playerIn));
@@ -154,7 +151,6 @@ public class ToolFilter extends Item
 	            if(itemStackIn.getTagCompound().getInteger("filter") == 3)
 	                player.addPending(new ThreadClearFoliage(worldIn, targetBlock, getNBT(itemStackIn).getInteger("radiusX"), getNBT(itemStackIn).getInteger("radiusY"), getNBT(itemStackIn).getInteger("radiusZ"), getNBT(itemStackIn).getInteger("fillorclear") != 1, targetFace, playerIn));
 	            System.out.println(world.getBlockState(targetBlock).getBlock().getClass());
-	            outlineing = true;
 	        }
     	}
     	
@@ -221,60 +217,67 @@ public class ToolFilter extends Item
     @Override
     public boolean drawOutline(DrawBlockHighlightEvent event)
     {        
+    	
+    	if(visualizer==null){
+    		visualizer = new FilterShapeVisualizer();
+    	}
+    	
+    	if(renderer == null){
+    		renderer = new RenderHelper();
+    	}
+    	
         if(targetBlock != null){
+        	
+        	renderer.startDraw();
+        	
 	        if (event.player.isSneaking())
 	        {
-	            RenderHelper.renderBlockOutline(event.context, event.player, targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
+	        	renderer.addOutlineToBuffer(event.player, targetBlock, RGBA.Green.setAlpha(150), event.partialTicks);
+	        	renderer.finalizeDraw();
+	        	//RenderHelper.renderBlockOutline(event.context, event.player, targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
 	            return true;
 	        }
 	        
-	        if(outlineing){
+	        if(checkVisualizer(visualizer, event.currentItem)){
+                visualizer.RegenShape(
+            			Shapes.Cuboid.generator, 
+            			getNBT(event.currentItem).getInteger("radiusX"),
+            			getNBT(event.currentItem).getInteger("radiusY"),
+            			getNBT(event.currentItem).getInteger("radiusZ"),
+            			getNBT(event.currentItem).getInteger("filter")
+        		);
+                updateVisualizer = false;
+        	}
 	        
-		        Set<BlockPos> blocks = this.blocksAffected(event.currentItem, world, targetBlock, targetFace, getNBT(event.currentItem).getInteger("radiusX") < 25 ? getNBT(event.currentItem).getInteger("radiusX") : 25, false);
-		        if (blocks == null || blocks.size() == 0) return false;
-		        for (BlockPos blockPos : blocks){
-		        	RenderHelper.renderBlockOutline(event.context, event.player, blockPos, RGBA.White.setAlpha(150), 2.0f, event.partialTicks);
-		        }
-	        
-	        }
+	        if(visualizer.finishedGenerating){
+	        	Set<BlockPos> blockData = visualizer.GetBlocks();
+	        	
+	        	if(blockData != null){
+		        	for(BlockPos pos : blockData){
+		        		BlockPos newPos = visualizer.CalcOffset(pos, targetBlock, targetFace, world);
+		        		
+		        		if(newPos != null){
+		        			renderer.addOutlineToBuffer(event.player, newPos, RGBA.White.setAlpha(150), event.partialTicks);
+		        			//RenderHelper.renderBlockOutline(event.context, event.player, newPos, RGBA.White.setAlpha(150), 1.0f, event.partialTicks);
+		        		}
+		        	}
+	        	}
+        	}
+	        renderer.finalizeDraw();
         }
         return true;
     }
-
-    public Set blocksAffected(ItemStack item, World world, BlockPos origin, EnumFacing side, int radius, boolean fill)
-    {
-        if(!(item.getItem() instanceof ToolFilter))
-            return null;
-        targetBlock = origin;
-        blocksForOutline = Sets.newHashSet();
-        Shapes.Cuboid.generator.generateShape(getNBT(item).getInteger("radiusX"), getNBT(item).getInteger("radiusY"), getNBT(item).getInteger("radiusZ"), this, true);
-        if(outlineing)
-            return blocksForOutline;
-        else
-            return null;
-    }
-
-    public void setBlock(BlockPos bpos)
-    {
-        if(outlineing)
-        {
-            if(blocksForOutline == null)
-                blocksForOutline = Sets.newHashSet();
-            if(getNBT(thisStack).getInteger("filter") == 1)
-            {
-                if(!world.isAirBlock(bpos.add(targetBlock)) && world.isAirBlock(bpos.add(targetBlock).up()))
-                    blocksForOutline.add(new BlockPos(bpos.add(targetBlock)));
-            } else
-            if(getNBT(thisStack).getInteger("filter") == 2)
-            {
-                if(!world.isAirBlock(bpos.add(targetBlock)) && (
-                		world.getBlockState(bpos.add(targetBlock)) == Blocks.water.getDefaultState() || world.getBlockState(bpos.add(targetBlock)) == Blocks.flowing_water.getDefaultState() || world.getBlockState(bpos.add(targetBlock)) == Blocks.lava.getDefaultState() || world.getBlockState(bpos.add(targetBlock)) == Blocks.flowing_lava.getDefaultState())
-                		&& world.getBlockState(bpos.add(targetBlock).up()) != Blocks.water.getDefaultState() && world.getBlockState(bpos.add(targetBlock).up()) != Blocks.flowing_water.getDefaultState() && world.getBlockState(bpos.add(targetBlock).up()) != Blocks.lava.getDefaultState() && world.getBlockState(bpos.add(targetBlock).up()) != Blocks.flowing_lava.getDefaultState())
-                    blocksForOutline.add(new BlockPos(bpos.add(targetBlock)));
-            } else
-            if(getNBT(thisStack).getInteger("filter") == 3 && ((world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockDoublePlant) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockLeaves) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockBush) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockTallGrass) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockCrops) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockFlower) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockVine) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockReed) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockSapling) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockWeb) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockCactus) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockLilyPad) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockSign) || (world.getBlockState(bpos.add(targetBlock)).getBlock() instanceof BlockStem)))
-                blocksForOutline.add(new BlockPos(bpos.add(targetBlock)));
-        }
+    
+    public boolean checkVisualizer(FilterShapeVisualizer vis, ItemStack stack){
+    	
+    	return (
+    			(visualizer.filterType != getNBT(stack).getInteger("filter")) ||
+    			(visualizer.x != getNBT(stack).getInteger("radiusX")) ||
+    			(visualizer.y != getNBT(stack).getInteger("radiusY")) ||
+    			(visualizer.z != getNBT(stack).getInteger("radiusZ")) ||
+    			updateVisualizer
+    			);
+    	
     }
 
     public void GetGuiButtonPressed(byte buttonID, int mouseButton, boolean isCtrlDown, boolean isAltDown, boolean isShiftDown, ItemStack stack)
@@ -353,6 +356,20 @@ public class ToolFilter extends Item
             getNBT(stack).setInteger("fillorclear", fillorclear);
         }
         PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(stack)));
+        updateVisualizer = true;
     }
+    
+    @Override
+	public int getMetadata(int damage)
+    {
+		updateVisualizer = true;
+        return super.getMetadata(damage);
+    }
+
+//	@Override
+//	public void shapeFinished() {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 }

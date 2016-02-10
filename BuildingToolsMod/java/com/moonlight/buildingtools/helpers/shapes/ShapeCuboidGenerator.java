@@ -87,5 +87,6 @@ public class ShapeCuboidGenerator implements IShapeGenerator {
 			
 		
 		}
+		shapeable.shapeFinished();
 	}
 }

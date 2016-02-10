@@ -11,5 +11,6 @@ public class ShapeSphereGenerator implements IShapeGenerator {
 		//}
 		
 		GeometryUtils.makeSphere(radiusX, radiusY, radiusZ, shapeable, Octant.ALL, fillmode);
+		shapeable.shapeFinished();
 	}
 }

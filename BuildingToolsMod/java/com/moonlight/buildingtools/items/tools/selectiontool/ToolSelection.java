@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -14,6 +15,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.common.DimensionManager;
 
 import com.google.common.collect.Lists;
 import com.moonlight.buildingtools.BuildingTools;
@@ -22,6 +24,7 @@ import com.moonlight.buildingtools.helpers.RenderHelper;
 import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
 import com.moonlight.buildingtools.network.GuiHandler;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
+import com.moonlight.buildingtools.network.packethandleing.SendRaytraceResult;
 import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.IOutlineDrawer;
@@ -31,7 +34,7 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 	
 	public BlockPos targetBlock;
 	public EnumFacing targetFace;
-	public World world;
+	//public World world;
 	public EntityPlayer currPlayer;
 	public static ItemStack thisStack;
 	
@@ -42,10 +45,13 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 	
 	public static ThreadPasteClipboard copyThread;
 	
+	private RenderHelper renderer;
+	
 	public ToolSelection(){
 		super();
 		setUnlocalizedName("selectionTool");
 		setCreativeTab(BuildingTools.tabBT);
+		setMaxStackSize(1);
 	}
 	
 	public static NBTTagCompound getNBT(ItemStack stack) {
@@ -76,21 +82,26 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 			thisStack = itemstack;
 		}
 		
-		if(this.world == null){
-			this.world = world;
-		}
+		if(world.isRemote){
+			RayTracing.instance().fire(1000, true);
+			MovingObjectPosition target = RayTracing.instance().getTarget();
 		
-		RayTracing.instance().fire(1000, true);
-		MovingObjectPosition target = RayTracing.instance().getTarget();
-		
-		if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){
-			targetBlock = target.getBlockPos();
-			targetFace = target.sideHit;
+			if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){				
+				PacketDispatcher.sendToServer(new SendRaytraceResult(target.getBlockPos(), target.sideHit));
+				this.targetBlock = target.getBlockPos();
+				this.targetFace = target.sideHit;
+			}
+			else{
+				PacketDispatcher.sendToServer(new SendRaytraceResult(null, null));
+				this.targetBlock = null;
+				this.targetFace = null;
+			}
 		}
-		else{
-			targetBlock = null;
-			targetFace = null;
-		}
+	}
+	
+	public void setTargetBlock(BlockPos pos, EnumFacing side){
+		this.targetBlock = pos;
+		this.targetFace = side;
 	}
 	
 	@Override
@@ -119,6 +130,7 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 					}
 					else if(getNBT(itemStackIn).getBoolean("bpos1Set") && getNBT(itemStackIn).getBoolean("bpos2Set")){
 						setBlockPos1(itemStackIn, targetBlock);
+						getNBT(itemStackIn).setBoolean("bpos2Set", false);
 					}
 					
 				}
@@ -187,7 +199,7 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
     public boolean drawOutline(DrawBlockHighlightEvent event)
     {
 		//BlockPos target = event.target.getBlockPos();
-
+		
 		if(targetBlock!=null){
 			
 	        if (event.player.isSneaking())
@@ -237,6 +249,7 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 		thisStack = stack;
 		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
 		
+		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimensionId());
 		
 		if (buttonID == 1) {
 			System.out.println("Copying");
@@ -383,6 +396,7 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 		
 		IBlockState fillBlock = Block.getBlockById(ID).getStateFromMeta(DATA);
 		
+		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimensionId());
 		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
 		player.addPending(new ThreadSimpleFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, fillBlock));
 	}
@@ -397,8 +411,7 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 			blockStates.add(Block.getBlockById(ID.get(i)).getStateFromMeta(DATA.get(i)));
 		}
 		
-		//IBlockState fillBlock = Block.getBlockById(ID).getStateFromMeta(DATA);
-		
+		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimensionId());
 		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
 		player.addPending(new ThreadAdvancedFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, blockStates, COUNT));
 		//player.addPending(new ThreadSimpleFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, fillBlock));
@@ -410,6 +423,7 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 		IBlockState fillBlock = Block.getBlockById(ID).getStateFromMeta(DATA);
 		IBlockState replaceBlock = Block.getBlockById(ID2).getStateFromMeta(DATA2);
 		
+		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimensionId());
 		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
 		player.addPending(new ThreadSimpleFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, fillBlock, replaceBlock));
 	}
@@ -433,6 +447,7 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 		
 		//IBlockState fillBlock = Block.getBlockById(ID).getStateFromMeta(DATA);
 		
+		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimensionId());
 		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
 		player.addPending(new ThreadAdvancedFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, blockStates, blockStatesReplace, COUNT));
 		//player.addPending(new ThreadSimpleFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, fillBlock));

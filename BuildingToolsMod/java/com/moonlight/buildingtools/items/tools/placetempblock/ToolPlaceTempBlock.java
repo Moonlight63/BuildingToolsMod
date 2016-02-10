@@ -8,49 +8,69 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.helpers.RayTracing;
+import com.moonlight.buildingtools.helpers.RenderHelper;
 import com.moonlight.buildingtools.helpers.loaders.BlockLoader;
+import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
+import com.moonlight.buildingtools.network.packethandleing.SendRaytraceResult;
+import com.moonlight.buildingtools.utils.IOutlineDrawer;
+import com.moonlight.buildingtools.utils.RGBA;
 
-public class ToolPlaceTempBlock extends Item{
+public class ToolPlaceTempBlock extends Item implements IOutlineDrawer{
 	
-	public static BlockPos targetBlock;
-	public static EnumFacing targetFace;
-	public static World world;
+	public BlockPos targetBlock;
+	public EnumFacing targetFace;
+	public World world;
 	
-	public static ItemStack thisStack;
+	public ItemStack thisStack;
+	
+	private RenderHelper renderer;
 	
 	public ToolPlaceTempBlock(){
 		super();
 		setUnlocalizedName("tempblockplacer");
 		setCreativeTab(BuildingTools.tabBT);
+		setMaxStackSize(1);
 	}
 	
 	@Override
 	public void onUpdate(ItemStack itemstack, World world, Entity entity, int metadata, boolean bool){
 		
-		RayTracing.instance().fire(1000, true);
-		MovingObjectPosition target = RayTracing.instance().getTarget();
+		if(world.isRemote){
+			RayTracing.instance().fire(1000, true);
+			MovingObjectPosition target = RayTracing.instance().getTarget();
 		
-		if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){
-			targetBlock = target.getBlockPos();
-			targetFace = target.sideHit;
-		}
-		else{
-			targetBlock = null;
-			targetFace = null;
+			if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){				
+				PacketDispatcher.sendToServer(new SendRaytraceResult(target.getBlockPos(), target.sideHit));
+				this.targetBlock = target.getBlockPos();
+				this.targetFace = target.sideHit;
+			}
+			else{
+				PacketDispatcher.sendToServer(new SendRaytraceResult(null, null));
+				this.targetBlock = null;
+				this.targetFace = null;
+			}
 		}
 		
+	}
+	
+	public void setTargetBlock(BlockPos pos, EnumFacing side){
+		this.targetBlock = pos;
+		this.targetFace = side;
 	}
 	
 	@Override
 	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
     {
 		if(!worldIn.isRemote){
-			if(playerIn.isSneaking())
-				if(targetBlock != null)
+			if(playerIn.isSneaking()){
+				if(targetBlock != null){
 					worldIn.setBlockState(targetBlock.offset(targetFace), BlockLoader.tempBlock.getDefaultState());
+				}
+			}
 			else
 				worldIn.setBlockState(playerIn.getPosition(), BlockLoader.tempBlock.getDefaultState());
 		}
@@ -70,6 +90,13 @@ public class ToolPlaceTempBlock extends Item{
 		
 		onItemRightClick(stack, worldIn, playerIn);
 		
+		return true;
+	}
+
+	@Override
+	public boolean drawOutline(DrawBlockHighlightEvent event) {
+		if(targetBlock != null)
+			RenderHelper.renderBlockOutline(event.context, event.player, targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
 		return true;
 	}
 	

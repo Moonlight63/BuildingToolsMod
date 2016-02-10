@@ -24,7 +24,7 @@ public class ChangeQueueTask implements Runnable{
         	for (PlayerWrapper p : BuildingTools.getPlayerRegistry().getPlayers()){
         		if(!p.hasPendingChanges())
         			continue;                
-        		
+        		//System.out.println(p);
             	if(p.pendingChangeQueue == null){
             		if(p.getNextPendingChange().get().isFinished()){
             			p.clearNextPending(false);

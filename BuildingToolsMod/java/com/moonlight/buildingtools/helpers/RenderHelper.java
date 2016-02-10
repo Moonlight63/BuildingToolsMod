@@ -1,26 +1,108 @@
 package com.moonlight.buildingtools.helpers;
 
+import java.nio.DoubleBuffer;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
+import com.jcraft.jogg.Buffer;
 import com.moonlight.buildingtools.utils.RGBA;
 
 public class RenderHelper
 {
-    // Similar to vanilla's "drawSelectionBox" with some customisability and without block checks
-    public static void renderBlockOutline(RenderGlobal context, EntityPlayer entityPlayer, BlockPos blockpos, RGBA colour, float lineWidth, float partialTicks){
-        Block block = entityPlayer.worldObj.getBlockState(blockpos).getBlock();
+	
+	public Tessellator tessellator;
+	public WorldRenderer worldrenderer;
+	
+	public RenderHelper(){
+		tessellator = new Tessellator(2097152*4);
+        worldrenderer = tessellator.getWorldRenderer();
+	}
+	
+	public void addOutlineToBuffer(EntityPlayer entityPlayer, BlockPos blockpos, RGBA colour, float partialTicks){
+		if(entityPlayer.worldObj == null)
+        	return;
+    	Block block = entityPlayer.worldObj.getBlockState(blockpos).getBlock();
         block.setBlockBoundsBasedOnState(entityPlayer.worldObj, blockpos);
+		
+        float f1 = 0.02F;
+
+        double d0 = entityPlayer.lastTickPosX + (entityPlayer.posX - entityPlayer.lastTickPosX) * (double) partialTicks;
+        double d1 = entityPlayer.lastTickPosY + (entityPlayer.posY - entityPlayer.lastTickPosY) * (double) partialTicks;
+        double d2 = entityPlayer.lastTickPosZ + (entityPlayer.posZ - entityPlayer.lastTickPosZ) * (double) partialTicks;
+        
+        AxisAlignedBB box = block.getSelectedBoundingBox(entityPlayer.worldObj, blockpos).expand(f1, f1, f1).offset(-d0, -d1, -d2);
+        
+        worldrenderer.pos(box.minX, box.minY, box.minZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.minX, box.maxY, box.minZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.maxX, box.minY, box.minZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.maxX, box.maxY, box.minZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.maxX, box.minY, box.maxZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.maxX, box.maxY, box.maxZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.minX, box.minY, box.maxZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.minX, box.maxY, box.maxZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        
+        worldrenderer.pos(box.minX, box.minY, box.minZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.maxX, box.minY, box.minZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.maxX, box.minY, box.minZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.maxX, box.minY, box.maxZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.maxX, box.minY, box.maxZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.minX, box.minY, box.maxZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.minX, box.minY, box.maxZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.minX, box.minY, box.minZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        
+        worldrenderer.pos(box.minX, box.maxY, box.minZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.maxX, box.maxY, box.minZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.maxX, box.maxY, box.minZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.maxX, box.maxY, box.maxZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.maxX, box.maxY, box.maxZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.minX, box.maxY, box.maxZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.minX, box.maxY, box.maxZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+        worldrenderer.pos(box.minX, box.maxY, box.minZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
+	}
+	
+	public void startDraw(){
+		GL11.glEnable(GL11.GL_BLEND);
+        OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+        GL11.glLineWidth(1.0f);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDepthMask(true);
+        //GL11.glDisable(GL11.GL_DEPTH_TEST);
+        
+        worldrenderer.begin(1, DefaultVertexFormats.POSITION_COLOR);
+	}
+	
+	public void finalizeDraw(){
+		tessellator.draw();
+        GL11.glDepthMask(true);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_BLEND);
+	}
+	
+	
+    // Similar to vanilla's "drawSelectionBox" with some customizability and without block checks
+    public static void renderBlockOutline(RenderGlobal context, EntityPlayer entityPlayer, BlockPos blockpos, RGBA colour, float lineWidth, float partialTicks){
+        if(entityPlayer.worldObj == null)
+        	return;
+    	Block block = entityPlayer.worldObj.getBlockState(blockpos).getBlock();
+        block.setBlockBoundsBasedOnState(entityPlayer.worldObj, blockpos);
+        
+        
+        
         renderAABBOutline(context, entityPlayer, block.getSelectedBoundingBox(entityPlayer.worldObj, blockpos), colour, lineWidth, partialTicks);
     }
 

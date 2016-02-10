@@ -41,7 +41,7 @@ public class ClientProxy extends CommonProxy {
         /**
          * {@inheritDoc}
          */
-        public Optional<Pair<EntityPlayer, PlayerWrapper>> get(String name)
+        public Optional<Pair<String, PlayerWrapper>> get(String name)
         {
             EntityPlayer player = null;
             for (Object e : net.minecraft.client.Minecraft.getMinecraft().getIntegratedServer().getConfigurationManager().playerEntityList)
@@ -58,7 +58,7 @@ public class ClientProxy extends CommonProxy {
             {
                 return Optional.absent();
             }
-            return Optional.of(new Pair<EntityPlayer, PlayerWrapper>(player, new PlayerWrapper(player)));
+            return Optional.of(new Pair<String, PlayerWrapper>(player.getName(), new PlayerWrapper(player)));
         }
 
     }

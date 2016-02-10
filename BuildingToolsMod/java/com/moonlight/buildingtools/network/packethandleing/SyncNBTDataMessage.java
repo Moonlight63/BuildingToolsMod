@@ -33,8 +33,11 @@ public class SyncNBTDataMessage implements IMessage {
 		@Override
 		public IMessage handleServerMessage(EntityPlayer player, SyncNBTDataMessage message, MessageContext ctx) {
 			//System.out.print("Returning from onMessege \n");
-			if(player.getHeldItem() != null && message.nbtTagComopound != null)
+			if(player.getHeldItem() != null && message.nbtTagComopound != null){
 				player.getHeldItem().setTagCompound(message.nbtTagComopound);
+				player.getHeldItem().getItem().getMetadata(0);
+			}
+			
 			return null;
 		}	
 	}		

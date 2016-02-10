@@ -31,7 +31,6 @@ public class PacketDispatcher
 	{
 	 // a simple counter will allow us to get rid of 'magic' numbers used during packet registration
 	 private static byte packetId = 0;
-	 
 	 /**
 	 * The SimpleNetworkWrapper instance is used both to register and send packets.
 	 * Since I will be adding wrapper methods, this field is private, but you should
@@ -59,6 +58,8 @@ public class PacketDispatcher
 		 PacketDispatcher.dispatcher.registerMessage(SendAdvancedFillPacketToItemMessage.Handler.class, SendAdvancedFillPacketToItemMessage.class, packetId++, Side.SERVER);
 		 PacketDispatcher.dispatcher.registerMessage(SendSimpleReplacePacketToItemMessage.Handler.class, SendSimpleReplacePacketToItemMessage.class, packetId++, Side.SERVER);
 		 PacketDispatcher.dispatcher.registerMessage(SendAdvancedReplacePacketToItemMessage.Handler.class, SendAdvancedReplacePacketToItemMessage.class, packetId++, Side.SERVER);
+		 PacketDispatcher.dispatcher.registerMessage(SendRaytraceResult.Handler.class, SendRaytraceResult.class, packetId++, Side.SERVER);
+		 
 		 
 	 // If you don't want to make a 'registerMessage' method, you can do it directly:
 	 //PacketDispatcher.dispatcher.registerMessage(OpenGuiMessage.OpenGuiMessageHandler.class, OpenGuiMessage.class, packetId++, Side.SERVER);
@@ -122,10 +123,10 @@ public class PacketDispatcher
 	 * See {@link SimpleNetworkWrapper#sendToServer(IMessage)}
 	 */
 	 public static final void sendToServer(IMessage message) {
-		 System.out.println("Starting Send Packet");
+		 //System.out.println("Starting Send Packet");
 		 if(FMLCommonHandler.instance().getSide().isClient()){
 			 PacketDispatcher.dispatcher.sendToServer(message);
-			 System.out.println("Sending: " + message);
+			 //System.out.println("Sending: " + message);
 		 }
 	 }
 }

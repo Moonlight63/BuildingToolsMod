@@ -23,7 +23,7 @@ import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
 public class WorldEventHandler{
 	
-	private Minecraft mc = Minecraft.getMinecraft();
+//	private Minecraft mc = Minecraft.getMinecraft();
 	
 	
 	@SubscribeEvent
@@ -47,6 +47,7 @@ public class WorldEventHandler{
 		if(s.isPresent()){
 			//System.out.println("\n\n\n\n"+s.get().getName()+"\n\n\n\n");
 			BuildingTools.getPlayerRegistry().invalidate(s.get().getName());
+			//BuildingTools.getPlayerRegistry().invalidate(event.player);
 		}
     }
 	
@@ -74,8 +75,8 @@ public class WorldEventHandler{
 	@SideOnly(Side.CLIENT)
 	public void onClientTick(TickEvent.ClientTickEvent event) {
 		
-		World world = mc.theWorld;
-		EntityPlayer player = mc.thePlayer;			
+		World world = Minecraft.getMinecraft().theWorld;
+		EntityPlayer player = Minecraft.getMinecraft().thePlayer;			
 		if (world != null && player != null){
 			RayTracing.instance().fire(4, true);
 			MovingObjectPosition target = RayTracing.instance().getTarget();
