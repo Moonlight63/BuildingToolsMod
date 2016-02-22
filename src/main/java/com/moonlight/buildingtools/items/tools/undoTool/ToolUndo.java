@@ -62,7 +62,8 @@ public class ToolUndo extends Item{
 			PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
 			//System.out.println(player.undolist);
 			if(!player.undolist.isEmpty() && player.UndoIsSaved){
-				player.addPending(new ThreadPasteClipboard(worldIn, playerIn, /*player.lastUndo, */new LinkedHashSet<Entity>()));				
+				player.addPending(new ThreadPasteClipboard(worldIn, playerIn, /*player.lastUndo, */new LinkedHashSet<Entity>()));		
+				playerIn.addChatComponentMessage(new ChatComponentText("Undoing"));
 			}
 			if(!player.UndoIsSaved){
 				playerIn.addChatComponentMessage(new ChatComponentText("The last operation is not finished saving. Please Wait!"));
