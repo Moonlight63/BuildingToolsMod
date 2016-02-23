@@ -312,6 +312,7 @@ public class ToolFilter extends Item
                 filter = 3;
             if(filter > 5)
                 filter = 1;
+            //getNBT(stack).setInteger("fillorclear", 2);
             getNBT(stack).setInteger("filter", filter);
         } else
         if(buttonID == 2)

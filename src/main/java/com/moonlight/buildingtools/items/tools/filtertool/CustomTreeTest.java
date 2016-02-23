@@ -28,25 +28,19 @@ public class CustomTreeTest{
     List<CustomTreeTest.FoliageCoordinates> foliageCoords;
     List<CustomTreeTest.FoliageCoordinates> extrafoliageCoords;
     float[][] foliage_shape;
-    
     int height = 64;
     double scaleWidth = 1.0D;
-    
     int trunkRadBot = 4;
     int trunkRadMid = 2;
     int trunkRadTop = 1;
     float trunkHeight = 0.8f;
-    
     float branchStart = 0.2f;
     float foliageStart = 0.35f;
-    
     double branchSlope = 0.381D;
     double leafDensity = 1.0D;
     double branchDensity = 0.5D;
-    
     boolean hollowTrunk = true;
     int trunkWallThickness = 1;
-    
     IBlockState logMat = Blocks.stone.getDefaultState();
     IBlockState leafMat = Blocks.stone.getDefaultState();
     

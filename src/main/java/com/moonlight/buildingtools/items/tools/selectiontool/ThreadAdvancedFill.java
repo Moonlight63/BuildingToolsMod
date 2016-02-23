@@ -161,7 +161,7 @@ public class ThreadAdvancedFill implements BlockChangeBase, IShapeable{
 	public void shapeFinished() {
 		addSetToList();
 		shapeFinished = true;
-		currentlyCalculating = false;
+		//currentlyCalculating = false;
 	}
 
 }

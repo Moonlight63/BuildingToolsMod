@@ -1,37 +1,39 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   ThreadTopsoil.java
-
 package com.moonlight.buildingtools.items.tools.filtertool;
 
-import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.helpers.Shapes;
-import com.moonlight.buildingtools.helpers.shapes.IShapeGenerator;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 import com.moonlight.buildingtools.items.tools.*;
-import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
-import com.moonlight.buildingtools.network.playerWrapper.PlayerRegistry;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.MiscUtils;
 
-import java.io.PrintStream;
 import java.util.*;
 
-import net.minecraft.block.*;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-public class ThreadTopsoil
-    implements IShapeable, BlockChangeBase
-{
+public class ThreadTopsoil implements IShapeable, BlockChangeBase{
+	
+	protected World world;
+    protected BlockPos origin;
+    protected int radiusX;
+    protected int radiusY;
+    protected int radiusZ;
+    protected int depth;
+    protected EnumFacing side;
+    protected boolean isFinished;
+    protected EntityPlayer entity;
+    protected int count;
+    protected boolean currentlyCalculating;
+    protected Set<ChangeBlockToThis> tempList;
+    
+    protected List<Set<ChangeBlockToThis>> listSet = Lists.newArrayList();
+	protected boolean shapeFinished = false;
 
     public ThreadTopsoil(World world, BlockPos origin, int radiusX, int radiusY, int radiusZ, int depth, EnumFacing side, 
             EntityPlayer entity)
@@ -40,7 +42,6 @@ public class ThreadTopsoil
         count = 0;
         currentlyCalculating = false;
         tempList = new HashSet();
-        checkedList = new HashSet();
         this.world = world;
         this.origin = origin;
         this.radiusX = radiusX;
@@ -54,71 +55,64 @@ public class ThreadTopsoil
     public void setBlock(BlockPos tempPos)
     {
         BlockPos bpos = tempPos;
-        if(count < 4096 && !checkedList.contains(tempPos))
+        if(bpos.add(origin).getY() > 0 && bpos.add(origin).getY() < 256 && !world.isAirBlock(bpos.add(origin)) && world.isAirBlock(bpos.add(origin).up()))
         {
-            checkedList.add(tempPos);
-            if(bpos.add(origin).getY() > 0 && bpos.add(origin).getY() < 256 && !world.isAirBlock(bpos.add(origin)) && world.isAirBlock(bpos.add(origin).up()))
+            tempList.add(new ChangeBlockToThis(bpos.add(origin), Blocks.grass.getDefaultState()));
+            for(int i = 1; i < depth; i++)
             {
-                tempList.add(new ChangeBlockToThis(bpos.add(origin), Blocks.grass.getDefaultState()));
-                for(int i = 1; i < depth; i++)
-                {
-                    tempList.add(new ChangeBlockToThis(bpos.add(origin).down(i), Blocks.dirt.getDefaultState()));
-                    count++;
-                }
-
-                System.out.println((new StringBuilder("Setblock ")).append(count).toString());
+                tempList.add(new ChangeBlockToThis(bpos.add(origin).down(i), Blocks.dirt.getDefaultState()));
                 count++;
             }
+
+            System.out.println((new StringBuilder("Setblock ")).append(count).toString());
+            count++;
+        }
+        
+        if(count > 4096){
+        	addSetToList();
         }
     }
 
-    public void perform()
-    {
+    public void perform(){
+    	
         if(!currentlyCalculating)
         {
             tempList.clear();
             Shapes.Cuboid.generator.generateShape(radiusX, radiusY, radiusZ, this, true);
-            if(!tempList.isEmpty() && tempList != null)
-            {
-                ((PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(entity).get()).tempUndoList.addAll(MiscUtils.CalcUndoList(tempList, world));
-                ((PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(entity).get()).pendingChangeQueue.add(new BlockChangeQueue(tempList, world, true));
-            }
-            if(count < 4096)
-            {
-            	MiscUtils.dumpUndoList(entity);
-                isFinished = true;
-            }
-            currentlyCalculating = false;
-            count = 0;
         }
+        if(listSet.isEmpty() && shapeFinished){
+			System.out.println("Finished");
+			MiscUtils.dumpUndoList(entity);
+			isFinished = true;
+		}
+        
     }
 
-    public World getWorld()
-    {
+    public World getWorld(){
         return world;
     }
 
-    public boolean isFinished()
-    {
+    public boolean isFinished(){
         return isFinished;
     }
 
-    protected World world;
-    protected BlockPos origin;
-    protected int radiusX;
-    protected int radiusY;
-    protected int radiusZ;
-    protected int depth;
-    protected EnumFacing side;
-    protected boolean isFinished;
-    protected EntityPlayer entity;
-    protected int count;
-    protected boolean currentlyCalculating;
-    protected Set tempList;
-    protected Set checkedList;
+    public void checkAndAddQueue(){
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(listSet.get(0), world));
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(listSet.get(0), world, true));
+		listSet.remove(0);
+	}
+	
+	public void addSetToList(){
+		listSet.add(Sets.newHashSet(tempList));
+		tempList.clear();
+		count = 0;
+		checkAndAddQueue();
+	}
+
 	@Override
 	public void shapeFinished() {
-		// TODO Auto-generated method stub
-		
+		addSetToList();
+		shapeFinished = true;
+		//currentlyCalculating = false;
 	}
 }

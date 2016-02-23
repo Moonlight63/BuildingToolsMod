@@ -150,7 +150,7 @@ public class ThreadBuildersTool implements IShapeable, BlockChangeBase {
 		//System.out.println("Shape Finished");
 		addSetToList();
 		shapeFinished = true;
-		currentlyCalculating = false;
+		//currentlyCalculating = false;
 	}
 	
 

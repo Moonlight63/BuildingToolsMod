@@ -45,6 +45,7 @@ public class ThreadSimpleFill implements BlockChangeBase, IShapeable{
 	protected Set<BlockPos> checkList = new HashSet<BlockPos>();
 	
 	protected List<Set<ChangeBlockToThis>> listSet = Lists.newArrayList();
+	protected boolean shapeFinished = false;
 	
 	protected boolean isFinished = false;
 	protected Set<ChangeBlockToThis> selectionSet = new LinkedHashSet<ChangeBlockToThis>();
@@ -55,7 +56,7 @@ public class ThreadSimpleFill implements BlockChangeBase, IShapeable{
 	protected IBlockState fillBlockState;
 	protected IBlockState replaceBlockState;
 	protected int count = 0;
-	protected boolean shapeFinished = false;
+	
 	
 	public ThreadSimpleFill(BlockPos blockpos1, BlockPos blockpos2, World world, EntityPlayer player, IBlockState fillBlock){
 		System.out.println("Thread Started");
@@ -152,7 +153,7 @@ public class ThreadSimpleFill implements BlockChangeBase, IShapeable{
 	public void shapeFinished() {
 		addSetToList();
 		shapeFinished = true;
-		currentlyCalculating = false;
+		//currentlyCalculating = false;
 	}
 
 }
