@@ -30,6 +30,7 @@ public class GUIToolFilter extends GuiScreen{
 	public static final GuiButton rady = 		new GuiButton(3, 0, 0, 160, 20, "");
 	public static final GuiButton radz = 		new GuiButton(4, 0, 0, 160, 20, "");
 	public static final GuiButton depth = 		new GuiButton(5, 0, 0, 160, 20, "");
+	public static final GuiButton editTree = 	new GuiButton(7, 0, 0, 160, 20, "Edit Tree");
 	
 	
 	public GUIToolFilter(EntityPlayer player){
@@ -77,22 +78,47 @@ public class GUIToolFilter extends GuiScreen{
 		switch (heldnbt.getInteger("filter")) {
 		case 1:
 			filter.displayString = "Topsoil";
+			radx.visible = true;
+			rady.visible = true;
+			radz.visible = true;
+			depth.visible = true;
+			editTree.visible = false;
 			break;
 			
 		case 2:
 			filter.displayString = "Clear Water";
+			radx.visible = true;
+			rady.visible = true;
+			radz.visible = true;
+			depth.visible = false;
+			editTree.visible = false;
 			break;
 			
 		case 3:
 			filter.displayString = "Clear Junk";
+			radx.visible = true;
+			rady.visible = true;
+			radz.visible = true;
+			depth.visible = false;
+			editTree.visible = false;
 			break;
 	
 		case 4:
 			filter.displayString = "BoneMeal-ify";
+			radx.visible = true;
+			rady.visible = true;
+			radz.visible = true;
+			depth.visible = false;
+			editTree.visible = false;
 			break;
 			
 		case 5:
 			filter.displayString = "Create Tree (UNFINISHED)";
+			radx.visible = false;
+			rady.visible = false;
+			radz.visible = false;
+			depth.visible = false;
+			editTree.visible = true;
 			break;
 
 		default:
@@ -104,7 +130,8 @@ public class GUIToolFilter extends GuiScreen{
 		radz.displayString = (gen.fixedRatio ? "Fixed Ratio: " : "Radius Z: ") + heldnbt.getInteger("radiusZ");
 		depth.displayString = "Depth: " + heldnbt.getInteger("topsoildepth");
 		
-		depth.enabled = heldnbt.getInteger("filter") == 1 ? true : false;
+		editTree.xPosition = this.width / 2 - (160 / 2);
+		editTree.yPosition = ((this.height / 2) - 111) + (44);
 		
 		buttons.add(filter);
 		buttons.add(radx);
@@ -117,6 +144,8 @@ public class GUIToolFilter extends GuiScreen{
 			btn.yPosition = ((this.height / 2) - 111) + (22 * btn.id);
 			buttonList.add(btn);
 		}
+		
+		buttonList.add(editTree);
 				
 	}
 	
@@ -146,8 +175,12 @@ public class GUIToolFilter extends GuiScreen{
 	
 	//@Override
 	protected void actionPerformed(GuiButton button, int mouseButton){
-		PacketDispatcher.sendToServer(new SendGuiButtonPressedToItemMessage((byte) button.id, mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));
-		
+		if(button.id == 7){
+			this.mc.displayGuiScreen((GuiScreen) null);
+			this.mc.displayGuiScreen(new GUIEditTree(this.player));
+		}
+		else
+			PacketDispatcher.sendToServer(new SendGuiButtonPressedToItemMessage((byte) button.id, mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));
 	}
 	
 }

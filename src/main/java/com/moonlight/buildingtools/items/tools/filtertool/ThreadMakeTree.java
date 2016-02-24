@@ -50,6 +50,7 @@ public class ThreadMakeTree implements BlockChangeBase{
     private Random rand;
     List<FoliageCoordinates> foliageCoords;
     List<FoliageCoordinates> extrafoliageCoords;
+    
     float[][] foliage_shape;
     int height = 64;
     double scaleWidth = 1.0D;
@@ -57,12 +58,13 @@ public class ThreadMakeTree implements BlockChangeBase{
     int trunkRadMid = 2;
     int trunkRadTop = 1;
     float trunkHeight = 0.8f;
+    float trunkMidPoint = 0.382f;
     float branchStart = 0.2f;
     float foliageStart = 0.35f;
     double branchSlope = 0.381D;
     double leafDensity = 1.0D;
     double branchDensity = 0.25D;
-    boolean hollowTrunk = true;
+    boolean hollowTrunk = false;
     int trunkWallThickness = 1;
     IBlockState logMat = Blocks.log.getDefaultState();
     IBlockState leafMat = Blocks.leaves.getDefaultState();
@@ -183,7 +185,7 @@ public class ThreadMakeTree implements BlockChangeBase{
     	
         int trunkheight = (int) (this.height * this.trunkHeight);
         
-        int midy = (int)(trunkheight * 0.382);
+        int midy = (int)(trunkheight * this.trunkMidPoint);
         int topy = trunkheight;
         
         Set<BlockPos> blocks = Sets.newHashSet();
