@@ -20,6 +20,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
@@ -43,15 +44,15 @@ public class ThreadMakeTree implements BlockChangeBase{
     protected Set<ChangeBlockToThis> tempList;
     protected List<Set<ChangeBlockToThis>> listSet = Lists.newArrayList();
     protected List<ChangeBlockToThis> data = Lists.newArrayList();
-    protected List<BlockPos> checkList = Lists.newArrayList();
-    protected List<BlockPos> checkPos = Lists.newArrayList();
+    protected Set<BlockPos> checkList = Sets.newHashSet();
+    protected Set<BlockPos> checkPos = Sets.newHashSet();
 	protected boolean shapeFinished = false;
     
     private Random rand;
     List<FoliageCoordinates> foliageCoords;
     List<FoliageCoordinates> extrafoliageCoords;
     
-    float[][] foliage_shape;
+    List<List<Float>> foliage_shape;
     int height = 64;
     double scaleWidth = 1.0D;
     int trunkRadBot = 4;
@@ -66,10 +67,11 @@ public class ThreadMakeTree implements BlockChangeBase{
     double branchDensity = 0.25D;
     boolean hollowTrunk = false;
     int trunkWallThickness = 1;
+    int clusterShape = 0;
     IBlockState logMat = Blocks.log.getDefaultState();
     IBlockState leafMat = Blocks.leaves.getDefaultState();
 
-    public ThreadMakeTree(World world, BlockPos origin, EntityPlayer entity){
+    public ThreadMakeTree(World world, BlockPos origin, EntityPlayer entity, ProceduralTreeData data){
         isFinished = false;
         count = 0;
         currentlyCalculating = false;
@@ -80,10 +82,34 @@ public class ThreadMakeTree implements BlockChangeBase{
         this.entity = entity;
         
         this.rand = new Random();
-        this.foliage_shape = new float[][]{/*{2, 4, 6, 6, 6, 6, 6, 5, 4, 3}, */{2, 3, 3, 2, 1}};
+        //this.foliage_shape = new float[][]{/*{2, 4, 6, 6, 6, 6, 6, 5, 4, 3}, */{2, 3, 3, 2, 1}};
+        
+        this.height = data.GetTreeHeight();
+        this.trunkRadBot = data.GetTrunkBottom();
+        this.trunkRadMid = data.GetTrunkMiddle();
+        this.trunkRadTop = data.GetTrunkTop();
+        this.trunkHeight = data.GetTrunkHeight();
+        this.trunkMidPoint = data.GetTrunkMidPoint();
+        this.branchStart = data.GetBranchStart();
+        this.foliageStart = data.GetFoliageStart();
+        this.branchSlope = data.GetBranchSlope();
+        this.leafDensity = data.GetLeafDensity();
+        this.branchDensity = data.GetBranchDensity();
+        this.foliage_shape = data.GetFoliageShapes();
+        
+        this.clusterShape = data.GetClusterShape();
+        
+        this.hollowTrunk = data.hollowTrunk;
+        this.scaleWidth = data.GetScaleWidth();
+        this.trunkWallThickness = data.trunkWallThickness;
+        
+        this.logMat = data.logMat;
+        this.leafMat = data.leafMat;
+        
     }
     
     public void convertData(){
+    	entity.addChatComponentMessage(new ChatComponentText("Generating All Blocks"));
     	for(ChangeBlockToThis pos : data){
     		
     		BlockPos blockpos1;
@@ -101,6 +127,7 @@ public class ThreadMakeTree implements BlockChangeBase{
     		checkPos.add(blockpos1.up());
     		count++;
     		if(count > 4096){
+    			entity.addChatComponentMessage(new ChatComponentText(pos.getBlockPos().toString()));
             	addSetToList();
             }
     	}
@@ -130,11 +157,12 @@ public class ThreadMakeTree implements BlockChangeBase{
     	if(!currentlyCalculating){
     		currentlyCalculating = true;
     		
-    		this.generateTrunk();
     		this.generateLeafNodeList();
+    		this.generateLeaves();
+    		this.generateTrunk();
     		this.generateLeafNodeBases();
-            this.generateLeaves();
             this.convertData();
+            
             
     		shapeFinished();
     	}
@@ -183,29 +211,36 @@ public class ThreadMakeTree implements BlockChangeBase{
      */
     void generateTrunk(){
     	
+    	entity.addChatComponentMessage(new ChatComponentText("Generating Trunk"));
+    	
         int trunkheight = (int) (this.height * this.trunkHeight);
         
         int midy = (int)(trunkheight * this.trunkMidPoint);
         int topy = trunkheight;
         
         Set<BlockPos> blocks = Sets.newHashSet();
+        Set<BlockPos> blockRemoval = Sets.newHashSet();
         
         blocks.addAll(taperedcylinder(BlockPos.ORIGIN, new BlockPos(0, midy, 0), trunkRadBot, trunkRadMid));
         blocks.addAll(taperedcylinder(new BlockPos(0, midy, 0), new BlockPos(0, topy, 0), trunkRadMid, trunkRadTop));
         
         if(trunkRadBot > 2 && trunkRadMid > 2 && trunkRadTop > 2 && hollowTrunk){
-        	blocks.removeAll(taperedcylinder(BlockPos.ORIGIN, new BlockPos(0, midy, 0), trunkRadBot - trunkWallThickness, trunkRadMid - trunkWallThickness));
-        	blocks.removeAll(taperedcylinder(new BlockPos(0, midy,0), new BlockPos(0, topy, 0), trunkRadMid - trunkWallThickness, trunkRadTop - trunkWallThickness));
+        	blockRemoval.addAll(taperedcylinder(BlockPos.ORIGIN, new BlockPos(0, midy, 0), trunkRadBot - trunkWallThickness, trunkRadMid - trunkWallThickness));
+        	blockRemoval.addAll(taperedcylinder(new BlockPos(0, midy,0), new BlockPos(0, topy, 0), trunkRadMid - trunkWallThickness, trunkRadTop - trunkWallThickness));
         }
         
-        
         for(BlockPos pos : blocks){
-        	this.add(new ChangeBlockToThis(pos.add(origin), this.logMat));
+        	if(blockRemoval.contains(pos))
+        		this.add(new ChangeBlockToThis(pos.add(origin), Blocks.air.getDefaultState()));
+        	else
+        		this.add(new ChangeBlockToThis(pos.add(origin), this.logMat));
         }
         
     }
     
     void generateLeafNodeList(){
+    	
+    	entity.addChatComponentMessage(new ChatComponentText("Generating Leaf Positions"));
     	
         int i = (int)(1.382D + Math.pow(this.leafDensity * this.height / 13.0D, 2.0D));
 
@@ -278,33 +313,54 @@ public class ThreadMakeTree implements BlockChangeBase{
      * Gets the rough size of a layer of the tree.
      */
     float layerSize(int layer){
-        if ((float)layer < (float)this.height * this.foliageStart)
-        {
-            return -1.0F;
-        }
-        else
-        {
-            float rad = (float)this.height / 2.0F;
-            float adj = rad - (float)layer;
-            float dist = MathHelper.sqrt_float(rad * rad - adj * adj);
-
-            if (adj == 0.0F)
-            {
-            	dist = rad;
-            }
-            else if (Math.abs(adj) >= rad)
-            {
-                return 0.0F;
-            }
-
-            return dist * 0.618F;
-        }
+    	
+    	if(clusterShape == 0){
+    	
+	        if ((float)layer < (float)this.height * this.foliageStart)
+	        {
+	            return -1.0F;
+	        }
+	        else
+	        {
+	            float rad = (float)this.height / 2.0F;
+	            float adj = rad - (float)layer;
+	            float dist = MathHelper.sqrt_float(rad * rad - adj * adj);
+	
+	            if (adj == 0.0F)
+	            {
+	            	dist = rad;
+	            }
+	            else if (Math.abs(adj) >= rad)
+	            {
+	                return 0.0F;
+	            }
+	
+	            return dist * 0.618F;
+	        }
+        
+    	}
+    	
+    	else if(clusterShape == 1){
+    		if(layer < this.height * (0.25 + 0.05 * Math.sqrt(Math.random()))){
+        		return -1;
+        	}
+        	
+        	float rad = (float) ((this.height - layer) * this.foliageStart);
+        	if(rad < 0)
+        		rad = 0;
+        	
+        	return rad;
+    	}
+    	else{
+    		return 0;
+    	}
     }
     
     /**
      * Generates additional wood blocks to fill out the bases of different leaf nodes that would otherwise degrade.
      */
     void generateLeafNodeBases(){
+    	entity.addChatComponentMessage(new ChatComponentText("Generating Branches"));
         for (FoliageCoordinates worldgenbigtree$foliagecoordinates : this.foliageCoords){
         	if(Math.random()<=this.branchDensity){
 	            int i = worldgenbigtree$foliagecoordinates.getBranchStartY();
@@ -373,7 +429,9 @@ public class ThreadMakeTree implements BlockChangeBase{
      * Generates the leaves surrounding an individual entry in the leafNodes list.
      */
     void generateLeaves(){
+    	entity.addChatComponentMessage(new ChatComponentText("Generating Leaves"));
         for (FoliageCoordinates coord : this.foliageCoords){
+        	entity.addChatComponentMessage(new ChatComponentText("At: " + coord.toString()));
         	for(BlockPos pos : this.foliagecluster(coord)){
         		if(this.leafMat.getBlock().equals(Blocks.leaves) || this.leafMat.getBlock().equals(Blocks.leaves2)){
         			this.add(new ChangeBlockToThis(pos, this.leafMat.withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false)).withProperty(BlockLeaves.DECAYABLE, false)));
@@ -408,7 +466,7 @@ public class ThreadMakeTree implements BlockChangeBase{
     	Set<BlockPos> set = Sets.newHashSet();
     	
     	int y = center.getY();
-    	for(float i : this.foliage_shape[new Random().nextInt(this.foliage_shape.length)]){
+    	for(float i : this.foliage_shape.get(new Random().nextInt(this.foliage_shape.size()))){
     		set.addAll(this.crossection(new int[]{center.getX(), y, center.getZ()}, i, 1));
     		y++;
     	}

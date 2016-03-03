@@ -30,7 +30,9 @@ public class GUIToolFilter extends GuiScreen{
 	public static final GuiButton rady = 		new GuiButton(3, 0, 0, 160, 20, "");
 	public static final GuiButton radz = 		new GuiButton(4, 0, 0, 160, 20, "");
 	public static final GuiButton depth = 		new GuiButton(5, 0, 0, 160, 20, "");
-	public static final GuiButton editTree = 	new GuiButton(7, 0, 0, 160, 20, "Edit Tree");
+	public static final GuiButton treeType = 	new GuiButton(7, 0, 0, 160, 20, "Tree Type: ");
+	public static final GuiButton editTree = 	new GuiButton(8, 0, 0, 160, 20, "Edit Tree");
+	
 	
 	
 	public GUIToolFilter(EntityPlayer player){
@@ -82,6 +84,7 @@ public class GUIToolFilter extends GuiScreen{
 			rady.visible = true;
 			radz.visible = true;
 			depth.visible = true;
+			treeType.visible = false;
 			editTree.visible = false;
 			break;
 			
@@ -91,6 +94,7 @@ public class GUIToolFilter extends GuiScreen{
 			rady.visible = true;
 			radz.visible = true;
 			depth.visible = false;
+			treeType.visible = false;
 			editTree.visible = false;
 			break;
 			
@@ -100,6 +104,7 @@ public class GUIToolFilter extends GuiScreen{
 			rady.visible = true;
 			radz.visible = true;
 			depth.visible = false;
+			treeType.visible = false;
 			editTree.visible = false;
 			break;
 	
@@ -109,6 +114,7 @@ public class GUIToolFilter extends GuiScreen{
 			rady.visible = true;
 			radz.visible = true;
 			depth.visible = false;
+			treeType.visible = false;
 			editTree.visible = false;
 			break;
 			
@@ -118,7 +124,9 @@ public class GUIToolFilter extends GuiScreen{
 			rady.visible = false;
 			radz.visible = false;
 			depth.visible = false;
-			editTree.visible = true;
+			treeType.visible = true;
+			treeType.displayString = ETreeTypes.values()[heldnbt.getInteger("treetype")].name();
+			editTree.visible = treeType.displayString == "Custom";
 			break;
 
 		default:
@@ -130,8 +138,11 @@ public class GUIToolFilter extends GuiScreen{
 		radz.displayString = (gen.fixedRatio ? "Fixed Ratio: " : "Radius Z: ") + heldnbt.getInteger("radiusZ");
 		depth.displayString = "Depth: " + heldnbt.getInteger("topsoildepth");
 		
+		treeType.xPosition = this.width / 2 - (160 / 2);
+		treeType.yPosition = ((this.height / 2) - 111) + (44);
+		
 		editTree.xPosition = this.width / 2 - (160 / 2);
-		editTree.yPosition = ((this.height / 2) - 111) + (44);
+		editTree.yPosition = ((this.height / 2) - 111) + (66);
 		
 		buttons.add(filter);
 		buttons.add(radx);
@@ -145,6 +156,7 @@ public class GUIToolFilter extends GuiScreen{
 			buttonList.add(btn);
 		}
 		
+		buttonList.add(treeType);
 		buttonList.add(editTree);
 				
 	}
@@ -152,32 +164,29 @@ public class GUIToolFilter extends GuiScreen{
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
-        //if (mouseButton == 0)
-        //{
-            for (int l = 0; l < this.buttonList.size(); ++l)
-            {
-                GuiButton guibutton = (GuiButton)this.buttonList.get(l);
+        for (int l = 0; l < this.buttonList.size(); ++l)
+        {
+            GuiButton guibutton = (GuiButton)this.buttonList.get(l);
 
-                if (guibutton.mousePressed(this.mc, mouseX, mouseY))
-                {
-                    ActionPerformedEvent.Pre event = new ActionPerformedEvent.Pre(this, guibutton, this.buttonList);
-                    if (MinecraftForge.EVENT_BUS.post(event))
-                        break;
-                    //this.selectedButton = event.button;
-                    event.button.playPressSound(this.mc.getSoundHandler());
-                    this.actionPerformed(event.button, mouseButton);
-                    if (this.equals(this.mc.currentScreen))
-                        MinecraftForge.EVENT_BUS.post(new ActionPerformedEvent.Post(this, event.button, this.buttonList));
-                }
+            if (guibutton.mousePressed(this.mc, mouseX, mouseY))
+            {
+                ActionPerformedEvent.Pre event = new ActionPerformedEvent.Pre(this, guibutton, this.buttonList);
+                if (MinecraftForge.EVENT_BUS.post(event))
+                    break;
+                //this.selectedButton = event.button;
+                event.button.playPressSound(this.mc.getSoundHandler());
+                this.actionPerformed(event.button, mouseButton);
+                if (this.equals(this.mc.currentScreen))
+                    MinecraftForge.EVENT_BUS.post(new ActionPerformedEvent.Post(this, event.button, this.buttonList));
             }
-        //}
+        }
     }
 	
 	//@Override
 	protected void actionPerformed(GuiButton button, int mouseButton){
-		if(button.id == 7){
+		if(button == editTree){
 			this.mc.displayGuiScreen((GuiScreen) null);
-			this.mc.displayGuiScreen(new GUIEditTree(this.player));
+			this.mc.displayGuiScreen(new GUIEditTree(this.player, ((ToolFilter)(player.getHeldItem().getItem())).treeData));
 		}
 		else
 			PacketDispatcher.sendToServer(new SendGuiButtonPressedToItemMessage((byte) button.id, mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));

@@ -21,7 +21,6 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 
 	public GUISetPaintBlock(EntityPlayer player) {
 		super(player);
-		// TODO Auto-generated constructor stub
 	}
 	
 	/**

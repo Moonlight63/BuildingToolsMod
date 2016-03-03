@@ -1,19 +1,25 @@
-package com.moonlight.buildingtools.items.tools.selectiontool;
+package com.moonlight.buildingtools.utils;
 
 import com.google.common.collect.Lists;
+
+
 //import de.take_weiland.mods.commons.util.SCReflector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.MathHelper;
+import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
+import net.minecraftforge.fml.client.config.GuiSlider;
 
 import java.util.List;
+
+
 
 //import static de.take_weiland.mods.commons.client.Guis.isPointInRegion;
 import static org.lwjgl.opengl.GL11.*;
 
-public abstract class ScrollPane extends Gui {
+public class ScrollPane extends Gui {
 
 	private boolean clip;
 
@@ -29,11 +35,12 @@ public abstract class ScrollPane extends Gui {
 	private int scrollbarY = 0;
 	private boolean isDragging = false;
 
-	private final GuiScreen screen;
+	private final IScrollButtonListener screen;
 	protected final Minecraft mc = Minecraft.getMinecraft();
-	private final List<GuiButton> buttons = Lists.newArrayList();
+	public final List<GuiButton> buttons = Lists.newArrayList();
+	private GuiButton selectedButton;
 
-	public ScrollPane(GuiScreen screen, int x, int y, int width, int height, int contentHeight) {
+	public ScrollPane(IScrollButtonListener screen, int x, int y, int width, int height, int contentHeight) {
 		this.screen = screen;
 		this.x = x;
 		this.y = y;
@@ -96,7 +103,7 @@ public abstract class ScrollPane extends Gui {
 	}
 
 	private void drawInternal(int mouseX, int mouseY) {
-		drawImpl(mouseX, mouseY);
+		//drawImpl(mouseX, mouseY);
 		int n = buttons.size();
 		for (int i = 0; i < n; ++i) {
 			buttons.get(i).drawButton(mc, mouseX, mouseY);
@@ -116,11 +123,15 @@ public abstract class ScrollPane extends Gui {
 		}
 
 		mouseX -= x;
-		mouseY -= computeYTranslate();
-		if (isPointInRegion(0, 0, width, height, mouseX, mouseY)) {
+		//mouseY -= computeYTranslate();
+		if (isPointInRegion(0, 0, width, height, mouseX, mouseY-y)) {
+			System.out.println("Clicked Button");
 			for (GuiButton button : buttons) {
-				if (button.mousePressed(mc, mouseX, mouseY)) {
-					((GUISaveLoadClipboard)this.screen).sendFilePacket(button);
+				if (button.mousePressed(mc, mouseX, (int) (mouseY-computeYTranslate()))) {
+					button.playPressSound(this.mc.getSoundHandler());
+					this.selectedButton = button;
+					this.screen.ScrollButtonPressed(button);
+					break;
 				}
 			}
 		}
@@ -130,7 +141,19 @@ public abstract class ScrollPane extends Gui {
 	public final void onMouseBtnReleased(int btn) {
 		if (btn == 0) {
 			isDragging = false;
-		}
+		}	
+	}
+	
+	public final void onMouseBtnReleased(int mouseX, int mouseY, int state){
+		if (this.selectedButton != null && state == 0)
+        {
+            this.selectedButton.mouseReleased(mouseX, mouseY);
+            if(this.selectedButton instanceof GuiSlider){
+            	this.screen.GetGuiSliderValue((GuiSlider)(this.selectedButton));
+            }
+            this.selectedButton = null;
+        }
+		onMouseBtnReleased(state);
 	}
 
 	public final void onMouseMoved(int mouseX, int mouseY) {
@@ -194,11 +217,12 @@ public abstract class ScrollPane extends Gui {
 		drawRect(x, y2 - 1, x2, y2, 0xff444444);
 	}
 
-	protected void drawImpl(int mouseX, int mouseY) {
-		drawImpl();
-	}
+//	protected void drawImpl(int mouseX, int mouseY) {
+//		drawImpl();
+//	}
 
-	protected abstract void drawImpl();
+//	protected void drawImpl() {
+//	}
 
 	protected void handleMouseClick(int relX, int relY, int btn) {
 	}

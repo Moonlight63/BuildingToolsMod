@@ -187,7 +187,7 @@ public class CustomTreeTest{
         	if(this.logMat.getBlock().equals(Blocks.log) || this.logMat.getBlock().equals(Blocks.log2)){
 	            BlockLog.EnumAxis blocklog$enumaxis = this.getLogAxis(pos1, blockpos1);
 	            this.data.add(new ChangeBlockToThis(blockpos1, this.logMat.withProperty(BlockLog.LOG_AXIS, blocklog$enumaxis)));
-	            //this.setBlockAndNotifyAdequately(this.world, blockpos1, this.logMat.withProperty(BlockLog.LOG_AXIS, blocklog$enumaxis));
+	           //this.setBlockAndNotifyAdequately(this.world, blockpos1, this.logMat.withProperty(BlockLog.LOG_AXIS, blocklog$enumaxis));
         	}
         	else{
         		this.data.add(new ChangeBlockToThis(blockpos1, this.logMat));

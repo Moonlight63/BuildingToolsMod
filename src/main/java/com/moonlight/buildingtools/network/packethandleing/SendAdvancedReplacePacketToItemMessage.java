@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.moonlight.buildingtools.items.tools.ContainerBlockSelMenu;
 import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
 import com.moonlight.buildingtools.items.tools.brushtool.ToolBrush;
+import com.moonlight.buildingtools.items.tools.filtertool.ToolFilter;
 import com.moonlight.buildingtools.items.tools.selectiontool.ToolSelection;
 
 import io.netty.buffer.ByteBuf;
@@ -115,6 +116,7 @@ public class SendAdvancedReplacePacketToItemMessage implements IMessage {
 				((ToolBrush)player.getHeldItem().getItem()).AdvancedReplace(message.replaceBlockID, message.replaceBlockData);
 				System.out.println("Sent message to player");
 			}
+			
 			return null;
 		}	
 		

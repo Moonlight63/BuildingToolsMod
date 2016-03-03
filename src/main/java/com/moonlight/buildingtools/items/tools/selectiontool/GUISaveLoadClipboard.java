@@ -13,6 +13,8 @@ import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SelectionToolSaveSelectionPacket;
 import com.moonlight.buildingtools.network.packethandleing.SendFileSelection;
 import com.moonlight.buildingtools.network.packethandleing.SendGuiButtonPressedToItemMessage;
+import com.moonlight.buildingtools.utils.IScrollButtonListener;
+import com.moonlight.buildingtools.utils.ScrollPane;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -22,14 +24,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.config.GuiSlider;
 
-public class GUISaveLoadClipboard extends GuiScreen{
+public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonListener{
 	
 	private EntityPlayer player;
 	
 	private boolean isScrollPressed = false;
 	private int scrollPos = 0;
-	
 	private ScrollPane scrollpane;
 	
 	public static GuiTextField saveName;
@@ -88,15 +90,9 @@ public class GUISaveLoadClipboard extends GuiScreen{
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui(){
+		System.out.println("GUISaveLoadClipboard.initGui()");
 		NBTTagCompound heldnbt = ToolSelection.getNBT(player.getHeldItem());
-		scrollpane = new ScrollPane(this, this.width/2 - 85, this.height/2 - 100, 180, 140, 400){
-		@Override
-			protected void drawImpl() {
-				// TODO Auto-generated method stub
-				
-			}
-        	
-        };
+		scrollpane = new ScrollPane(this, this.width/2 - 85, this.height/2 - 100, 180, 140, 400);
         scrollpane.setClip(true);
         
         File savedirectory = BuildingTools.clipboardSaveDir;
@@ -160,10 +156,17 @@ public class GUISaveLoadClipboard extends GuiScreen{
 		PacketDispatcher.sendToServer(new SelectionToolSaveSelectionPacket(saveName.getText(), mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));
 		this.mc.thePlayer.closeScreen();
 	}
-	
-	protected void sendFilePacket(GuiButton button){
+
+	@Override
+	public void ScrollButtonPressed(GuiButton button) {
 		PacketDispatcher.sendToServer(new SendFileSelection(filelist[button.id].getName()));
 		this.mc.thePlayer.closeScreen();
+	}
+
+	@Override
+	public void GetGuiSliderValue(GuiSlider slider) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
