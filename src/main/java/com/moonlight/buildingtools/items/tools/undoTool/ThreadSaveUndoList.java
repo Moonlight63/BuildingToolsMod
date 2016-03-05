@@ -1,4 +1,4 @@
-package com.moonlight.buildingtools.items.tools.selectiontool;
+package com.moonlight.buildingtools.items.tools.undoTool;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -9,6 +9,8 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagByteArray;
@@ -33,75 +35,56 @@ import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
 import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
-public class ThreadSaveClipboard implements BlockChangeBase{
+public class ThreadSaveUndoList implements BlockChangeBase{
 	
 	protected EntityPlayer player; 
 	protected boolean isFinished = false;
 	protected boolean currentlyCalculating = false;
 	protected String savename;
 	
-	public ThreadSaveClipboard(Entity playerIn, String savename){
+	public ThreadSaveUndoList(Entity playerIn, String savename){
 		this.player = (EntityPlayer) playerIn;	
-		this.savename = "/" + savename + ".json";
+		this.savename = "/" + savename + ".nbt";
 	}
 	
 	public void perform(){
 		if(!currentlyCalculating){
 			try{
 				currentlyCalculating = true;
-				
-				CopyData COPYDATA = new CopyData();
-				COPYDATA.blocks = new LinkedList<BlockData>();
-				
-				String JSONDATA = "";
-				
+								
 				PlayerWrapper playerwrap = BuildingTools.getPlayerRegistry().getPlayer(player).get();
 				
-				Gson gson = new GsonBuilder()
-	            .disableHtmlEscaping()
-	            .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
-	            .setPrettyPrinting()
-	            .create();
+				NBTTagCompound undolistnbt = new NBTTagCompound();
 				
-				NBTTagCompound test = new NBTTagCompound();
-				test.getKeySet();
+				int count = 0;
+				for(List<BlockInfoContainer> list : playerwrap.undolist){
+					NBTTagCompound blockinfo = new NBTTagCompound();
+					for(BlockInfoContainer blocks : list){
+						NBTTagCompound block = new NBTTagCompound();
+						block.setInteger("X", blocks.change.getBlockPos().getX());
+						block.setInteger("Y", blocks.change.getBlockPos().getY());
+						block.setInteger("Z", blocks.change.getBlockPos().getZ());
+						block.setInteger("BlockId", Block.getIdFromBlock(blocks.change.getBlockState().getBlock()));
+						block.setInteger("BlockState", blocks.change.getBlockState().getBlock().getMetaFromState(blocks.change.getBlockState()));
+						if(blocks.change.getNBTTag() != null)
+							block.setTag("BlockCompound", blocks.change.getNBTTag());
+						blockinfo.setTag("X: " + blocks.change.getBlockPos().getX() + " Y: " + blocks.change.getBlockPos().getY() + " Z: " + blocks.change.getBlockPos().getZ(), block);
+					}
+					count++;
+					undolistnbt.setTag("Undo: " + count, blockinfo);
+				}
 			    
-			    for(BlockInfoContainer change : playerwrap.currentCopyClipboard){
-			    	
-			    	BlockData data = new BlockData();
-			    	
-			    	data.pos = new int[]{change.change.getBlockPos().getX(), change.change.getBlockPos().getY(), change.change.getBlockPos().getZ()};
-			    	data.block = Block.getIdFromBlock(change.change.getBlockState().getBlock());
-			    	data.data = change.change.getBlockState().getBlock().getMetaFromState(change.change.getBlockState());	
-			    	if(change.change.getNBTTag() != null){
-				    	data.nbt = NBTCompoundParser(change.change.getNBTTag());	
-			    	}
-			    	player.addChatMessage(new ChatComponentText(change.change.getBlockPos().getX() + "  " + change.change.getBlockPos().getY() + "  " + change.change.getBlockPos().getZ()));
-			    	
-			    	COPYDATA.blocks.add(data);
-		    	
-			    }
-			    
-			    COPYDATA.maxPos = new int[]{playerwrap.clipboardMaxPos.getX(), playerwrap.clipboardMaxPos.getY(), playerwrap.clipboardMaxPos.getZ()}; 
-			    
-			    
-//			    List<List<NBTData>> tempdata = new LinkedList<List<NBTData>>();
-//			    for(Entity e : playerwrap.currentClipboardEntities){
-//			    	//NBTData data = new NBTData();
-//			    	NBTTagCompound tag = new NBTTagCompound();
-//			    	e.writeToNBTOptional(tag);
-//			    	tempdata.add(NBTCompoundPhraser(tag));
-//			    }
-			    
-			    JSONDATA = gson.toJson(COPYDATA);
-			    
-				File savedirectory = BuildingTools.clipboardSaveDir;
+				File savedirectory = BuildingTools.oldUndoDir;
 				new File(savedirectory, savename).createNewFile();
-				BufferedWriter os = new BufferedWriter(new FileWriter(new File(savedirectory, savename)));
+				CompressedStreamTools.safeWrite(undolistnbt, new File(savedirectory, savename));
+				//BufferedWriter os = new BufferedWriter(new FileWriter(new File(savedirectory, savename)));
 				player.addChatMessage(new ChatComponentText("Writing data"));
-				os.write(JSONDATA);
+				
+				
+				
+				//os.write();
 //				os.write(gson.toJson(tempdata));
-				os.close();
+				//os.close();
 				player.addChatMessage(new ChatComponentText("Done"));
 				
 				//playerwrap.addPending(new ThreadLoadClipboard(player));

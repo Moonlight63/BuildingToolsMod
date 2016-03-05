@@ -115,64 +115,35 @@ public class BlockInfoContainer implements Serializable{
 		
 		//LOG
 		else if(properties.containsKey(logDirectionProperty)){
-			
 			this.blockType = BlockTypes.Logs;
-			
 		}
 		
 		//QUARTZ
 		else if(properties.containsKey(quartzPillerProperty)){
-			
 			this.blockType = BlockTypes.Quartz_Pillar;
-			
 		}
 		
 		//SIGNS
 		else if(properties.containsKey(bannerStandingRotation)){
-			
 			this.blockType = BlockTypes.Signs;
-			
 		}
 		
 		//CARPET
 		else if(block instanceof BlockCarpet || block instanceof BlockFlowerPot){
-			
 			this.blockType = BlockTypes.Carpet;
-			
 		}
 		
 		//LEVERS
 		else if(block instanceof BlockLever){
-			
 			this.blockType = BlockTypes.Lever;
-			
 		}
 		
 		//STANDARD BLOCK
 		else{
-			
 			this.blockType = BlockTypes.Standard;
-			
 		}
 		
 		
-		
-		
-		
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 }

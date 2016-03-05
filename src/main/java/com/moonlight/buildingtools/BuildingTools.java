@@ -41,6 +41,7 @@ public class BuildingTools
     public static PlayerRegistry playerregistry;
     
     public static File clipboardSaveDir;
+    public static File oldUndoDir;
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent event){
@@ -67,7 +68,12 @@ public class BuildingTools
 	    	if(!clipboardSaveDir.exists()){
 	    		System.out.println(clipboardSaveDir.mkdir());
 	    	}
-	    	System.out.println(clipboardSaveDir);
+	    	oldUndoDir = new File(event.getModConfigurationDirectory().getParent().concat("/BuildingToolsSaves/Old_Undo"));
+	    	System.out.println(oldUndoDir.exists());
+	    	if(!oldUndoDir.exists()){
+	    		System.out.println(oldUndoDir.mkdir());
+	    	}
+	    	System.out.println(oldUndoDir);
     	}
     	catch(Exception e){
     		System.out.println(e);

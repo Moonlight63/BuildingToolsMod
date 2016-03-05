@@ -1,6 +1,7 @@
 package com.moonlight.buildingtools.network.packethandleing;
 
 import com.moonlight.buildingtools.items.tools.selectiontool.ToolSelection;
+import com.moonlight.buildingtools.items.tools.undoTool.ToolUndo;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,6 +38,10 @@ public class SendFileSelection implements IMessage {
 		public IMessage handleServerMessage(EntityPlayer player, SendFileSelection message, MessageContext ctx) {
 			if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ToolSelection){
 				((ToolSelection)player.getHeldItem().getItem()).LoadSelectionFromFile(message.file, player.getHeldItem());
+			}
+			
+			if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ToolUndo){
+				((ToolUndo)player.getHeldItem().getItem()).loadUndos(message.file);
 			}
 			return null;
 		}	
