@@ -74,23 +74,40 @@ public class ThreadLoadUndo implements BlockChangeBase{
 				
 				
 				//Undo List is loaded in opposite order
-				for(String tagName : undolistnbt.getKeySet()){
-					NBTTagCompound change = (NBTTagCompound) undolistnbt.getTag(tagName);
+				
+				for(int i = 1; i <= undolistnbt.getInteger("Undo Count"); i++){
+					System.out.println(i);
+					NBTTagCompound change = (NBTTagCompound) undolistnbt.getTag("Undo: " + i);
 					List<BlockInfoContainer> tempList = Lists.newArrayList();
 					for(String blockChangeInfo : change.getKeySet()){
 						NBTTagCompound changeinfo = (NBTTagCompound) change.getTag(blockChangeInfo);
-						ChangeBlockToThis newChange = new ChangeBlockToThis(
-								new BlockPos(
-										changeinfo.getInteger("X"),
-										changeinfo.getInteger("Y"),
-										changeinfo.getInteger("Z"))
-								,
-								Block.getBlockById(
-										changeinfo.getInteger("BlockId")).
-										getStateFromMeta(
-												changeinfo.getInteger("BlockState"))
-												);
-						tempList.add(new BlockInfoContainer(newChange));
+						if(changeinfo.getTag("BlockCompound") != null){
+							ChangeBlockToThis newChange = new ChangeBlockToThis(
+									new BlockPos(
+											changeinfo.getInteger("X"),
+											changeinfo.getInteger("Y"),
+											changeinfo.getInteger("Z"))
+									,
+									Block.getBlockById(
+											changeinfo.getInteger("BlockId")).
+											getStateFromMeta(changeinfo.getInteger("BlockState"))
+									,
+									(NBTTagCompound) changeinfo.getTag("BlockCompound")
+											);
+							tempList.add(new BlockInfoContainer(newChange));
+						}
+						else{
+							ChangeBlockToThis newChange = new ChangeBlockToThis(
+									new BlockPos(
+											changeinfo.getInteger("X"),
+											changeinfo.getInteger("Y"),
+											changeinfo.getInteger("Z"))
+									,
+									Block.getBlockById(
+											changeinfo.getInteger("BlockId")).
+											getStateFromMeta(changeinfo.getInteger("BlockState")));
+							tempList.add(new BlockInfoContainer(newChange));
+						}
 					}
 					playerwrap.undolist.add(tempList);
 					playerwrap.UndoIsSaved = true;

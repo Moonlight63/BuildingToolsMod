@@ -55,7 +55,7 @@ public class ThreadSaveUndoList implements BlockChangeBase{
 				PlayerWrapper playerwrap = BuildingTools.getPlayerRegistry().getPlayer(player).get();
 				
 				NBTTagCompound undolistnbt = new NBTTagCompound();
-				
+				undolistnbt.setInteger("Undo Count", playerwrap.undolist.size());
 				int count = 0;
 				for(List<BlockInfoContainer> list : playerwrap.undolist){
 					NBTTagCompound blockinfo = new NBTTagCompound();

@@ -1,7 +1,9 @@
 package com.moonlight.buildingtools.helpers;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -19,6 +21,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import com.google.common.base.Optional;
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.UpdateHandler;
+import com.moonlight.buildingtools.items.tools.undoTool.ThreadLoadUndo;
+import com.moonlight.buildingtools.items.tools.undoTool.ThreadSaveUndoList;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
 public class WorldEventHandler{
@@ -45,6 +49,7 @@ public class WorldEventHandler{
     {
 		Optional<PlayerWrapper> s = BuildingTools.getPlayerRegistry().getPlayer(event.player.getName());
 		if(s.isPresent()){
+			s.get().addPending(new ThreadSaveUndoList(event.player, event.player.getName() + "." + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date())));
 			//System.out.println("\n\n\n\n"+s.get().getName()+"\n\n\n\n");
 			BuildingTools.getPlayerRegistry().invalidate(s.get().getName());
 			//BuildingTools.getPlayerRegistry().invalidate(event.player);
