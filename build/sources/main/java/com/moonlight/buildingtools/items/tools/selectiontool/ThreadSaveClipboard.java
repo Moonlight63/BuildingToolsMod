@@ -74,7 +74,7 @@ public class ThreadSaveClipboard implements BlockChangeBase{
 			    	data.block = Block.getIdFromBlock(change.change.getBlockState().getBlock());
 			    	data.data = change.change.getBlockState().getBlock().getMetaFromState(change.change.getBlockState());	
 			    	if(change.change.getNBTTag() != null){
-				    	data.nbt = NBTCompoundPhraser(change.change.getNBTTag());	
+				    	data.nbt = NBTCompoundParser(change.change.getNBTTag());	
 			    	}
 			    	player.addChatMessage(new ChatComponentText(change.change.getBlockPos().getX() + "  " + change.change.getBlockPos().getY() + "  " + change.change.getBlockPos().getZ()));
 			    	
@@ -116,7 +116,7 @@ public class ThreadSaveClipboard implements BlockChangeBase{
 	}
 	
 	
-	public List<NBTData> NBTCompoundPhraser(NBTTagCompound tag){
+	public List<NBTData> NBTCompoundParser(NBTTagCompound tag){
 		
 		List<NBTData> tempList = new LinkedList<NBTData>();
 
@@ -148,9 +148,9 @@ public class ThreadSaveClipboard implements BlockChangeBase{
             else if(id == 8)
             	tempData.data.stringData = tag.getString((String) nbt);
             else if(id == 9)
-            	tempData.data.listTagData = NBTTagListPhraser((NBTTagList)tag.getTag((String) nbt));
+            	tempData.data.listTagData = NBTTagListParser((NBTTagList)tag.getTag((String) nbt));
             else if(id == 10)
-            	tempData.data.compoundTagData = NBTCompoundPhraser(tag.getCompoundTag((String) nbt));
+            	tempData.data.compoundTagData = NBTCompoundParser(tag.getCompoundTag((String) nbt));
             else if(id == 11)
             	tempData.data.intArrayData = tag.getIntArray((String) nbt);
             
@@ -163,7 +163,7 @@ public class ThreadSaveClipboard implements BlockChangeBase{
 	}
 	
 	
-	public List<NBTData> NBTTagListPhraser(NBTTagList tag){
+	public List<NBTData> NBTTagListParser(NBTTagList tag){
 		
 		List<NBTData> tempList = new LinkedList<NBTData>();
 
@@ -195,9 +195,9 @@ public class ThreadSaveClipboard implements BlockChangeBase{
         	else if(id == 8)
             	tempData.data.stringData = ((NBTTagString)tag.get(i)).getString();
         	else if(id == 9)
-            	tempData.data.listTagData = NBTTagListPhraser(((NBTTagList)tag.get(i)));
+            	tempData.data.listTagData = NBTTagListParser(((NBTTagList)tag.get(i)));
         	else if(id == 10)
-            	tempData.data.compoundTagData = NBTCompoundPhraser(((NBTTagCompound)tag.getCompoundTagAt(i)));
+            	tempData.data.compoundTagData = NBTCompoundParser(((NBTTagCompound)tag.getCompoundTagAt(i)));
         	else if(id == 11)
             	tempData.data.intArrayData = ((NBTTagIntArray)tag.get(i)).getIntArray();
 	        	

@@ -78,7 +78,7 @@ public class GUISelectionTool extends GuiScreen{
 		buttonsLeft.clear();
 		buttonsRight.clear();
 		
-		NBTTagCompound heldnbt = ToolSelection.getNBT(player.getHeldItem());
+		NBTTagCompound heldnbt = ToolSelection.getNBT(player.getHeldItemMainhand());
 		
 		rotate90.displayString = "Rotate 90: " + heldnbt.getInteger("Rotation");
 		flipx.displayString = "Flip X: " + heldnbt.getBoolean("flipX");
@@ -141,10 +141,10 @@ public class GUISelectionTool extends GuiScreen{
                     if (MinecraftForge.EVENT_BUS.post(event))
                         break;
                     //this.selectedButton = event.button;
-                    event.button.playPressSound(this.mc.getSoundHandler());
-                    this.actionPerformed(event.button, mouseButton);
+                    event.getButton().playPressSound(this.mc.getSoundHandler());
+                    this.actionPerformed(event.getButton(), mouseButton);
                     if (this.equals(this.mc.currentScreen))
-                        MinecraftForge.EVENT_BUS.post(new ActionPerformedEvent.Post(this, event.button, this.buttonList));
+                        MinecraftForge.EVENT_BUS.post(new ActionPerformedEvent.Post(this, event.getButton(), this.buttonList));
                 }
             }
         //}

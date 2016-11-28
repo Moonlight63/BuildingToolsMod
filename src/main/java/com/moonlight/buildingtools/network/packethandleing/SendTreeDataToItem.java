@@ -90,8 +90,8 @@ public class SendTreeDataToItem implements IMessage {
 		@Override
 		public IMessage handleServerMessage(EntityPlayer player, SendTreeDataToItem message, MessageContext ctx) {
 			//System.out.println(player);
-			if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ToolFilter){
-				((ToolFilter)player.getHeldItem().getItem()).SetTreeData(message.data);;
+			if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof ToolFilter){
+				((ToolFilter)player.getHeldItemMainhand().getItem()).SetTreeData(message.data);;
 			}
 			return null;
 		}	

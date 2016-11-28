@@ -85,12 +85,12 @@ public class SendAdvancedFillPacketToItemMessage implements IMessage {
 		@Override
 		public IMessage handleServerMessage(EntityPlayer player, SendAdvancedFillPacketToItemMessage message, MessageContext ctx) {
 			System.out.println(player);
-			if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ToolSelection){
-				((ToolSelection)player.getHeldItem().getItem()).AdvancedFill(message.fillBlockID, message.fillBlockData, message.fillChance);
+			if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof ToolSelection){
+				((ToolSelection)player.getHeldItemMainhand().getItem()).AdvancedFill(message.fillBlockID, message.fillBlockData, message.fillChance);
 				System.out.println("Sent message to player");
 			}
-			if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ToolBrush){
-				((ToolBrush)player.getHeldItem().getItem()).AdvancedFill(message.fillBlockID, message.fillBlockData, message.fillChance);
+			if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof ToolBrush){
+				((ToolBrush)player.getHeldItemMainhand().getItem()).AdvancedFill(message.fillBlockID, message.fillBlockData, message.fillChance);
 				System.out.println("Sent message to player");
 			}
 			return null;

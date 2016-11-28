@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 public class debugblock extends Block implements ITileEntityProvider{
 
 	public debugblock() {
-		super(Material.rock);
+		super(Material.ROCK);
 		setUnlocalizedName("alwaysdayremoverain_(DO_NOT_USE_ON_SERVERS)");
 		setCreativeTab(BuildingTools.tabBT);
 	}

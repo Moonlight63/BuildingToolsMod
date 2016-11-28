@@ -22,7 +22,7 @@ import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.nbt.NBTUtil;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -76,7 +76,7 @@ public class ThreadSaveClipboard implements BlockChangeBase{
 			    	if(change.change.getNBTTag() != null){
 				    	data.nbt = NBTCompoundParser(change.change.getNBTTag());	
 			    	}
-			    	player.addChatMessage(new ChatComponentText(change.change.getBlockPos().getX() + "  " + change.change.getBlockPos().getY() + "  " + change.change.getBlockPos().getZ()));
+			    	player.addChatMessage(new TextComponentString(change.change.getBlockPos().getX() + "  " + change.change.getBlockPos().getY() + "  " + change.change.getBlockPos().getZ()));
 			    	
 			    	COPYDATA.blocks.add(data);
 		    	
@@ -98,11 +98,11 @@ public class ThreadSaveClipboard implements BlockChangeBase{
 				File savedirectory = BuildingTools.clipboardSaveDir;
 				new File(savedirectory, savename).createNewFile();
 				BufferedWriter os = new BufferedWriter(new FileWriter(new File(savedirectory, savename)));
-				player.addChatMessage(new ChatComponentText("Writing data"));
+				player.addChatMessage(new TextComponentString("Writing data"));
 				os.write(JSONDATA);
 //				os.write(gson.toJson(tempdata));
 				os.close();
-				player.addChatMessage(new ChatComponentText("Done"));
+				player.addChatMessage(new TextComponentString("Done"));
 				
 				//playerwrap.addPending(new ThreadLoadClipboard(player));
 			}
@@ -179,17 +179,17 @@ public class ThreadSaveClipboard implements BlockChangeBase{
         	if(id == 0)
             	;
         	else if(id == 1)
-            	tempData.data.byteData = ((NBTBase.NBTPrimitive)((NBTTagByte)tag.get(i))).getByte();
+            	tempData.data.byteData = ((NBTTagByte)tag.get(i)).getByte();
         	else if(id == 2)
-            	tempData.data.shortData = ((NBTBase.NBTPrimitive)((NBTTagShort)tag.get(i))).getShort();
+            	tempData.data.shortData = ((NBTTagShort)tag.get(i)).getShort();
         	else if(id == 3)
-            	tempData.data.intData = ((NBTBase.NBTPrimitive)((NBTTagInt)tag.get(i))).getInt();
+            	tempData.data.intData = ((NBTTagInt)tag.get(i)).getInt();
         	else if(id == 4)
-            	tempData.data.longData = ((NBTBase.NBTPrimitive)((NBTTagLong)tag.get(i))).getLong();
+            	tempData.data.longData = ((NBTTagLong)tag.get(i)).getLong();
         	else if(id == 5)
-            	tempData.data.floatData = ((NBTBase.NBTPrimitive)((NBTTagFloat)tag.get(i))).getFloat();
+            	tempData.data.floatData = ((NBTTagFloat)tag.get(i)).getFloat();
         	else if(id == 6)
-            	tempData.data.doubleData = ((NBTBase.NBTPrimitive)((NBTTagDouble)tag.get(i))).getDouble();
+            	tempData.data.doubleData = ((NBTTagDouble)tag.get(i)).getDouble();
         	else if(id == 7)
             	tempData.data.byteArrayData = ((NBTTagByteArray)tag.get(i)).getByteArray();
         	else if(id == 8)

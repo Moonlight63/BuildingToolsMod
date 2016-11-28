@@ -3,6 +3,7 @@ package com.moonlight.buildingtools.items.tools.undoTool;
 import java.io.Serializable;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockCarpet;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockFlowerPot;
@@ -32,6 +33,7 @@ public class BlockInfoContainer implements Serializable{
 	private static final long serialVersionUID = -3457714512620564053L;
 	public ChangeBlockToThis change;
 	public BlockTypes blockType;
+	public boolean setAir;
 	
 	public static enum BlockTypes{
 		Standard,
@@ -66,7 +68,10 @@ public class BlockInfoContainer implements Serializable{
 		IProperty<EnumType>   quartzPillerProperty = PropertyEnum.create("variant", BlockQuartz.EnumType.class);
 		IProperty<Integer>    bannerStandingRotation = PropertyInteger.create("rotation", 0, 15);
 		
-		
+		if(block instanceof BlockAir){
+			this.setAir = true;
+			return;
+		}
 		
 		//ROTATION STATES
 		if(properties.containsKey(directionalBlockProperty)){
@@ -110,64 +115,35 @@ public class BlockInfoContainer implements Serializable{
 		
 		//LOG
 		else if(properties.containsKey(logDirectionProperty)){
-			
 			this.blockType = BlockTypes.Logs;
-			
 		}
 		
 		//QUARTZ
 		else if(properties.containsKey(quartzPillerProperty)){
-			
 			this.blockType = BlockTypes.Quartz_Pillar;
-			
 		}
 		
 		//SIGNS
 		else if(properties.containsKey(bannerStandingRotation)){
-			
 			this.blockType = BlockTypes.Signs;
-			
 		}
 		
 		//CARPET
 		else if(block instanceof BlockCarpet || block instanceof BlockFlowerPot){
-			
 			this.blockType = BlockTypes.Carpet;
-			
 		}
 		
 		//LEVERS
 		else if(block instanceof BlockLever){
-			
 			this.blockType = BlockTypes.Lever;
-			
 		}
 		
 		//STANDARD BLOCK
 		else{
-			
 			this.blockType = BlockTypes.Standard;
-			
 		}
 		
 		
-		
-		
-		
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 }

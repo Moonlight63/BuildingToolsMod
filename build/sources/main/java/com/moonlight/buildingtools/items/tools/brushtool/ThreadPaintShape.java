@@ -277,17 +277,9 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 		return isFinished;
 	}
 
-	public void checkAndAddQueue(){
-//		if(BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue != null)
-//			return;
-		
+	public void checkAndAddQueue(){		
 		BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(listSet.get(0), world));
-		
-		//if(replaceAll)
-			BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(listSet.get(0), world, true));
-		//if(!replaceAll)
-		//	BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(listSet.get(0), world, blockStateToReplace));
-		
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(listSet.get(0), world, true));
 		listSet.remove(0);
 		
 	}
@@ -304,7 +296,7 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 		//System.out.println("Shape Finished");
 		addSetToList();
 		shapeFinished = true;
-		currentlyCalculating = false;
+		//currentlyCalculating = false;
 	}
 
 	

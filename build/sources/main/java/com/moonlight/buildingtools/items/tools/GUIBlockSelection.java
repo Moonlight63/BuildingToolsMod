@@ -324,7 +324,7 @@ public class GUIBlockSelection extends GuiContainer{
         {
         	ContainerBlockSelMenu.CustomSlot slot = (ContainerBlockSelMenu.CustomSlot)this.inventorySlots.inventorySlots.get(i11);
         	
-        	if(mode == 1){
+        	//if(mode == 1){
         		
         		if(blockReplaceList.contains(slot.getStack())){
         			slot.setColor(RGBA.Red.setAlpha(100));
@@ -342,20 +342,20 @@ public class GUIBlockSelection extends GuiContainer{
         			}
         		}
         		
-        	}
-        	else if (mode == 0){
+        	//}
+        	//else if (mode == 0){
         		
-        		if(blockReplaceList.contains(slot.getStack())){
-        			slot.setColor(RGBA.Red.setAlpha(100));
-        		}
-        		else{
-        			if(slot != null){
-	        			slot.clearColor();
-	        			if(slot.getStack() != null)
-	        				slot.getStack().stackSize = 1;
-        			}
-        		}
-        	}
+//        		if(blockReplaceList.contains(slot.getStack())){
+//        			slot.setColor(RGBA.Red.setAlpha(100));
+//        		}
+//        		else{
+//        			if(slot != null){
+//	        			slot.clearColor();
+//	        			if(slot.getStack() != null)
+//	        				slot.getStack().stackSize = 1;
+//        			}
+//        		}
+        	//}
         	
         	slot.drawRect(this.guiLeft, this.guiTop); 
         	
@@ -366,8 +366,8 @@ public class GUIBlockSelection extends GuiContainer{
         
         if(mode == 0){
         	modeSwitch.displayString = "Simple Replace";
-        	if(!blockFillList.isEmpty())
-        		blockFillList.clear();
+//        	if(!blockFillList.isEmpty())
+//        		blockFillList.clear();
         }
         else if (mode == 1){
         	modeSwitch.displayString = "Advanced Replace";
@@ -437,7 +437,7 @@ public class GUIBlockSelection extends GuiContainer{
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
     protected void actionPerformed(GuiButton button) throws IOException{
-        if (button.id == showMetaData.id){
+        if (button == showMetaData){
         	this.updateCreativeSearch();
         	
         	for (ItemStack itemStack : blockFillList) {
@@ -486,7 +486,7 @@ public class GUIBlockSelection extends GuiContainer{
     		}
         }
 
-        if (button.id == 1){
+        if (button == modeSwitch){
         	if (mode == 0){
         		mode++;
         	}

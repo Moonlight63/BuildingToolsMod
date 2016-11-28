@@ -4,7 +4,7 @@ package com.moonlight.buildingtools.helpers.loaders;
 import com.moonlight.buildingtools.Reference;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 
 public class ItemRenderRegister {

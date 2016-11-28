@@ -14,9 +14,12 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.common.DimensionManager;
@@ -94,9 +97,9 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
 		
 		if(world.isRemote){
 			RayTracing.instance().fire(1000, true);
-			MovingObjectPosition target = RayTracing.instance().getTarget();
+			RayTraceResult target = RayTracing.instance().getTarget();
 		
-			if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){				
+			if (target != null && target.typeOfHit == RayTraceResult.Type.BLOCK){				
 				PacketDispatcher.sendToServer(new SendRaytraceResult(target.getBlockPos(), target.sideHit));
 				this.targetBlock = target.getBlockPos();
 				this.targetFace = target.sideHit;
@@ -124,7 +127,7 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
 	        stack.getTagCompound().setBoolean("forcefall", false);
 	        stack.getTagCompound().setBoolean("fillmode", true);
 	        stack.getTagCompound().setInteger("replacemode", 1);
-	        stack.getTagCompound().setTag("sourceblock", new ItemStack(Blocks.stone).writeToNBT(new NBTTagCompound()));
+	        stack.getTagCompound().setTag("sourceblock", new ItemStack(Blocks.STONE).writeToNBT(new NBTTagCompound()));
 	        stack.getTagCompound().setIntArray("sourceBlockValues", new int[2]);
 	        stack.getTagCompound().setBoolean("useNBTBlock", true);
 	        stack.getTagCompound().setIntArray("targetBlockPos", new int[]{0,0,0});
@@ -160,8 +163,10 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
     }
 	
 	@Override
-	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
+		ItemStack itemStackIn = playerIn.getHeldItemMainhand();
+		
 		//System.out.println(targetBlock);
 		if(targetBlock != null && !worldIn.isAirBlock(targetBlock)){
 		
@@ -181,7 +186,7 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
 			if(playerIn.isSneaking()){
 				//getNBT(stack).setTag("sourceblock", new ItemStack(worldIn.getBlockState(pos).getBlock(), 1, worldIn.getBlockState(pos).getBlock().getMetaFromState(worldIn.getBlockState(pos))).writeToNBT(new NBTTagCompound()));
 				playerIn.openGui(BuildingTools.instance, GuiHandler.GUIBrushTool, worldIn, 0, 0, 0);
-				return itemStackIn;
+				return new ActionResult(EnumActionResult.PASS, itemStackIn);
 				//return false;
 			}
 			
@@ -205,7 +210,7 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
 							getNBT(itemStackIn).getBoolean("fillmode"), 
 							getNBT(itemStackIn).getBoolean("forcefall"),
 							getNBT(itemStackIn).getBoolean("useNBTBlock") ?
-								Block.getBlockFromItem(ItemStack.loadItemStackFromNBT(getNBT(itemStackIn).getCompoundTag("sourceblock")).getItem()).getStateFromMeta(ItemStack.loadItemStackFromNBT(getNBT(itemStackIn).getCompoundTag("sourceblock")).getMetadata())
+								Block.getBlockFromItem(new ItemStack(getNBT(itemStackIn).getCompoundTag("sourceblock")).getItem()).getStateFromMeta(new ItemStack(getNBT(itemStackIn).getCompoundTag("sourceblock")).getMetadata())
 							:
 								Block.getBlockById(getNBT(itemStackIn).getIntArray("sourceBlockValues")[0]).getStateFromMeta(getNBT(itemStackIn).getIntArray("sourceBlockValues")[1]),
 							this.blockStates,
@@ -223,7 +228,7 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
 							getNBT(itemStackIn).getBoolean("fillmode"), 
 							getNBT(itemStackIn).getBoolean("forcefall"),
 							getNBT(itemStackIn).getBoolean("useNBTBlock") ?
-								Block.getBlockFromItem(ItemStack.loadItemStackFromNBT(getNBT(itemStackIn).getCompoundTag("sourceblock")).getItem()).getStateFromMeta(ItemStack.loadItemStackFromNBT(getNBT(itemStackIn).getCompoundTag("sourceblock")).getMetadata())
+								Block.getBlockFromItem(new ItemStack(getNBT(itemStackIn).getCompoundTag("sourceblock")).getItem()).getStateFromMeta(new ItemStack(getNBT(itemStackIn).getCompoundTag("sourceblock")).getMetadata())
 							:
 								Block.getBlockById(getNBT(itemStackIn).getIntArray("sourceBlockValues")[0]).getStateFromMeta(getNBT(itemStackIn).getIntArray("sourceBlockValues")[1])
 							,
@@ -243,7 +248,7 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
 							getNBT(itemStackIn).getBoolean("fillmode"), 
 							getNBT(itemStackIn).getBoolean("forcefall"),
 							getNBT(itemStackIn).getBoolean("useNBTBlock") ?
-								Block.getBlockFromItem(ItemStack.loadItemStackFromNBT(getNBT(itemStackIn).getCompoundTag("sourceblock")).getItem()).getStateFromMeta(ItemStack.loadItemStackFromNBT(getNBT(itemStackIn).getCompoundTag("sourceblock")).getMetadata())
+								Block.getBlockFromItem(new ItemStack(getNBT(itemStackIn).getCompoundTag("sourceblock")).getItem()).getStateFromMeta(new ItemStack(getNBT(itemStackIn).getCompoundTag("sourceblock")).getMetadata())
 							:
 								Block.getBlockById(getNBT(itemStackIn).getIntArray("sourceBlockValues")[0]).getStateFromMeta(getNBT(itemStackIn).getIntArray("sourceBlockValues")[1])
 							,
@@ -263,7 +268,7 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
 							getNBT(itemStackIn).getBoolean("fillmode"), 
 							getNBT(itemStackIn).getBoolean("forcefall"),
 							getNBT(itemStackIn).getBoolean("useNBTBlock") ?
-								Block.getBlockFromItem(ItemStack.loadItemStackFromNBT(getNBT(itemStackIn).getCompoundTag("sourceblock")).getItem()).getStateFromMeta(ItemStack.loadItemStackFromNBT(getNBT(itemStackIn).getCompoundTag("sourceblock")).getMetadata())
+								Block.getBlockFromItem(new ItemStack(getNBT(itemStackIn).getCompoundTag("sourceblock")).getItem()).getStateFromMeta(new ItemStack(getNBT(itemStackIn).getCompoundTag("sourceblock")).getMetadata())
 							:
 								Block.getBlockById(getNBT(itemStackIn).getIntArray("sourceBlockValues")[0]).getStateFromMeta(getNBT(itemStackIn).getIntArray("sourceBlockValues")[1])
 							,
@@ -278,7 +283,7 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
 			
 		}
 		
-		return itemStackIn;
+		return new ActionResult(EnumActionResult.PASS, itemStackIn);
 		
     }
 		
@@ -291,7 +296,7 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
             float hitY,
             float hitZ){
 		
-		onItemRightClick(stack, worldIn, playerIn);
+		onItemRightClick(worldIn, playerIn, EnumHand.MAIN_HAND);
 		return true;
 	}
     
@@ -390,21 +395,21 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
         	
         	renderer.startDraw();
         	
-	        if (event.player.isSneaking())
+	        if (event.getPlayer().isSneaking())
 	        {
-	        	renderer.addOutlineToBuffer(event.player, targetBlock, RGBA.Green.setAlpha(150), event.partialTicks);
+	        	renderer.addOutlineToBuffer(event.getPlayer(), targetBlock, RGBA.Green.setAlpha(150), event.getPartialTicks());
 	            //RenderHelper.renderBlockOutline(event.context, event.player, targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
 	        	renderer.finalizeDraw();
 	            return true;
 	        }
 	        	
-        	if(checkVisualizer(visualizer, event.currentItem)){
+        	if(checkVisualizer(visualizer, event.getPlayer().getHeldItemMainhand())){
                 visualizer.RegenShape(
-            			Shapes.VALUES[getNBT(event.currentItem).getInteger("generator")].generator, 
-            			getNBT(event.currentItem).getInteger("radiusX"),
-            			getNBT(event.currentItem).getInteger("radiusY"),
-            			getNBT(event.currentItem).getInteger("radiusZ"),
-            			getNBT(event.currentItem).getInteger("replacemode"),
+            			Shapes.VALUES[getNBT(event.getPlayer().getHeldItemMainhand()).getInteger("generator")].generator, 
+            			getNBT(event.getPlayer().getHeldItemMainhand()).getInteger("radiusX"),
+            			getNBT(event.getPlayer().getHeldItemMainhand()).getInteger("radiusY"),
+            			getNBT(event.getPlayer().getHeldItemMainhand()).getInteger("radiusZ"),
+            			getNBT(event.getPlayer().getHeldItemMainhand()).getInteger("replacemode"),
             			this.replaceBlocks
         		);
                 updateVisualizer = false;
@@ -418,8 +423,8 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
 		        		BlockPos newPos = visualizer.CalcOffset(pos, targetBlock, targetFace, world);
 		        		
 		        		if(newPos != null){
-		        			if(!(getNBT(event.currentItem).getInteger("replacemode") == 2 && world.isAirBlock(newPos)))
-		        				renderer.addOutlineToBuffer(event.player, newPos, RGBA.White.setAlpha(150), event.partialTicks);
+		        			if(!(getNBT(event.getPlayer().getHeldItemMainhand()).getInteger("replacemode") == 2 && world.isAirBlock(newPos)))
+		        				renderer.addOutlineToBuffer(event.getPlayer(), newPos, RGBA.White.setAlpha(150), event.getPartialTicks());
 		        			//RenderHelper.renderBlockOutline(event.context, event.player, newPos, RGBA.White.setAlpha(150), 1.0f, event.partialTicks);
 		        		}
 		        	}

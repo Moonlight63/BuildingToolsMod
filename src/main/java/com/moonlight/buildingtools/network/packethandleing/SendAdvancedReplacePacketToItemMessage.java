@@ -108,12 +108,12 @@ public class SendAdvancedReplacePacketToItemMessage implements IMessage {
 		@Override
 		public IMessage handleServerMessage(EntityPlayer player, SendAdvancedReplacePacketToItemMessage message, MessageContext ctx) {
 			System.out.println(player);
-			if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ToolSelection){
-				((ToolSelection)player.getHeldItem().getItem()).AdvancedReplace(message.fillBlockID, message.fillBlockData, message.fillChance, message.replaceBlockID, message.replaceBlockData);
+			if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof ToolSelection){
+				((ToolSelection)player.getHeldItemMainhand().getItem()).AdvancedReplace(message.fillBlockID, message.fillBlockData, message.fillChance, message.replaceBlockID, message.replaceBlockData);
 				System.out.println("Sent message to player");
 			}
-			if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ToolBrush){
-				((ToolBrush)player.getHeldItem().getItem()).AdvancedReplace(message.replaceBlockID, message.replaceBlockData);
+			if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof ToolBrush){
+				((ToolBrush)player.getHeldItemMainhand().getItem()).AdvancedReplace(message.replaceBlockID, message.replaceBlockData);
 				System.out.println("Sent message to player");
 			}
 			

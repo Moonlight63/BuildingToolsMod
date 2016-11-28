@@ -111,10 +111,8 @@ public class GeometryUtils {
 				}
 			}
 		}
+		shapeable.shapeFinished();
 		
-		//for(int i = 0; i<=depth;i++){
-			//GeometryUtils.makePlane(new BlockPos(startPos.getX(), startPos.getY(), startPos.getZ()), startPos.getX() * 2, startPos.getY() * 2, EnumFacing.WEST, EnumFacing.UP, shapeable);
-		//}
 	}
 
 	public static void makeSphere(int radiusX, int radiusY, int radiusZ, IShapeable shapeable, EnumSet<Octant> octants, boolean fillMode) {

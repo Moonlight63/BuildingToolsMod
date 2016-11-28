@@ -29,8 +29,8 @@ import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 
 import com.google.common.collect.Maps;
 import com.google.gson.FieldNamingPolicy;
@@ -72,7 +72,7 @@ public class ThreadLoadClipboard implements BlockChangeBase{
 				File savedirectory = BuildingTools.clipboardSaveDir;
 				//new File(savedirectory, "/" + fileName.replace(".json", "") + ".json").createNewFile();
 				BufferedReader is = new BufferedReader(new FileReader(new File(savedirectory, "/" + fileName.replace(".json", "") + ".json")));
-				player.addChatMessage(new ChatComponentText("Reading data"));
+				player.addChatMessage(new TextComponentString("Reading data"));
 
 				String line = null;
 				while((line = is.readLine()) != null) {

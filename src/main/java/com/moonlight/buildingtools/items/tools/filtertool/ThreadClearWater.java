@@ -28,8 +28,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ThreadClearWater implements IShapeable, BlockChangeBase{
@@ -78,16 +78,16 @@ public class ThreadClearWater implements IShapeable, BlockChangeBase{
     {
         BlockPos bpos = tempPos;
         if(bpos.add(origin).getY() > 0 && bpos.add(origin).getY() < 256 && !world.isAirBlock(bpos.add(origin)) && (
-        		world.getBlockState(bpos.add(origin)) == Blocks.water.getDefaultState() || world.getBlockState(bpos.add(origin)) == Blocks.flowing_water.getDefaultState()
-        		|| world.getBlockState(bpos.add(origin)) == Blocks.lava.getDefaultState() || world.getBlockState(bpos.add(origin)) == Blocks.flowing_lava.getDefaultState()))
+        		world.getBlockState(bpos.add(origin)) == Blocks.WATER.getDefaultState() || world.getBlockState(bpos.add(origin)) == Blocks.FLOWING_WATER.getDefaultState()
+        		|| world.getBlockState(bpos.add(origin)) == Blocks.LAVA.getDefaultState() || world.getBlockState(bpos.add(origin)) == Blocks.FLOWING_LAVA.getDefaultState()))
         {
             if(alsofill)
             {
-                tempList.add(new ChangeBlockToThis(bpos.add(origin), Blocks.stone.getDefaultState()));
-                filledList.add(new ChangeBlockToThis(bpos.add(origin), Blocks.air.getDefaultState()));
+                tempList.add(new ChangeBlockToThis(bpos.add(origin), Blocks.STONE.getDefaultState()));
+                filledList.add(new ChangeBlockToThis(bpos.add(origin), Blocks.AIR.getDefaultState()));
             } else
             {
-                tempList.add(new ChangeBlockToThis(bpos.add(origin), Blocks.air.getDefaultState()));
+                tempList.add(new ChangeBlockToThis(bpos.add(origin), Blocks.AIR.getDefaultState()));
             }
             System.out.println((new StringBuilder("Setblock ")).append(count).toString());
             count++;

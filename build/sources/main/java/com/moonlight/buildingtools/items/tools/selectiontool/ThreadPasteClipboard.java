@@ -43,6 +43,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.helpers.loaders.BlockLoader;
 import com.moonlight.buildingtools.items.tools.BlockChangeBase;
@@ -59,14 +61,21 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 	protected BlockPos copyToPos;
 	protected EntityPlayer entity;
 	
+	protected List<BlockInfoContainer> selectionSet = new CopyOnWriteArrayList<BlockInfoContainer>();
+	protected Set<ChangeBlockToThis> tempList = new HashSet<ChangeBlockToThis>();
+	protected int count;
+	
 	protected boolean isFinished = false;
+	protected boolean canFinish = false;
 	
 	protected Set<ChangeBlockToThis> firstPassSet = new CopyOnWriteArraySet<ChangeBlockToThis>();
 	protected Set<SecondPass> secondPassSet = new CopyOnWriteArraySet<SecondPass>();
 	protected Set<Entity> entitySet = new CopyOnWriteArraySet<Entity>();
 	protected Set<EntityPass> entityPassSet = new CopyOnWriteArraySet<EntityPass>();
 	
-	protected List<BlockInfoContainer> selectionSet = new CopyOnWriteArrayList<BlockInfoContainer>();
+	
+	
+	protected List<Set<ChangeBlockToThis>> listSet = Lists.newArrayList();
 	
 	protected boolean currentlyCalculating = false;
 	
@@ -104,7 +113,10 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 //			selectionSet.add(new BlockInfoContainer(change));
 //		}
 		
+		
+		
 		PlayerWrapper playerwrap = BuildingTools.getPlayerRegistry().getPlayer(player).get();
+		//System.out.println(playerwrap.undolist.peek());
 		if(!playerwrap.undolist.isEmpty())
 			selectionSet = playerwrap.undolist.pollLast();
 		
@@ -382,34 +394,37 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 		
 	}
 	
-	public Set<ChangeBlockToThis> RunFirstPass(){
+	public void RunFirstPass(){
 		
-		Set<ChangeBlockToThis> tempList = new HashSet<ChangeBlockToThis>();
-		int firstPassCount = 0;
+		//Set<ChangeBlockToThis> tempList = new HashSet<ChangeBlockToThis>();
+		//int firstPassCount = 0;
 		
 		currentlyCalculating = true;
 		
 		for(BlockInfoContainer bpos : selectionSet){
+			//System.out.println(bpos);
 			
-			if(firstPassCount < 4096){
-				//System.out.println(firstPassCount);
+			//if(firstPassCount < 4096){
 				
-				IBlockState blockState = bpos.change.getBlockState();//world.getBlockState(bpos);
-				NBTTagCompound compound = bpos.change.getNBTTag();
-				Block block = blockState.getBlock();
-				
-				ImmutableMap<?, ?> properties = blockState.getProperties();
-				IProperty<EnumFacing> directionalBlockProperty = PropertyDirection.create("facing"/*, EnumFacing.Plane.HORIZONTAL*/);
-				IProperty<EnumAxis>   logDirectionProperty = PropertyEnum.create("axis", BlockLog.EnumAxis.class);
-				IProperty<EnumType>   quartzPillerProperty = PropertyEnum.create("variant", BlockQuartz.EnumType.class);
-				IProperty<Integer>    bannerStandingRotation = PropertyInteger.create("rotation", 0, 15);
-				
-				BlockPos normalizedPos = bpos.change.getBlockPos();
-				BlockPos adjustedPos = getAdjustedBlockPos(normalizedPos);
-				BlockPos newPos = adjustedPos.add(copyToPos);
-				
-				EnumFacing facing;
-				
+			IBlockState blockState = bpos.change.getBlockState();//world.getBlockState(bpos);
+			NBTTagCompound compound = bpos.change.getNBTTag();
+			
+			IProperty<EnumFacing> directionalBlockProperty = PropertyDirection.create("facing"/*, EnumFacing.Plane.HORIZONTAL*/);
+			IProperty<EnumAxis>   logDirectionProperty = PropertyEnum.create("axis", BlockLog.EnumAxis.class);
+			IProperty<EnumType>   quartzPillerProperty = PropertyEnum.create("variant", BlockQuartz.EnumType.class);
+			IProperty<Integer>    bannerStandingRotation = PropertyInteger.create("rotation", 0, 15);
+			
+			BlockPos normalizedPos = bpos.change.getBlockPos();
+			BlockPos adjustedPos = getAdjustedBlockPos(normalizedPos);
+			BlockPos newPos = adjustedPos.add(copyToPos);
+			
+			EnumFacing facing;
+			
+			if(bpos.setAir){
+				tempList.add(new ChangeBlockToThis(newPos, Blocks.air.getDefaultState()));
+			}
+			else{
+			
 				switch (bpos.blockType) {
 				case Standard:
 					
@@ -645,150 +660,207 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 				default:
 					break;
 				}
-				
-				if(!entitySet.isEmpty()){
-					System.out.println("ENTITIES");
-					for(Entity e : entitySet){
-						if (e instanceof EntityHanging){
-							BlockPos entPos = getAdjustedBlockPos(((EntityHanging)e).getHangingPosition());
-							entityPassSet.add(new EntityPass(entPos.add(copyToPos), e, getAdjustedRotation(e.getHorizontalFacing()).getOpposite()));
-							entitySet.remove(e);
-						}
-						else{
-							entitySet.remove(e);
-						}
+			}
+			
+			if(!entitySet.isEmpty()){
+				System.out.println("ENTITIES");
+				for(Entity e : entitySet){
+					if (e instanceof EntityHanging){
+						BlockPos entPos = getAdjustedBlockPos(((EntityHanging)e).getHangingPosition());
+						entityPassSet.add(new EntityPass(entPos.add(copyToPos), e, getAdjustedRotation(e.getHorizontalFacing()).getOpposite()));
+						entitySet.remove(e);
+					}
+					else{
+						entitySet.remove(e);
 					}
 				}
+			}
+			
+			count++;
+			
+			if(count > 4096){
+    			addSetToList();
+    			//return;
+    		}
 			
 				//System.out.println("REMOVING BPOS");
-				firstPassCount++;
-				selectionSet.remove(bpos);
+			//	firstPassCount++;
+			//	selectionSet.remove(bpos);
 				
-			}
-			else{
-				System.out.println("Break Loop");
-				break;
-			}
+			//}
+			//else{
+			//	System.out.println("Break Loop");
+			//	break;
+			//}
 			
 		}
+		if(!tempList.isEmpty())
+			addSetToList();
 		
-		return tempList;
+		//return tempList;
 		
 	}
 	
-	
-	public Set<ChangeBlockToThis> RunSecondPass(){
+	public void RunSecondPass(){
 		
-		Set<ChangeBlockToThis> tempSet = new HashSet<ChangeBlockToThis>();
-		int secondPassCount = 0;
+		//Set<ChangeBlockToThis> tempList = new HashSet<ChangeBlockToThis>();
+		//int secondPassCount = 0;
 		
 		currentlyCalculating = true;
 		
 		for(SecondPass pass : secondPassSet){
-			if(secondPassCount < 4096){
-				if(!world.isAirBlock(pass.posToCheckForAir)){
-					if(pass.blockChange.getBlockState().getBlock() instanceof BlockDoor){
-						ItemDoor.placeDoor(world, pass.blockChange.getBlockPos(), (EnumFacing) pass.blockChange.getBlockState().getValue(BlockDoor.FACING), pass.blockChange.getBlockState().getBlock());
-					}
-					else{
-						tempSet.add(pass.blockChange);
-					}
-					secondPassCount++;
-					secondPassSet.remove(pass);
-				}
-				//else{
-				//	pass.tries++;
-				//}
+			
+			while (world.isAirBlock(pass.posToCheckForAir)) {
 				
-				if(pass.tries > 25){
-					entity.addChatComponentMessage(new ChatComponentText("Tried 25 times to place block at " + pass.blockChange.getBlockPos()));
-					BuildingTools.getPlayerRegistry().getPlayer(entity).get().rejectedSecondPass.add(pass);
-					secondPassSet.remove(pass);
+			}
+			
+			if(!world.isAirBlock(pass.posToCheckForAir)){
+				if(pass.blockChange.getBlockState().getBlock() instanceof BlockDoor){
+					ItemDoor.placeDoor(world, pass.blockChange.getBlockPos(), (EnumFacing) pass.blockChange.getBlockState().getValue(BlockDoor.FACING), pass.blockChange.getBlockState().getBlock());
 				}
+				else{
+					tempList.add(pass.blockChange);
+				}
+				count++;
+				secondPassSet.remove(pass);
 			}
-			else{
-				break;
+			//else{
+			//	pass.tries++;
+			//}
+			
+			if(pass.tries > 25){
+				entity.addChatComponentMessage(new ChatComponentText("Tried 25 times to place block at " + pass.blockChange.getBlockPos()));
+				BuildingTools.getPlayerRegistry().getPlayer(entity).get().rejectedSecondPass.add(pass);
+				secondPassSet.remove(pass);
 			}
+			
+			if(count > 4096){
+    			addSetToList();
+    			//return;
+    		}
+			
 		}
-		return tempSet;
+		if(!tempList.isEmpty())
+			addSetToList();
 		
 	}
 	
 	public void RunEntityPass(){
 		
-		int passCount = 0;
+		//int passCount = 0;
 		currentlyCalculating = true;
 		for(EntityPass e : entityPassSet){
-			if(passCount < 10){
-				if(!world.isAirBlock(e.placmentPos.offset(e.posToCheckForAir))){
-					if(e.entityToPlace instanceof EntityPainting){
-						world.spawnEntityInWorld(new EntityPainting(world, e.placmentPos, e.posToCheckForAir.getOpposite(), ((EntityPainting)e.entityToPlace).art.title));
-						entityPassSet.remove(e);
-					}
-					else if(e.entityToPlace instanceof EntityItemFrame){
-						EntityItemFrame itemframe = new EntityItemFrame(world, e.placmentPos, e.posToCheckForAir.getOpposite());
-						itemframe.setDisplayedItem(((EntityItemFrame)e.entityToPlace).getDisplayedItem());
-						world.spawnEntityInWorld(itemframe);
-						entityPassSet.remove(e);
-					}
+			//if(passCount < 10){
+			
+			while (world.isAirBlock(e.placmentPos.offset(e.posToCheckForAir))) {
+				
+			}
+			
+			if(!world.isAirBlock(e.placmentPos.offset(e.posToCheckForAir))){
+				if(e.entityToPlace instanceof EntityPainting){
+					world.spawnEntityInWorld(new EntityPainting(world, e.placmentPos, e.posToCheckForAir.getOpposite(), ((EntityPainting)e.entityToPlace).art.title));
+					entityPassSet.remove(e);
 				}
-				passCount++;
+				else if(e.entityToPlace instanceof EntityItemFrame){
+					EntityItemFrame itemframe = new EntityItemFrame(world, e.placmentPos, e.posToCheckForAir.getOpposite());
+					itemframe.setDisplayedItem(((EntityItemFrame)e.entityToPlace).getDisplayedItem());
+					world.spawnEntityInWorld(itemframe);
+					entityPassSet.remove(e);
+				}
 			}
-			else{
-				entityPassSet.remove(e);
-			}
+			//	passCount++;
+			//}
+			//else{
+			//	entityPassSet.remove(e);
+			//}
 		}
+		
+		canFinish = true;
 		
 	}
 	
 	public void perform(){
 		
 		if(!currentlyCalculating){
-			//System.out.println("Starting Paste");
-			if(!selectionSet.isEmpty()){
-				//entity.addChatComponentMessage(new ChatComponentText("Pasting Phase 1"));
-				//System.out.println("Running First Pass");
-				Set<ChangeBlockToThis> temp1 = RunFirstPass();
-				BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(temp1, world, true));
-				if(saveUndo)
-					BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(temp1, world));
-				currentlyCalculating = false;
-				System.out.println("First Pass Done");
-			}
-			else{
-				if(!secondPassSet.isEmpty()){
-					//entity.addChatComponentMessage(new ChatComponentText("Pasting Phase 2"));
-					//System.out.println("Running Second Pass");
-					Set<ChangeBlockToThis> temp2 = RunSecondPass();
-					BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(temp2, world, true));
-					if(saveUndo)
-						BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(temp2, world));
-					currentlyCalculating = false;
-					System.out.println("Second Pass Done");
-				}
-				else{
-					if(!entityPassSet.isEmpty()){
-						//entity.addChatComponentMessage(new ChatComponentText("Pasting Entities"));
-						//System.out.println("Running Entity Pass");
-						RunEntityPass();
-						currentlyCalculating = false;
-						System.out.println("Entity Pass Done");
-					}
-					else{
-						if(saveUndo)
-							MiscUtils.dumpUndoList(entity);
-						entity.addChatComponentMessage(new ChatComponentText("Finished!"));
-						System.out.println("Finished");
-						isFinished = true;
-					}
-				}
-			}			
+			currentlyCalculating = true;
+			RunFirstPass();
+			RunSecondPass();
+			RunEntityPass();
+			
 		}
+		
+		if(listSet.isEmpty() && canFinish){
+			System.out.println("Finished");
+			if(saveUndo)
+				MiscUtils.dumpUndoList(entity);
+			isFinished = true;
+		}
+		
+//		if(!currentlyCalculating){
+//			//System.out.println("Starting Paste");
+//			if(!selectionSet.isEmpty()){
+//				//entity.addChatComponentMessage(new ChatComponentText("Pasting Phase 1"));
+//				//System.out.println("Running First Pass");
+//				Set<ChangeBlockToThis> temp1 = RunFirstPass();
+//				BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(temp1, world, true));
+//				if(saveUndo)
+//					BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(temp1, world));
+//				currentlyCalculating = false;
+//				System.out.println("First Pass Done");
+//			}
+//			else{
+//				if(!secondPassSet.isEmpty()){
+//					//entity.addChatComponentMessage(new ChatComponentText("Pasting Phase 2"));
+//					//System.out.println("Running Second Pass");
+//					Set<ChangeBlockToThis> temp2 = RunSecondPass();
+//					BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(temp2, world, true));
+//					if(saveUndo)
+//						BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(temp2, world));
+//					currentlyCalculating = false;
+//					System.out.println("Second Pass Done");
+//				}
+//				else{
+//					if(!entityPassSet.isEmpty()){
+//						//entity.addChatComponentMessage(new ChatComponentText("Pasting Entities"));
+//						//System.out.println("Running Entity Pass");
+//						RunEntityPass();
+//						currentlyCalculating = false;
+//						System.out.println("Entity Pass Done");
+//					}
+//					else{
+//						if(saveUndo)
+//							MiscUtils.dumpUndoList(entity);
+//						entity.addChatComponentMessage(new ChatComponentText("Finished!"));
+//						System.out.println("Finished");
+//						isFinished = true;
+//					}
+//				}
+//			}			
+//		}
 		
 	}
 	
 	public boolean isFinished(){
 		return isFinished;
+	}
+	
+	public void checkAndAddQueue(){
+//		if(BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue != null)
+//			return;
+		
+		if(saveUndo)
+			BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(listSet.get(0), world));
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(listSet.get(0), world, true));
+		
+		listSet.remove(0);
+		
+	}
+	
+	public void addSetToList(){
+		listSet.add(Sets.newHashSet(tempList));
+		tempList.clear();
+		count = 0;
+		checkAndAddQueue();
 	}
 	
 	public class SecondPass{

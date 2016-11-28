@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -121,7 +121,7 @@ public final class ContainerBlockSelMenu extends Container{
 //	        }
 	
 	        Tessellator tessellator = Tessellator.getInstance();
-	        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+	        VertexBuffer worldrenderer = tessellator.getBuffer();
 	        GlStateManager.enableBlend();
 	        GlStateManager.disableTexture2D();
 	        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);

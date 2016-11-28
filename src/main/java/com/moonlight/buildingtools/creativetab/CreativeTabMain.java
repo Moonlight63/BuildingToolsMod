@@ -1,8 +1,10 @@
 package com.moonlight.buildingtools.creativetab;
 
+import com.moonlight.buildingtools.helpers.loaders.ItemLoader;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -13,9 +15,9 @@ public class CreativeTabMain extends CreativeTabs {
 	}
 	
 	@SideOnly(Side.CLIENT)
-    public Item getTabIconItem() {
+    public ItemStack getTabIconItem() {
         //return Item.getItemFromBlock(Blocks.chest);
-        return Items.milk_bucket;
+        return new ItemStack(ItemLoader.toolBuilding);
     }
 	
 	public boolean hasSearchBar() {

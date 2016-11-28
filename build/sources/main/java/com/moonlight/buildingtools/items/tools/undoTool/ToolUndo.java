@@ -1,5 +1,8 @@
 package com.moonlight.buildingtools.items.tools.undoTool;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -13,13 +16,15 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
 import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.items.tools.selectiontool.GUISaveLoadClipboard;
 import com.moonlight.buildingtools.items.tools.selectiontool.ThreadPasteClipboard;
+import com.moonlight.buildingtools.network.GuiHandler;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.KeyHelper;
 
 public class ToolUndo extends Item{
 	
-	
+	EntityPlayer playerIn;
 	
 	public ToolUndo(){
 		super();
@@ -27,6 +32,12 @@ public class ToolUndo extends Item{
 		setCreativeTab(BuildingTools.tabBT);
 		setMaxStackSize(1);
 	}
+	
+	@Override
+	public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
+    {
+		this.playerIn = (EntityPlayer) entityIn;
+    }
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -57,18 +68,26 @@ public class ToolUndo extends Item{
 	@Override
 	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
     {
-		if(!worldIn.isRemote){
-			System.out.println("Used Undo Tool");
-			PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
-			//System.out.println(player.undolist);
-			if(!player.undolist.isEmpty() && player.UndoIsSaved){
-				player.addPending(new ThreadPasteClipboard(worldIn, playerIn, /*player.lastUndo, */new LinkedHashSet<Entity>()));				
-			}
-			if(!player.UndoIsSaved){
-				playerIn.addChatComponentMessage(new ChatComponentText("The last operation is not finished saving. Please Wait!"));
-			}
-			else if (player.undolist.isEmpty()){
-				playerIn.addChatComponentMessage(new ChatComponentText("No Undo operations are recorded"));
+		if(playerIn.isSneaking()){
+			playerIn.openGui(BuildingTools.instance, GuiHandler.GUIUndoSave, worldIn, 0, 0, 0);
+			//PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
+			//player.addPending(new ThreadSaveUndoList(playerIn, new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date())));
+		}
+		else{
+			if(!worldIn.isRemote){
+				System.out.println("Used Undo Tool");
+				PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
+				//System.out.println(player.undolist);
+				if(!player.undolist.isEmpty() && player.UndoIsSaved){
+					player.addPending(new ThreadPasteClipboard(worldIn, playerIn, /*player.lastUndo, */new LinkedHashSet<Entity>()));		
+					playerIn.addChatComponentMessage(new ChatComponentText("Undoing"));
+				}
+				if(!player.UndoIsSaved){
+					playerIn.addChatComponentMessage(new ChatComponentText("The last operation is not finished saving. Please Wait!"));
+				}
+				else if (player.undolist.isEmpty()){
+					playerIn.addChatComponentMessage(new ChatComponentText("No Undo operations are recorded"));
+				}
 			}
 		}
         return itemStackIn;
@@ -86,5 +105,10 @@ public class ToolUndo extends Item{
 		onItemRightClick(stack, worldIn, playerIn);
 		
 		return true;
+	}
+	
+	public void loadUndos(String file){
+		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
+		player.addPending(new ThreadLoadUndo(playerIn, file));
 	}
 }

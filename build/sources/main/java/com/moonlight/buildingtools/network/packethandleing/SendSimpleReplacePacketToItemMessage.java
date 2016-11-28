@@ -5,6 +5,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
+import com.moonlight.buildingtools.items.tools.filtertool.ToolFilter;
 import com.moonlight.buildingtools.items.tools.selectiontool.ToolSelection;
 
 public class SendSimpleReplacePacketToItemMessage implements IMessage {
@@ -62,6 +63,12 @@ public class SendSimpleReplacePacketToItemMessage implements IMessage {
 				((ToolSelection)player.getHeldItem().getItem()).SimpleReplace(message.fillBlockID, message.fillBlockData, message.replaceBlockID, message.replaceBlockData);
 				System.out.println("Sent message to player");
 			}
+			
+			if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ToolFilter){
+				((ToolFilter)player.getHeldItem().getItem()).SetTreeMaterials(message.fillBlockID, message.fillBlockData, message.replaceBlockID, message.replaceBlockData);
+				System.out.println("Sent message to player");
+			}
+			
 			return null;
 		}	
 		

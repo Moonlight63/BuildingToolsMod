@@ -21,7 +21,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.config.GuiSlider;
@@ -91,7 +90,7 @@ public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonList
 	@Override
 	public void initGui(){
 		System.out.println("GUISaveLoadClipboard.initGui()");
-		NBTTagCompound heldnbt = ToolSelection.getNBT(player.getHeldItem());
+		NBTTagCompound heldnbt = ToolSelection.getNBT(player.getHeldItemMainhand());
 		scrollpane = new ScrollPane(this, this.width/2 - 85, this.height/2 - 100, 180, 140, 400);
         scrollpane.setClip(true);
         
@@ -128,10 +127,10 @@ public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonList
                     if (MinecraftForge.EVENT_BUS.post(event))
                         break;
                     //this.selectedButton = event.button;
-                    event.button.playPressSound(this.mc.getSoundHandler());
-                    this.actionPerformed(event.button, mouseButton);
+                    event.getButton().playPressSound(this.mc.getSoundHandler());
+                    this.actionPerformed(event.getButton(), mouseButton);
                     if (this.equals(this.mc.currentScreen))
-                        MinecraftForge.EVENT_BUS.post(new ActionPerformedEvent.Post(this, event.button, this.buttonList));
+                        MinecraftForge.EVENT_BUS.post(new ActionPerformedEvent.Post(this, event.getButton(), this.buttonList));
                 }
             }
             

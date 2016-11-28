@@ -1,7 +1,7 @@
-This set of MCP mappings was designed for MC 1.8.8. Use at your own peril.This set of MCP mappings was designed for MC 1.8.8. Use at your own peril.
+This mapping 'stable_20' was designed for MC 1.8.8! Use at your own peril.This mapping 'stable_20' was designed for MC 1.8.8! Use at your own peril.
 
 #################################################
-         ForgeGradle 2.1-SNAPSHOT-75bb646        
+         ForgeGradle 2.1-SNAPSHOT-d98ae31        
   https://github.com/MinecraftForge/ForgeGradle  
 #################################################
                Powered by MCP unknown               
@@ -30,13 +30,13 @@ Note: Recompile with -Xlint:unchecked for details.
 :testClasses UP-TO-DATE
 :test UP-TO-DATE
 :extractMcpData SKIPPED
-:extractMcpMappings SKIPPED
+:extractMcpMappings
 :getVersionJson
 :extractUserdev
 :genSrgs SKIPPED
 :reobfJar
 :extractRangemapReplacedMain
-F:\Users\dalen\Desktop\MC Mod WS\WS\BuildingToolsAdvanced\build\sources\main\java
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java
 :retromapReplacedMain
 remapping source...
 :sourceJar
@@ -46,4 +46,4 @@ remapping source...
 
 BUILD SUCCESSFUL
 
-Total time: 1 mins 18.37 secs
+Total time: 25.365 secs

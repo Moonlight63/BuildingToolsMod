@@ -8,7 +8,7 @@ import java.util.Set;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import com.moonlight.buildingtools.helpers.Shapes;
@@ -79,7 +79,7 @@ public class ErosionVisuallizer implements IShapeable{
 		
 		if(!fillPass){
 		
-			if(curBlock != Blocks.air.getDefaultState()){
+			if(curBlock != Blocks.AIR.getDefaultState()){
 				int tempCount = 0;
 				
 				for(BlockPos pos : FACES_TO_CHECK){
@@ -89,7 +89,7 @@ public class ErosionVisuallizer implements IShapeable{
 				}
 				
 				if(tempCount >= curPreset.getErosionFaces()){
-					tracker.put(bpos, Blocks.air.getDefaultState(), curErodeIteration);
+					tracker.put(bpos, Blocks.AIR.getDefaultState(), curErodeIteration);
 					tempErosionSet.add(bpos);
 					//tempList.add(new ChangeBlockToThis(bpos, Blocks.air.getDefaultState()));
 				}
@@ -99,14 +99,14 @@ public class ErosionVisuallizer implements IShapeable{
 		}
 		else if(fillPass){
 			
-			if(curBlock == Blocks.air.getDefaultState()){
+			if(curBlock == Blocks.AIR.getDefaultState()){
 				int tempCount = 0;
 				Map<IBlockState, Integer> blockCount = new HashMap<IBlockState, Integer>();
 	              for (BlockPos pos : FACES_TO_CHECK)
 	              {
 	            	  BlockPos relativePosition = bpos.add(pos);
 	            	  IBlockState relativeBlock = tracker.get(relativePosition, curFillIteration);
-	            	  if ((relativeBlock != Blocks.air.getDefaultState()))
+	            	  if ((relativeBlock != Blocks.AIR.getDefaultState()))
 	            	  {
 	            		  tempCount++;
 	            		  IBlockState typeBlock = relativeBlock;
@@ -118,7 +118,7 @@ public class ErosionVisuallizer implements IShapeable{
 	            	  }
 	              }
 	              
-	              IBlockState currentMaterial = Blocks.air.getDefaultState();
+	              IBlockState currentMaterial = Blocks.AIR.getDefaultState();
 	              int amount = 0;
 	              for (IBlockState state : blockCount.keySet())
 	              {

@@ -1,7 +1,7 @@
 package com.moonlight.buildingtools.helpers.shapes;
 
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 
 public class ShapeCuboidGenerator implements IShapeGenerator {
 

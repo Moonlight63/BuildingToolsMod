@@ -13,8 +13,8 @@ import java.util.*;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ThreadTopsoil implements IShapeable, BlockChangeBase{
@@ -57,10 +57,10 @@ public class ThreadTopsoil implements IShapeable, BlockChangeBase{
         BlockPos bpos = tempPos;
         if(bpos.add(origin).getY() > 0 && bpos.add(origin).getY() < 256 && !world.isAirBlock(bpos.add(origin)) && world.isAirBlock(bpos.add(origin).up()))
         {
-            tempList.add(new ChangeBlockToThis(bpos.add(origin), Blocks.grass.getDefaultState()));
+            tempList.add(new ChangeBlockToThis(bpos.add(origin), Blocks.GRASS.getDefaultState()));
             for(int i = 1; i < depth; i++)
             {
-                tempList.add(new ChangeBlockToThis(bpos.add(origin).down(i), Blocks.dirt.getDefaultState()));
+                tempList.add(new ChangeBlockToThis(bpos.add(origin).down(i), Blocks.DIRT.getDefaultState()));
                 count++;
             }
 

@@ -106,10 +106,10 @@ public class GUISaveLoadCurrentUndoList extends GuiScreen implements IScrollButt
                     if (MinecraftForge.EVENT_BUS.post(event))
                         break;
                     //this.selectedButton = event.button;
-                    event.button.playPressSound(this.mc.getSoundHandler());
-                    this.actionPerformed(event.button, mouseButton);
+                    event.getButton().playPressSound(this.mc.getSoundHandler());
+                    this.actionPerformed(event.getButton(), mouseButton);
                     if (this.equals(this.mc.currentScreen))
-                        MinecraftForge.EVENT_BUS.post(new ActionPerformedEvent.Post(this, event.button, this.buttonList));
+                        MinecraftForge.EVENT_BUS.post(new ActionPerformedEvent.Post(this, event.getButton(), this.buttonList));
                 }
             }
             

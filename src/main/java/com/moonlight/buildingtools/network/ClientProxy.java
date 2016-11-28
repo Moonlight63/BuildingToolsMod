@@ -44,7 +44,7 @@ public class ClientProxy extends CommonProxy {
         public Optional<Pair<String, PlayerWrapper>> get(String name)
         {
             EntityPlayer player = null;
-            for (Object e : net.minecraft.client.Minecraft.getMinecraft().getIntegratedServer().getConfigurationManager().playerEntityList)
+            for (Object e : net.minecraft.client.Minecraft.getMinecraft().getIntegratedServer().getPlayerList().getPlayerList())
             {
             	//System.out.println("\n\n\n\n" + e + "\n\n\n\n");
                 EntityPlayer entity = (EntityPlayer) e;

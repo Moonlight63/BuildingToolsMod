@@ -9,8 +9,8 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -32,7 +32,7 @@ public class WorldEventHandler{
 	
 	@SubscribeEvent
 	public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event){
-		event.player.addChatMessage(new ChatComponentText(UpdateHandler.updateStatus));
+		event.player.addChatMessage(new TextComponentString(UpdateHandler.updateStatus));
 	}
 	
 	@SubscribeEvent
@@ -84,9 +84,9 @@ public class WorldEventHandler{
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer;			
 		if (world != null && player != null){
 			RayTracing.instance().fire(4, true);
-			MovingObjectPosition target = RayTracing.instance().getTarget();
+			RayTraceResult target = RayTracing.instance().getTarget();
 			
-			if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){
+			if (target != null && target.typeOfHit == RayTraceResult.Type.BLOCK){
 				
 			}
 			

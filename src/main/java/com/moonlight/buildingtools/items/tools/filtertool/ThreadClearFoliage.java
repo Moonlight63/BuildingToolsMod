@@ -15,8 +15,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import net.minecraft.block.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ThreadClearFoliage implements IShapeable, BlockChangeBase{
@@ -69,11 +69,11 @@ public class ThreadClearFoliage implements IShapeable, BlockChangeBase{
         {
             if(alsofill)
             {
-                tempList.add(new ChangeBlockToThis(bpos.add(origin), Blocks.stone.getDefaultState()));
-                filledList.add(new ChangeBlockToThis(bpos.add(origin), Blocks.air.getDefaultState()));
+                tempList.add(new ChangeBlockToThis(bpos.add(origin), Blocks.STONE.getDefaultState()));
+                filledList.add(new ChangeBlockToThis(bpos.add(origin), Blocks.AIR.getDefaultState()));
             } else
             {
-                tempList.add(new ChangeBlockToThis(bpos.add(origin), Blocks.air.getDefaultState()));
+                tempList.add(new ChangeBlockToThis(bpos.add(origin), Blocks.AIR.getDefaultState()));
             }
             System.out.println((new StringBuilder("Setblock ")).append(count).toString());
             count++;

@@ -22,8 +22,8 @@ import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.BlockVine;
 import net.minecraft.block.BlockWeb;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class FilterShapeVisualizer implements IShapeable{
@@ -92,17 +92,17 @@ public class FilterShapeVisualizer implements IShapeable{
             		!world.isAirBlock(bpos.add(targetBlock)) 
             		&& 
             		(
-	            		world.getBlockState(bpos.add(targetBlock)) == Blocks.water.getDefaultState() ||
-	            		world.getBlockState(bpos.add(targetBlock)) == Blocks.flowing_water.getDefaultState() ||
-	            		world.getBlockState(bpos.add(targetBlock)) == Blocks.lava.getDefaultState() ||
-	            		world.getBlockState(bpos.add(targetBlock)) == Blocks.flowing_lava.getDefaultState()
+	            		world.getBlockState(bpos.add(targetBlock)) == Blocks.WATER.getDefaultState() ||
+	            		world.getBlockState(bpos.add(targetBlock)) == Blocks.FLOWING_WATER.getDefaultState() ||
+	            		world.getBlockState(bpos.add(targetBlock)) == Blocks.LAVA.getDefaultState() ||
+	            		world.getBlockState(bpos.add(targetBlock)) == Blocks.FLOWING_LAVA.getDefaultState()
             		)
             		&& 
 	            	(
-	            		world.getBlockState(bpos.add(targetBlock).up()) != Blocks.water.getDefaultState() &&
-	            		world.getBlockState(bpos.add(targetBlock).up()) != Blocks.flowing_water.getDefaultState() &&
-	            		world.getBlockState(bpos.add(targetBlock).up()) != Blocks.lava.getDefaultState() &&
-	            		world.getBlockState(bpos.add(targetBlock).up()) != Blocks.flowing_lava.getDefaultState()
+	            		world.getBlockState(bpos.add(targetBlock).up()) != Blocks.WATER.getDefaultState() &&
+	            		world.getBlockState(bpos.add(targetBlock).up()) != Blocks.FLOWING_WATER.getDefaultState() &&
+	            		world.getBlockState(bpos.add(targetBlock).up()) != Blocks.LAVA.getDefaultState() &&
+	            		world.getBlockState(bpos.add(targetBlock).up()) != Blocks.FLOWING_LAVA.getDefaultState()
 	            	)
             	){
             	
@@ -134,7 +134,7 @@ public class FilterShapeVisualizer implements IShapeable{
         }
         else if(filterType == 4)
         {
-            if(world.getBlockState(bpos.add(targetBlock)) == Blocks.grass.getDefaultState() && world.isAirBlock(bpos.add(targetBlock).up())){
+            if(world.getBlockState(bpos.add(targetBlock)) == Blocks.GRASS.getDefaultState() && world.isAirBlock(bpos.add(targetBlock).up())){
             	return (new BlockPos(bpos.add(targetBlock)));
             }
         } 

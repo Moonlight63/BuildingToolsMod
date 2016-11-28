@@ -7,8 +7,8 @@ import net.minecraft.block.BlockDoor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 import com.google.common.collect.Lists;
@@ -55,7 +55,7 @@ public class MiscUtils {
 		if(player.undolist.add(Lists.newCopyOnWriteArrayList(player.tempUndoList))){
 			player.tempUndoList.clear();
 			player.UndoIsSaved = true;
-			entity.addChatComponentMessage(new ChatComponentText("Done Saving Undo"));
+			entity.addChatComponentMessage(new TextComponentString("Done Saving Undo"), true);
 		}
 	}
 

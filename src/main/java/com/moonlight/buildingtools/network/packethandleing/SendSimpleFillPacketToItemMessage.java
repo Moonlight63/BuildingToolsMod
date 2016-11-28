@@ -55,12 +55,12 @@ public class SendSimpleFillPacketToItemMessage implements IMessage {
 		@Override
 		public IMessage handleServerMessage(EntityPlayer player, SendSimpleFillPacketToItemMessage message, MessageContext ctx) {
 			System.out.println(player);
-			if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ToolSelection){
-				((ToolSelection)player.getHeldItem().getItem()).SimpleFill(message.fillBlockID, message.fillBlockData);
+			if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof ToolSelection){
+				((ToolSelection)player.getHeldItemMainhand().getItem()).SimpleFill(message.fillBlockID, message.fillBlockData);
 				System.out.println("Sent message to player");
 			}
-			if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ToolBrush){
-				((ToolBrush)player.getHeldItem().getItem()).SimpleFill(message.fillBlockID, message.fillBlockData);
+			if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof ToolBrush){
+				((ToolBrush)player.getHeldItemMainhand().getItem()).SimpleFill(message.fillBlockID, message.fillBlockData);
 				System.out.println("Sent message to player");
 			}
 			return null;

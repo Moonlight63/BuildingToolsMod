@@ -10,9 +10,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 import com.moonlight.buildingtools.BuildingTools;
@@ -66,8 +69,9 @@ public class ToolUndo extends Item{
     }
 	
 	@Override
-	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
+		ItemStack itemStackIn = playerIn.getHeldItemMainhand();
 		if(playerIn.isSneaking()){
 			playerIn.openGui(BuildingTools.instance, GuiHandler.GUIUndoSave, worldIn, 0, 0, 0);
 			//PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
@@ -80,17 +84,17 @@ public class ToolUndo extends Item{
 				//System.out.println(player.undolist);
 				if(!player.undolist.isEmpty() && player.UndoIsSaved){
 					player.addPending(new ThreadPasteClipboard(worldIn, playerIn, /*player.lastUndo, */new LinkedHashSet<Entity>()));		
-					playerIn.addChatComponentMessage(new ChatComponentText("Undoing"));
+					playerIn.addChatMessage(new TextComponentString("Undoing"));
 				}
 				if(!player.UndoIsSaved){
-					playerIn.addChatComponentMessage(new ChatComponentText("The last operation is not finished saving. Please Wait!"));
+					playerIn.addChatMessage(new TextComponentString("The last operation is not finished saving. Please Wait!"));
 				}
 				else if (player.undolist.isEmpty()){
-					playerIn.addChatComponentMessage(new ChatComponentText("No Undo operations are recorded"));
+					playerIn.addChatMessage(new TextComponentString("No Undo operations are recorded"));
 				}
 			}
 		}
-        return itemStackIn;
+		return new ActionResult(EnumActionResult.PASS, itemStackIn);
     }
 		
 	public boolean onItemUse(ItemStack stack,
@@ -102,7 +106,7 @@ public class ToolUndo extends Item{
             float hitY,
             float hitZ){
 		
-		onItemRightClick(stack, worldIn, playerIn);
+		onItemRightClick(worldIn, playerIn, EnumHand.MAIN_HAND);
 		
 		return true;
 	}

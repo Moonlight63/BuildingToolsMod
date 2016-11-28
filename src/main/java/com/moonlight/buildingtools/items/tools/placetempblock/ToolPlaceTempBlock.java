@@ -4,9 +4,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 
@@ -41,9 +44,9 @@ public class ToolPlaceTempBlock extends Item implements IOutlineDrawer{
 		
 		if(world.isRemote){
 			RayTracing.instance().fire(1000, true);
-			MovingObjectPosition target = RayTracing.instance().getTarget();
+			RayTraceResult target = RayTracing.instance().getTarget();
 		
-			if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){				
+			if (target != null && target.typeOfHit == RayTraceResult.Type.BLOCK){				
 				PacketDispatcher.sendToServer(new SendRaytraceResult(target.getBlockPos(), target.sideHit));
 				this.targetBlock = target.getBlockPos();
 				this.targetFace = target.sideHit;
@@ -63,8 +66,10 @@ public class ToolPlaceTempBlock extends Item implements IOutlineDrawer{
 	}
 	
 	@Override
-	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
+		
+		ItemStack itemStackIn = playerIn.getHeldItemMainhand();
 		if(!worldIn.isRemote){
 			if(playerIn.isSneaking()){
 				if(targetBlock != null){
@@ -75,7 +80,7 @@ public class ToolPlaceTempBlock extends Item implements IOutlineDrawer{
 				worldIn.setBlockState(playerIn.getPosition(), BlockLoader.tempBlock.getDefaultState());
 		}
 		
-        return itemStackIn;
+		return new ActionResult(EnumActionResult.PASS, itemStackIn);
     }
 		
 	public boolean onItemUse(ItemStack stack,
@@ -88,7 +93,7 @@ public class ToolPlaceTempBlock extends Item implements IOutlineDrawer{
             float hitZ){
 		
 		
-		onItemRightClick(stack, worldIn, playerIn);
+		onItemRightClick(worldIn, playerIn, EnumHand.MAIN_HAND);
 		
 		return true;
 	}
@@ -96,7 +101,7 @@ public class ToolPlaceTempBlock extends Item implements IOutlineDrawer{
 	@Override
 	public boolean drawOutline(DrawBlockHighlightEvent event) {
 		if(targetBlock != null)
-			RenderHelper.renderBlockOutline(event.context, event.player, targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
+			RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.getPartialTicks());
 		return true;
 	}
 	

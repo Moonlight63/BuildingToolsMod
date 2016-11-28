@@ -1,7 +1,8 @@
 package com.moonlight.buildingtools.helpers;
 
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.StatCollector;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.translation.LanguageMap;
 
 import org.lwjgl.opengl.GL11;
 
@@ -37,7 +38,8 @@ public class FontHelper
     	GL11.glEnable(GL11.GL_DEPTH_TEST);
     }
     
-    public static String localizeString(String key){
-    	return StatCollector.translateToLocal(key);
+    public String localizeString(String key){
+    	
+    	return I18n.format(key);
     }
 }

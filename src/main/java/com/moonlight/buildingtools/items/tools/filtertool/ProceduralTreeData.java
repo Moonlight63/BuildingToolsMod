@@ -32,8 +32,8 @@ public class ProceduralTreeData {
     double scaleWidth = 1.0D;
     boolean hollowTrunk = false;
     int trunkWallThickness = 1;
-    IBlockState logMat = Blocks.log.getDefaultState();
-    IBlockState leafMat = Blocks.leaves.getDefaultState();
+    IBlockState logMat = Blocks.LOG.getDefaultState();
+    IBlockState leafMat = Blocks.LEAVES.getDefaultState();
 	
 	public ProceduralTreeData(){
 		

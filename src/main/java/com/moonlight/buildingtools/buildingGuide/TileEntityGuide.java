@@ -2,7 +2,14 @@ package com.moonlight.buildingtools.buildingGuide;
 
 import java.util.Set;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
+import com.moonlight.buildingtools.helpers.Shapes;
+import com.moonlight.buildingtools.helpers.shapes.IShapeable;
+
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockSign;
+import net.minecraft.block.BlockStone;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -12,23 +19,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
-import com.moonlight.buildingtools.helpers.Shapes;
-import com.moonlight.buildingtools.helpers.loaders.BlockLoader;
-import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 
 public class TileEntityGuide extends TileEntity implements IShapeable, IActivateAwareTile {
 
@@ -231,8 +233,8 @@ public class TileEntityGuide extends TileEntity implements IShapeable, IActivate
 
 	private void switchMode(EntityPlayer player) {
 		switchMode();
-		player.addChatMessage(new ChatComponentTranslation("openblocks.misc.change_mode", getCurrentMode().getLocalizedName()));
-		player.addChatMessage(new ChatComponentTranslation("openblocks.misc.total_blocks", shape.size()));
+		player.addChatMessage(new TextComponentTranslation("openblocks.misc.change_mode", getCurrentMode().getLocalizedName()));
+		player.addChatMessage(new TextComponentTranslation("openblocks.misc.total_blocks", shape.size()));
 	}
 
 	
@@ -254,8 +256,8 @@ public class TileEntityGuide extends TileEntity implements IShapeable, IActivate
 
 	private void changeDimensions(EntityPlayer player, EnumFacing orientation) {
 		changeDimensions(orientation);
-		player.addChatMessage(new ChatComponentTranslation("openblocks.misc.change_size", width, height, depth));
-		player.addChatMessage(new ChatComponentTranslation("openblocks.misc.total_blocks", shape.size()));
+		player.addChatMessage(new TextComponentTranslation("openblocks.misc.change_size", width, height, depth));
+		player.addChatMessage(new TextComponentTranslation("openblocks.misc.total_blocks", shape.size()));
 	}
 
 	private void changeDimensions(EnumFacing orientation) {
@@ -310,12 +312,12 @@ public class TileEntityGuide extends TileEntity implements IShapeable, IActivate
 	}
 
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (worldObj.isRemote) return true;
-		playerIn.addChatMessage(new ChatComponentText("Got Right Click"));
+		playerIn.addChatMessage(new TextComponentString("Got Right Click"));
 		if (playerIn.isSneaking()) switchMode(playerIn);
 		else {
-			ItemStack heldStack = playerIn.getHeldItem();
+			ItemStack heldStack = playerIn.getHeldItemMainhand();
 			if (heldStack == null || !tryUseItem(playerIn, heldStack)) changeDimensions(playerIn, side);
 		}
 		
@@ -323,7 +325,7 @@ public class TileEntityGuide extends TileEntity implements IShapeable, IActivate
 	}
 	
 	@Override
-	public boolean removedByPlayer(World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {	
+	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {	
 		previousShape = shape;
 		return removeMarkers(shape);
 	}
@@ -364,10 +366,10 @@ public class TileEntityGuide extends TileEntity implements IShapeable, IActivate
 	}
 
 	private boolean isInFillMode() {
-		return worldObj.getBlockState(new BlockPos(this.pos.getX(), this.pos.getY() + 1, this.pos.getZ())) == Blocks.obsidian.getDefaultState();//worldObj.getBlock(xCoord, yCoord + 1, zCoord) == Blocks.obsidian;
+		return worldObj.getBlockState(new BlockPos(this.pos.getX(), this.pos.getY() + 1, this.pos.getZ())) == Blocks.OBSIDIAN.getDefaultState();//worldObj.getBlock(xCoord, yCoord + 1, zCoord) == Blocks.obsidian;
 	}
 	private boolean isInSolidMode() {
-		return worldObj.getBlockState(new BlockPos(this.pos.getX(), this.pos.getY() - 1, this.pos.getZ())) == Blocks.obsidian.getDefaultState();//worldObj.getBlock(xCoord, yCoord + 1, zCoord) == Blocks.obsidian;
+		return worldObj.getBlockState(new BlockPos(this.pos.getX(), this.pos.getY() - 1, this.pos.getZ())) == Blocks.OBSIDIAN.getDefaultState();//worldObj.getBlock(xCoord, yCoord + 1, zCoord) == Blocks.obsidian;
 	}
 
 	@Override
@@ -376,26 +378,26 @@ public class TileEntityGuide extends TileEntity implements IShapeable, IActivate
 	}
 	
 	@Override
-	public Packet getDescriptionPacket()
-	{
-	 NBTTagCompound var1 = new NBTTagCompound();
-	 this.writeToNBT(var1);
-	 return new S35PacketUpdateTileEntity(pos, 3, var1);
+	public SPacketUpdateTileEntity getUpdatePacket(){
+		NBTTagCompound var1 = new NBTTagCompound();
+		this.writeToNBT(var1);
+		return new SPacketUpdateTileEntity(pos, 3, var1);
 	}
 		
 	@Override
-	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt)
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt)
 	{
 		readFromNBT(pkt.getNbtCompound());
 	}
 	
 	//@Override
-	public void writeToNBT(NBTTagCompound compound){
+	public NBTTagCompound writeToNBT(NBTTagCompound compound){
 		super.writeToNBT(compound);
 		compound.setInteger("width", this.getWidth());
 		compound.setInteger("height", this.getHeight());
 		compound.setInteger("depth", this.getDepth());		
 		compound.setInteger("curShape", mode.ordinal());
+		return compound;
 	}
 	
 	//@Override

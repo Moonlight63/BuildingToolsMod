@@ -13,10 +13,10 @@ import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.item.EntityPainting;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 
@@ -94,7 +94,7 @@ public class ThreadCopyToClipboard implements BlockChangeBase, IShapeable{
 			
 			if(!selectionCalculated){
 				
-				entity.addChatComponentMessage(new ChatComponentText("Copying Selection. Please Wait!"));
+				entity.addChatMessage(new TextComponentString("Copying Selection. Please Wait!"));
 				
 				GeometryUtils.makeFilledCube(new BlockPos(structureBoundingBox.minX, structureBoundingBox.minY, structureBoundingBox.minZ), structureBoundingBox.getXSize()-1, structureBoundingBox.getYSize()-1, structureBoundingBox.getZSize()-1, this);
 				
@@ -140,7 +140,7 @@ public class ThreadCopyToClipboard implements BlockChangeBase, IShapeable{
 					}
 				}
 				
-				entity.addChatComponentMessage(new ChatComponentText("Done Copying!"));
+				entity.addChatMessage(new TextComponentString("Done Copying!"));
 				
 //				System.out.println("Done Copying");
 				selectionCalculated = true;

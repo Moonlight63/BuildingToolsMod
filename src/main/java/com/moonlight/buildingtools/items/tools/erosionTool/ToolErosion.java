@@ -8,9 +8,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 
@@ -56,9 +59,9 @@ public class ToolErosion extends Item implements IKeyHandler, IOutlineDrawer, IG
 	public void onUpdate(ItemStack itemstack, World world, Entity entity, int metadata, boolean bool){		
 		if(world.isRemote){
 			RayTracing.instance().fire(1000, true);
-			MovingObjectPosition target = RayTracing.instance().getTarget();
+			RayTraceResult target = RayTracing.instance().getTarget();
 		
-			if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){				
+			if (target != null && target.typeOfHit == RayTraceResult.Type.BLOCK){				
 				PacketDispatcher.sendToServer(new SendRaytraceResult(target.getBlockPos(), target.sideHit));
 				this.targetBlock = target.getBlockPos();
 				this.targetFace = target.sideHit;
@@ -86,8 +89,11 @@ public class ToolErosion extends Item implements IKeyHandler, IOutlineDrawer, IG
 	}
 	
 	@Override
-	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
+		
+		ItemStack itemStackIn = playerIn.getHeldItemMainhand();
+		
 		if(playerIn.isSneaking())
 			playerIn.openGui(BuildingTools.instance, GuiHandler.GUIErosionTool, worldIn, 0, 0, 0);
 		else{
@@ -97,7 +103,7 @@ public class ToolErosion extends Item implements IKeyHandler, IOutlineDrawer, IG
 				//player.addPending(new ErosionThread(worldIn, pos, 3, 3, 3, side, playerIn, getNBT(stack).getInteger("preset")));
 			}
 		}
-        return itemStackIn;
+        return new ActionResult(EnumActionResult.PASS, itemStackIn);
         
     }
 	
@@ -110,7 +116,7 @@ public class ToolErosion extends Item implements IKeyHandler, IOutlineDrawer, IG
             float hitY,
             float hitZ){
 		
-		onItemRightClick(stack, worldIn, playerIn);
+		onItemRightClick(worldIn, playerIn, EnumHand.MAIN_HAND);
 		return true;
 	}
 	    
@@ -217,7 +223,7 @@ public class ToolErosion extends Item implements IKeyHandler, IOutlineDrawer, IG
 	public boolean drawOutline(DrawBlockHighlightEvent event) {
 		
 		if(targetBlock != null){
-			ErosionVisuallizer visuallizer = new ErosionVisuallizer(getTargetRadius(event.currentItem), event.player.worldObj, targetBlock, getNBT(event.currentItem).getInteger("preset"));
+			ErosionVisuallizer visuallizer = new ErosionVisuallizer(getTargetRadius(event.getPlayer().getHeldItemMainhand()), event.getPlayer().worldObj, targetBlock, getNBT(event.getPlayer().getHeldItemMainhand()).getInteger("preset"));
 			
 			if(renderer == null){
 	    		renderer = new RenderHelper();
@@ -225,12 +231,12 @@ public class ToolErosion extends Item implements IKeyHandler, IOutlineDrawer, IG
 			renderer.startDraw();
 			
 			for(BlockPos pos : visuallizer.getErosionData()){
-				renderer.addOutlineToBuffer(event.player, pos, RGBA.Red.setAlpha(1500), event.partialTicks);
+				renderer.addOutlineToBuffer(event.getPlayer(), pos, RGBA.Red.setAlpha(1500), event.getPartialTicks());
 				//RenderHelper.renderBlockOutline(event.context, event.player, pos, RGBA.Red.setAlpha(150), 2.0f, event.partialTicks);
 			}
 			
 			for(BlockPos pos : visuallizer.getFillData()){
-				renderer.addOutlineToBuffer(event.player, pos, RGBA.Green.setAlpha(1500), event.partialTicks);
+				renderer.addOutlineToBuffer(event.getPlayer(), pos, RGBA.Green.setAlpha(1500), event.getPartialTicks());
 				//RenderHelper.renderBlockOutline(event.context, event.player, pos, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
 			}
 			

@@ -30,14 +30,16 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenBigMushroom;
 import net.minecraft.world.gen.feature.WorldGenBigTree;
 import net.minecraft.world.gen.feature.WorldGenCanopyTree;
-import net.minecraft.world.gen.feature.WorldGenForest;
 import net.minecraft.world.gen.feature.WorldGenIceSpike;
 import net.minecraft.world.gen.feature.WorldGenMegaJungle;
 import net.minecraft.world.gen.feature.WorldGenMegaPineTree;
@@ -124,9 +126,9 @@ public class ToolFilter extends Item
 		
 		if(world.isRemote){
 			RayTracing.instance().fire(1000, true);
-			MovingObjectPosition target = RayTracing.instance().getTarget();
+			RayTraceResult target = RayTracing.instance().getTarget();
 		
-			if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){				
+			if (target != null && target.typeOfHit == RayTraceResult.Type.BLOCK){				
 				PacketDispatcher.sendToServer(new SendRaytraceResult(target.getBlockPos(), target.sideHit));
 				this.targetBlock = target.getBlockPos();
 				this.targetFace = target.sideHit;
@@ -151,9 +153,12 @@ public class ToolFilter extends Item
             stack.getTagCompound();
     }
 
-    public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
+    @Override
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
-
+		
+		ItemStack itemStackIn = playerIn.getHeldItemMainhand();
+		
     	if(targetBlock != null && !worldIn.isAirBlock(targetBlock)){
     		if(playerIn.isSneaking())
 	            playerIn.openGui(BuildingTools.instance, 3, worldIn, 0, 0, 0);
@@ -187,7 +192,7 @@ public class ToolFilter extends Item
 						new WorldGenSwamp().generate(world, new Random(), targetBlock.up());
 						break;	
 					case Shrub:
-						new WorldGenShrub(Blocks.log.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.OAK), Blocks.leaves.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false))).generate(world, new Random(), targetBlock.up());
+						new WorldGenShrub(Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.OAK), Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false))).generate(world, new Random(), targetBlock.up());
 						break;	
 					case Savanna:
 						new WorldGenSavannaTree(true).generate(world, new Random(), targetBlock.up());
@@ -196,15 +201,15 @@ public class ToolFilter extends Item
 						new WorldGenMegaPineTree(true, true).generate(world, new Random(), targetBlock.up());
 						break;	
 					case MegaJungle:
-						IBlockState iblockstate = Blocks.log.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);
-		                IBlockState iblockstate1 = Blocks.leaves.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.JUNGLE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
+						IBlockState iblockstate = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);
+		                IBlockState iblockstate1 = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.JUNGLE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
 						new WorldGenMegaJungle(true, 10, 20, iblockstate, iblockstate1).generate(world, new Random(), targetBlock.up());
 						break;	
 					case IceSpike:
 						new WorldGenIceSpike().generate(world, new Random(), targetBlock.up());
 						break;
 					case Forest:
-						new WorldGenForest(true, true).generate(world, new Random(), targetBlock.up());
+						new WorldGenTrees(true).generate(world, new Random(), targetBlock.up());
 						break;	
 					case Canopy:
 						new WorldGenCanopyTree(true).generate(world, new Random(), targetBlock.up());
@@ -213,10 +218,10 @@ public class ToolFilter extends Item
 						new WorldGenBigTree(true).generate(world, new Random(), targetBlock.up());
 						break;	
 					case BigMushroomBrown:
-						new WorldGenBigMushroom(Blocks.brown_mushroom_block).generate(world, new Random(), targetBlock.up());
+						new WorldGenBigMushroom(Blocks.BROWN_MUSHROOM_BLOCK).generate(world, new Random(), targetBlock.up());
 						break;	
 					case BigMushroomRed:
-						new WorldGenBigMushroom(Blocks.red_mushroom_block).generate(world, new Random(), targetBlock.up());
+						new WorldGenBigMushroom(Blocks.RED_MUSHROOM_BLOCK).generate(world, new Random(), targetBlock.up());
 						break;	
 					case Custom:
 						player.addPending(new ThreadMakeTree(worldIn, targetBlock, playerIn, treeData));
@@ -230,13 +235,13 @@ public class ToolFilter extends Item
 	        }
     	}
     	
-        return itemStackIn;
+    	return new ActionResult(EnumActionResult.PASS, itemStackIn);
     }
 
     public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumFacing side, float hitX, float hitY, 
             float hitZ)
     {
-        onItemRightClick(stack, worldIn, playerIn);
+    	onItemRightClick(worldIn, playerIn, EnumHand.MAIN_HAND);
         return true;
     }
 
@@ -306,21 +311,21 @@ public class ToolFilter extends Item
         	
         	renderer.startDraw();
         	
-	        if (event.player.isSneaking())
+	        if (event.getPlayer().isSneaking())
 	        {
-	        	renderer.addOutlineToBuffer(event.player, targetBlock, RGBA.Green.setAlpha(150), event.partialTicks);
+	        	renderer.addOutlineToBuffer(event.getPlayer(), targetBlock, RGBA.Green.setAlpha(150), event.getPartialTicks());
 	        	renderer.finalizeDraw();
 	        	//RenderHelper.renderBlockOutline(event.context, event.player, targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
 	            return true;
 	        }
 	        
-	        if(checkVisualizer(visualizer, event.currentItem)){
+	        if(checkVisualizer(visualizer, event.getPlayer().getHeldItemMainhand())){
                 visualizer.RegenShape(
             			Shapes.Cuboid.generator, 
-            			getNBT(event.currentItem).getInteger("radiusX"),
-            			getNBT(event.currentItem).getInteger("radiusY"),
-            			getNBT(event.currentItem).getInteger("radiusZ"),
-            			getNBT(event.currentItem).getInteger("filter")
+            			getNBT(event.getPlayer().getHeldItemMainhand()).getInteger("radiusX"),
+            			getNBT(event.getPlayer().getHeldItemMainhand()).getInteger("radiusY"),
+            			getNBT(event.getPlayer().getHeldItemMainhand()).getInteger("radiusZ"),
+            			getNBT(event.getPlayer().getHeldItemMainhand()).getInteger("filter")
         		);
                 updateVisualizer = false;
         	}
@@ -333,7 +338,7 @@ public class ToolFilter extends Item
 		        		BlockPos newPos = visualizer.CalcOffset(pos, targetBlock, targetFace, world);
 		        		
 		        		if(newPos != null){
-		        			renderer.addOutlineToBuffer(event.player, newPos, RGBA.White.setAlpha(150), event.partialTicks);
+		        			renderer.addOutlineToBuffer(event.getPlayer(), newPos, RGBA.White.setAlpha(150), event.getPartialTicks());
 		        			//RenderHelper.renderBlockOutline(event.context, event.player, newPos, RGBA.White.setAlpha(150), 1.0f, event.partialTicks);
 		        		}
 		        	}

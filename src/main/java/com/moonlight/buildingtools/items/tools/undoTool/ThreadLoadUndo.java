@@ -30,8 +30,8 @@ import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -66,7 +66,7 @@ public class ThreadLoadUndo implements BlockChangeBase{
 				File savedirectory = BuildingTools.oldUndoDir;
 				//new File(savedirectory, "/" + fileName.replace(".json", "") + ".json").createNewFile();
 				BufferedReader is = new BufferedReader(new FileReader(new File(savedirectory, "/" + fileName.replace(".nbt", "") + ".nbt")));
-				player.addChatMessage(new ChatComponentText("Reading data"));
+				player.addChatMessage(new TextComponentString("Reading data"));
 				
 				PlayerWrapper playerwrap = BuildingTools.getPlayerRegistry().getPlayer(player).get();
 				playerwrap.UndoIsSaved = false;
@@ -115,7 +115,7 @@ public class ThreadLoadUndo implements BlockChangeBase{
 				
 				is.close();
 				
-				player.addChatMessage(new ChatComponentText("That undo list has now been added to the end of your current session. Your next undo operation will start from the end of your selected list."));
+				player.addChatMessage(new TextComponentString("That undo list has now been added to the end of your current session. Your next undo operation will start from the end of your selected list."));
 				
 			}
 			catch(Exception e){

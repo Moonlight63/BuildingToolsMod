@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockCactus;
 import net.minecraft.block.BlockCrops;
@@ -12,6 +13,9 @@ import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockLilyPad;
+import net.minecraft.block.BlockOldLeaf;
+import net.minecraft.block.BlockOldLog;
+import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.BlockReed;
 import net.minecraft.block.BlockSapling;
 import net.minecraft.block.BlockSign;
@@ -19,6 +23,7 @@ import net.minecraft.block.BlockStem;
 import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.BlockVine;
 import net.minecraft.block.BlockWeb;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -29,6 +34,19 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.feature.WorldGenBigMushroom;
+import net.minecraft.world.gen.feature.WorldGenBigTree;
+import net.minecraft.world.gen.feature.WorldGenCanopyTree;
+import net.minecraft.world.gen.feature.WorldGenForest;
+import net.minecraft.world.gen.feature.WorldGenIceSpike;
+import net.minecraft.world.gen.feature.WorldGenMegaJungle;
+import net.minecraft.world.gen.feature.WorldGenMegaPineTree;
+import net.minecraft.world.gen.feature.WorldGenSavannaTree;
+import net.minecraft.world.gen.feature.WorldGenShrub;
+import net.minecraft.world.gen.feature.WorldGenSwamp;
+import net.minecraft.world.gen.feature.WorldGenTaiga1;
+import net.minecraft.world.gen.feature.WorldGenTaiga2;
+import net.minecraft.world.gen.feature.WorldGenTrees;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 
 import com.google.common.collect.Sets;
@@ -59,6 +77,8 @@ public class ToolFilter extends Item
 	private static Set<Key.KeyCode> handledKeys;
     public BlockPos targetBlock;
     public World world;
+    
+    public ProceduralTreeData treeData = new ProceduralTreeData();
     
     public boolean updateVisualizer = true;
 	private FilterShapeVisualizer visualizer;
@@ -91,6 +111,7 @@ public class ToolFilter extends Item
             stack.getTagCompound().setInteger("radiusZ", 1);
             stack.getTagCompound().setInteger("topsoildepth", 1);
             stack.getTagCompound().setInteger("fillorclear", 1);
+            stack.getTagCompound().setInteger("treetype", 0);
         }
         return stack.getTagCompound();
     }
@@ -142,20 +163,70 @@ public class ToolFilter extends Item
 	            world = worldIn;
 	            PlayerWrapper player = (PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
 	            System.out.println("FilterToolUsed");
-	            if(itemStackIn.getTagCompound().getInteger("filter") == 1)
+	            if(getNBT(itemStackIn).getInteger("filter") == 1)
 	            	//player.addPending(new ThreadBonemeal(worldIn, targetBlock, getNBT(itemStackIn).getInteger("radiusX"), getNBT(itemStackIn).getInteger("radiusY"), getNBT(itemStackIn).getInteger("radiusZ"), targetFace, playerIn));
 	                player.addPending(new ThreadTopsoil(worldIn, targetBlock, getNBT(itemStackIn).getInteger("radiusX"), getNBT(itemStackIn).getInteger("radiusY"), getNBT(itemStackIn).getInteger("radiusZ"), getNBT(itemStackIn).getInteger("topsoildepth"), targetFace, playerIn));
-	            else if(itemStackIn.getTagCompound().getInteger("filter") == 2)
+	            else if(getNBT(itemStackIn).getInteger("filter") == 2)
 	                player.addPending(new ThreadClearWater(worldIn, targetBlock, getNBT(itemStackIn).getInteger("radiusX"), getNBT(itemStackIn).getInteger("radiusY"), getNBT(itemStackIn).getInteger("radiusZ"), getNBT(itemStackIn).getInteger("fillorclear") != 1, targetFace, playerIn));
-	            else if(itemStackIn.getTagCompound().getInteger("filter") == 3)
+	            else if(getNBT(itemStackIn).getInteger("filter") == 3)
 	                player.addPending(new ThreadClearFoliage(worldIn, targetBlock, getNBT(itemStackIn).getInteger("radiusX"), getNBT(itemStackIn).getInteger("radiusY"), getNBT(itemStackIn).getInteger("radiusZ"), getNBT(itemStackIn).getInteger("fillorclear") != 1, targetFace, playerIn));
-	            else if(itemStackIn.getTagCompound().getInteger("filter") == 4)
+	            else if(getNBT(itemStackIn).getInteger("filter") == 4)
 	            	player.addPending(new ThreadBonemeal(worldIn, targetBlock, getNBT(itemStackIn).getInteger("radiusX"), getNBT(itemStackIn).getInteger("radiusY"), getNBT(itemStackIn).getInteger("radiusZ"), targetFace, playerIn));
-	            else if(itemStackIn.getTagCompound().getInteger("filter") == 5)
-	            	player.addPending(new ThreadMakeTree(worldIn, targetBlock, playerIn));
+	            else if(getNBT(itemStackIn).getInteger("filter") == 5)
+	            	switch (ETreeTypes.values()[getNBT(itemStackIn).getInteger("treetype")]) {
+					case Tree:
+						new WorldGenTrees(true).generate(world, new Random(), targetBlock.up());
+						break;
+					case Taiga1:
+						new WorldGenTaiga1().generate(world, new Random(), targetBlock.up());
+						break;
+					case Taiga2:
+						new WorldGenTaiga2(true).generate(world, new Random(), targetBlock.up());
+						break;
+					case Swamp:
+						new WorldGenSwamp().generate(world, new Random(), targetBlock.up());
+						break;	
+					case Shrub:
+						new WorldGenShrub(Blocks.log.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.OAK), Blocks.leaves.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false))).generate(world, new Random(), targetBlock.up());
+						break;	
+					case Savanna:
+						new WorldGenSavannaTree(true).generate(world, new Random(), targetBlock.up());
+						break;	
+					case MegaPine:
+						new WorldGenMegaPineTree(true, true).generate(world, new Random(), targetBlock.up());
+						break;	
+					case MegaJungle:
+						IBlockState iblockstate = Blocks.log.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);
+		                IBlockState iblockstate1 = Blocks.leaves.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.JUNGLE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
+						new WorldGenMegaJungle(true, 10, 20, iblockstate, iblockstate1).generate(world, new Random(), targetBlock.up());
+						break;	
+					case IceSpike:
+						new WorldGenIceSpike().generate(world, new Random(), targetBlock.up());
+						break;
+					case Forest:
+						new WorldGenForest(true, true).generate(world, new Random(), targetBlock.up());
+						break;	
+					case Canopy:
+						new WorldGenCanopyTree(true).generate(world, new Random(), targetBlock.up());
+						break;	
+					case BigTree:
+						new WorldGenBigTree(true).generate(world, new Random(), targetBlock.up());
+						break;	
+					case BigMushroomBrown:
+						new WorldGenBigMushroom(Blocks.brown_mushroom_block).generate(world, new Random(), targetBlock.up());
+						break;	
+					case BigMushroomRed:
+						new WorldGenBigMushroom(Blocks.red_mushroom_block).generate(world, new Random(), targetBlock.up());
+						break;	
+					case Custom:
+						player.addPending(new ThreadMakeTree(worldIn, targetBlock, playerIn, treeData));
+						break;
+					default:
+						break;
+					}
+	            		
 	            	//new CustomTreeTest(true).generate(world, new Random(), targetBlock);
 	            
-	            //System.out.println(world.getBlockState(targetBlock).getBlock().getClass());
 	        }
     	}
     	
@@ -309,9 +380,10 @@ public class ToolFilter extends Item
             if(mouseButton == 1)
                 filter--;
             if(filter < 1)
-                filter = 3;
+                filter = 5;
             if(filter > 5)
                 filter = 1;
+            //getNBT(stack).setInteger("fillorclear", 2);
             getNBT(stack).setInteger("filter", filter);
         } else
         if(buttonID == 2)
@@ -360,6 +432,21 @@ public class ToolFilter extends Item
                 fillorclear = 1;
             getNBT(stack).setInteger("fillorclear", fillorclear);
         }
+        
+        if(buttonID == 7)
+        {
+            int treetype = getNBT(stack).getInteger("treetype");
+            if(mouseButton == 0)
+            	treetype++;
+            else
+            if(mouseButton == 1)
+            	treetype--;
+            if(treetype < 0)
+            	treetype = ETreeTypes.values().length-1;
+            if(treetype > ETreeTypes.values().length-1)
+            	treetype = 0;
+            getNBT(stack).setInteger("treetype", treetype);
+        }
         PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(stack)));
         updateVisualizer = true;
     }
@@ -369,6 +456,18 @@ public class ToolFilter extends Item
     {
 		updateVisualizer = true;
         return super.getMetadata(damage);
+    }
+    
+    public void SetTreeData(ProceduralTreeData data){
+    	this.treeData = data;
+    	for(List list : this.treeData.foliage_shape){
+    		System.out.println(list.toString());
+    	}
+    }
+    
+    public void SetTreeMaterials(int id1, int meat1, int id2, int meta2){
+    	System.out.println(meat1);
+    	this.treeData.SetMatValues(id1, meat1, id2, meta2);
     }
 
 //	@Override

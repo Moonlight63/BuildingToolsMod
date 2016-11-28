@@ -22,6 +22,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.helpers.loaders.BlockLoader;
 import com.moonlight.buildingtools.helpers.shapes.GeometryUtils;
@@ -42,6 +44,9 @@ public class ThreadSimpleFill implements BlockChangeBase, IShapeable{
 	protected Set<ChangeBlockToThis> tempList = new HashSet<ChangeBlockToThis>();
 	protected Set<BlockPos> checkList = new HashSet<BlockPos>();
 	
+	protected List<Set<ChangeBlockToThis>> listSet = Lists.newArrayList();
+	protected boolean shapeFinished = false;
+	
 	protected boolean isFinished = false;
 	protected Set<ChangeBlockToThis> selectionSet = new LinkedHashSet<ChangeBlockToThis>();
 	protected Set<Entity> entitySet = new LinkedHashSet<Entity>();
@@ -51,6 +56,7 @@ public class ThreadSimpleFill implements BlockChangeBase, IShapeable{
 	protected IBlockState fillBlockState;
 	protected IBlockState replaceBlockState;
 	protected int count = 0;
+	
 	
 	public ThreadSimpleFill(BlockPos blockpos1, BlockPos blockpos2, World world, EntityPlayer player, IBlockState fillBlock){
 		System.out.println("Thread Started");
@@ -79,88 +85,75 @@ public class ThreadSimpleFill implements BlockChangeBase, IShapeable{
 	
 	@Override
 	public void setBlock(BlockPos bpos){
-		//System.out.println(world);
 		
-		if(count < 4096){
-			
-			if(!checkList.contains(bpos)){
-				
-				System.out.println(world.getBlockState(bpos) + "         " + replaceBlockState);
-				
-				if(replaceBlockState != null){
-					if(replaceBlockState.getBlock() == Blocks.flowing_water){
-						if(!(world.getBlockState(bpos).getBlock() == Blocks.flowing_water || world.getBlockState(bpos).getBlock() == Blocks.water)){
-							return;
-						}
-					}
-					else if(replaceBlockState.getBlock() == Blocks.flowing_lava){
-						if(!(world.getBlockState(bpos).getBlock() == Blocks.flowing_lava || world.getBlockState(bpos).getBlock() == Blocks.lava))
-							return;
-					}
-					else{
-						if(world.getBlockState(bpos) != replaceBlockState)
-							if(replaceBlockState == BlockLoader.tempBlock.getDefaultState() && !world.isAirBlock(bpos))
-								return;
-							else if (replaceBlockState != BlockLoader.tempBlock.getDefaultState())
-								return;
-					}
+		currentlyCalculating = true;
+		System.out.println(world.getBlockState(bpos) + "         " + replaceBlockState);
+		
+		if(replaceBlockState != null){
+			if(replaceBlockState.getBlock() == Blocks.flowing_water){
+				if(!(world.getBlockState(bpos).getBlock() == Blocks.flowing_water || world.getBlockState(bpos).getBlock() == Blocks.water)){
+					return;
 				}
-			
-				currentlyCalculating = true;
-			
-				tempList.add(new ChangeBlockToThis(bpos, fillBlockState));
-				checkList.add(bpos);
-				count++;
-				
+			}
+			else if(replaceBlockState.getBlock() == Blocks.flowing_lava){
+				if(!(world.getBlockState(bpos).getBlock() == Blocks.flowing_lava || world.getBlockState(bpos).getBlock() == Blocks.lava))
+					return;
+			}
+			else{
+				if(world.getBlockState(bpos) != replaceBlockState)
+					if(replaceBlockState == BlockLoader.tempBlock.getDefaultState() && !world.isAirBlock(bpos))
+						return;
+					else if (replaceBlockState != BlockLoader.tempBlock.getDefaultState())
+						return;
 			}
 		}
-		else{
-			return;
-		}
+	
+		tempList.add(new ChangeBlockToThis(bpos, fillBlockState));
+		count++;
 		
+		if(count > 4096){
+			addSetToList();
+		}		
 		
 	}
 	
-	int tempCount = 0;
 	public void perform(){
 		
 		if(!currentlyCalculating){
-			tempCount++;
-			System.out.println(tempCount);
-			
 			tempList.clear();
-			
 			GeometryUtils.makeFilledCube(new BlockPos(structureBoundingBox.minX, structureBoundingBox.minY, structureBoundingBox.minZ), structureBoundingBox.getXSize()-1, structureBoundingBox.getYSize()-1, structureBoundingBox.getZSize()-1, this);
-			
-			if(!tempList.isEmpty() && tempList != null){
-				
-				BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(tempList, world));
-				
-				BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(tempList, world, true));
-				
-			}
-				
-			if(count < 4096){
-				isFinished = true;
-				MiscUtils.dumpUndoList(entity);
-				//BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.clear();
-				//System.out.println("Added all blocks to undo list: " + BuildingTools.getPlayerRegistry().getPlayer(entity).get().undolist);
-			}
-			
-			count = 0;
-			currentlyCalculating = false;
-			
 		}
+		
+		if(listSet.isEmpty() && shapeFinished){
+			System.out.println("Finished");
+			MiscUtils.dumpUndoList(entity);
+			isFinished = true;
+		}
+		
 	}
 	
 	public boolean isFinished(){
 		return isFinished;
 	}
 
+	public void checkAndAddQueue(){
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(listSet.get(0), world));
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(listSet.get(0), world, true));
+		listSet.remove(0);
+	}
+	
+	public void addSetToList(){
+		listSet.add(Sets.newHashSet(tempList));
+		tempList.clear();
+		count = 0;
+		checkAndAddQueue();
+	}
+
 	@Override
 	public void shapeFinished() {
-		// TODO Auto-generated method stub
-		
+		addSetToList();
+		shapeFinished = true;
+		//currentlyCalculating = false;
 	}
 
 }

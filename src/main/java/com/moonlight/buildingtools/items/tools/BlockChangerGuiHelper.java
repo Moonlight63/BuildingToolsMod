@@ -2,7 +2,7 @@ package com.moonlight.buildingtools.items.tools;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -32,7 +32,7 @@ public class BlockChangerGuiHelper extends Gui
     @SubscribeEvent
     public void onGameOverlayRender(RenderGameOverlayEvent event)
     {
-        if (event.isCancelable() || event.type != RenderGameOverlayEvent.ElementType.EXPERIENCE) return;
+        if (event.isCancelable() || event.getType() != RenderGameOverlayEvent.ElementType.EXPERIENCE) return;
 
         if (!(mc.thePlayer instanceof EntityPlayer)) return;
 
@@ -47,7 +47,7 @@ public class BlockChangerGuiHelper extends Gui
         
         if ((player.inventory.getCurrentItem().getItem() instanceof ToolBrush)){
         	ItemStack currItem = player.inventory.getCurrentItem();
-        	ItemStack source = ItemStack.loadItemStackFromNBT(ToolBrush.getNBT(currItem).getCompoundTag("sourceblock"));
+        	ItemStack source = new ItemStack(ToolBrush.getNBT(currItem).getCompoundTag("sourceblock"));
         	
         	// Null check prevents NPEs in vanilla renderItemAndEffectIntoGUI for items which drop the wrong thing
             net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();

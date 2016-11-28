@@ -1,11 +1,12 @@
 package com.moonlight.buildingtools.buildingGuide;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumWorldBlockLayer;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -15,7 +16,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class BlockMarker extends Block {
 
 	public BlockMarker() {
-		super(Material.rock);
+		super(Material.ROCK);
 		//setCreativeTab(BuildingTools.tabBT);
 		setUnlocalizedName("markerBlock");
 		//lightValue = 15;
@@ -27,25 +28,24 @@ public class BlockMarker extends Block {
     {
         return -1;
     }*/
-	@Override
-	public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state)
+	@Nullable
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
     {
-        return null;
+        return NULL_AABB;
     }
+	
 	@Override
-    public boolean isOpaqueCube()
-    {
+    public boolean isOpaqueCube(IBlockState state){
         return false;
     }
     @Override
-    public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid)
-    {
+    public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid){
         return false;
     }
     
     @Override
-    public boolean isReplaceable(World worldIn, BlockPos pos){
-    	return true;
+    public boolean isReplaceable(IBlockAccess worldIn, BlockPos pos){
+        return true;
     }
     
     @Override
@@ -74,21 +74,19 @@ public class BlockMarker extends Block {
         }
     }*/
     
-    @Override
     public int getMixedBrightnessForBlock(IBlockAccess worldIn, BlockPos pos) {
     	return 1000;
     }
     
-    @Override
     public float getAmbientOcclusionLightValue()
     {
         return 1.0f;
     }
     
     @SideOnly(Side.CLIENT)
-    public EnumWorldBlockLayer getBlockLayer()
+    public BlockRenderLayer getBlockLayer()
     {
-        return EnumWorldBlockLayer.CUTOUT_MIPPED;
+        return BlockRenderLayer.CUTOUT_MIPPED;
     }
 
     public boolean isFullCube()

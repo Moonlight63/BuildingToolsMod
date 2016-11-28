@@ -47,16 +47,16 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 //	        			currID = ((ItemBucket)slotIn.getStack().getItem()) == Items.lava_bucket ? Block.getIdFromBlock(Blocks.flowing_lava) : Block.getIdFromBlock(Blocks.flowing_water);
 //	        			currDATA = 0;
 //	        		}
-	        		if(slotIn.getStack().getIsItemStackEqual(new ItemStack(Items.bucket).setStackDisplayName("Air"))){
-	        			currID = Block.getIdFromBlock(Blocks.air);
+	        		if(ItemStack.areItemsEqual(slotIn.getStack(), new ItemStack(Items.BUCKET).setStackDisplayName("Air"))){
+	        			currID = Block.getIdFromBlock(Blocks.AIR);
 	        			currDATA = 0;
 	        		}
-	        		else if(slotIn.getStack().getIsItemStackEqual(new ItemStack(Items.water_bucket).setStackDisplayName("Water"))){
-	        			currID = Block.getIdFromBlock(Blocks.flowing_water);
+	        		else if(ItemStack.areItemsEqual(slotIn.getStack(), new ItemStack(Items.WATER_BUCKET).setStackDisplayName("Water"))){
+	        			currID = Block.getIdFromBlock(Blocks.FLOWING_WATER);
 	        			currDATA = 0;
 	        		}
-	        		else if(slotIn.getStack().getIsItemStackEqual(new ItemStack(Items.lava_bucket).setStackDisplayName("Lava"))){
-	        			currID = Block.getIdFromBlock(Blocks.flowing_lava);
+	        		else if(ItemStack.areItemsEqual(slotIn.getStack(), new ItemStack(Items.LAVA_BUCKET).setStackDisplayName("Lava"))){
+	        			currID = Block.getIdFromBlock(Blocks.FLOWING_LAVA);
 	        			currDATA = 0;
 	        		}
 	        		else{
@@ -90,7 +90,7 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 	        		}
 	        		else{
 	        			blockFillList.remove(slotIn.getStack());
-	        			slotIn.getStack().stackSize++;
+	        			slotIn.getStack().func_190920_e(slotIn.getStack().func_190916_E()+1);
 	        			blockFillList.add(slotIn.getStack());
 	        		}
 	        		System.out.println(blockFillList);
@@ -110,11 +110,11 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 	        		}
 	        		else{
 	        			blockFillList.remove(slotIn.getStack());
-	        			if(slotIn.getStack().stackSize>1){
-	        				slotIn.getStack().stackSize--;
+	        			if(slotIn.getStack().func_190916_E()>1){
+	        				slotIn.getStack().func_190920_e(slotIn.getStack().func_190916_E()-1);
 	        				blockFillList.add(slotIn.getStack());
 	        			}
-	        			else if (slotIn.getStack().stackSize == 1){
+	        			else if (slotIn.getStack().func_190916_E() == 1){
 	        				//((ContainerBlockSelMenu.CustomSlot) slotIn).clearColor();
 	        			}
 	        			
@@ -151,14 +151,14 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 	        		
 	        		System.out.println("SIZE = " + blockFillList.size());
 	        		
-	        		if(blockFillList.get(i).getIsItemStackEqual(new ItemStack(Items.bucket).setStackDisplayName("Air"))){
-	        			ID.add(i, Block.getIdFromBlock(Blocks.air));
+	        		if(ItemStack.areItemsEqual(blockFillList.get(i), new ItemStack(Items.BUCKET).setStackDisplayName("Air"))){
+	        			ID.add(i, Block.getIdFromBlock(Blocks.AIR));
 	        		}
-	        		else if(blockFillList.get(i).getIsItemStackEqual(new ItemStack(Items.water_bucket).setStackDisplayName("Water"))){
-	        			ID.add(i, Block.getIdFromBlock(Blocks.flowing_water));
+	        		else if(ItemStack.areItemsEqual(blockFillList.get(i), new ItemStack(Items.WATER_BUCKET).setStackDisplayName("Water"))){
+	        			ID.add(i, Block.getIdFromBlock(Blocks.FLOWING_WATER));
 	        		}
-	        		else if(blockFillList.get(i).getIsItemStackEqual(new ItemStack(Items.lava_bucket).setStackDisplayName("Lava"))){
-	        			ID.add(i, Block.getIdFromBlock(Blocks.flowing_lava));
+	        		else if(ItemStack.areItemsEqual(blockFillList.get(i), new ItemStack(Items.LAVA_BUCKET).setStackDisplayName("Lava"))){
+	        			ID.add(i, Block.getIdFromBlock(Blocks.FLOWING_LAVA));
 	        		}
 	        		else{
 	        			ID.add(i, Block.getIdFromBlock(Block.getBlockFromItem(blockFillList.get(i).getItem())));
@@ -170,7 +170,7 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 //	        				Block.getIdFromBlock(Block.getBlockFromItem(blockFillList.get(i).getItem()))
 //	        				);
 	        		META.add(i, blockFillList.get(i).getMetadata());
-	        		CHANCE.add(i, blockFillList.get(i).stackSize);
+	        		CHANCE.add(i, blockFillList.get(i).func_190916_E());
 	        	}
 	        	
 	        	System.out.println(ID + "   " + META + "   " + CHANCE);

@@ -59,7 +59,7 @@ public class PacketDispatcher
 		 PacketDispatcher.dispatcher.registerMessage(SendSimpleReplacePacketToItemMessage.Handler.class, SendSimpleReplacePacketToItemMessage.class, packetId++, Side.SERVER);
 		 PacketDispatcher.dispatcher.registerMessage(SendAdvancedReplacePacketToItemMessage.Handler.class, SendAdvancedReplacePacketToItemMessage.class, packetId++, Side.SERVER);
 		 PacketDispatcher.dispatcher.registerMessage(SendRaytraceResult.Handler.class, SendRaytraceResult.class, packetId++, Side.SERVER);
-		 
+		 PacketDispatcher.dispatcher.registerMessage(SendTreeDataToItem.Handler.class, SendTreeDataToItem.class, packetId++, Side.SERVER);
 		 
 	 // If you don't want to make a 'registerMessage' method, you can do it directly:
 	 //PacketDispatcher.dispatcher.registerMessage(OpenGuiMessage.OpenGuiMessageHandler.class, OpenGuiMessage.class, packetId++, Side.SERVER);

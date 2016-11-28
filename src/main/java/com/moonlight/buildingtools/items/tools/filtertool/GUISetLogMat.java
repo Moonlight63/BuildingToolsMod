@@ -130,16 +130,16 @@ public class GUISetLogMat extends GUIBlockSelection{
             	int ID2 = 0;
             	int META2 = 0;
             	
-            	if(blockFillList.get(0).getIsItemStackEqual(new ItemStack(Items.bucket).setStackDisplayName("Air"))){
-        			ID=(Block.getIdFromBlock(Blocks.air));
+            	if(ItemStack.areItemsEqual(blockFillList.get(0), new ItemStack(Items.BUCKET).setStackDisplayName("Air"))){
+        			ID=(Block.getIdFromBlock(Blocks.AIR));
         			META=(blockFillList.get(0).getMetadata());
         		}
-        		else if(blockFillList.get(0).getIsItemStackEqual(new ItemStack(Items.water_bucket).setStackDisplayName("Water"))){
-        			ID=(Block.getIdFromBlock(Blocks.water));
+        		else if(ItemStack.areItemsEqual(blockFillList.get(0), new ItemStack(Items.WATER_BUCKET).setStackDisplayName("Water"))){
+        			ID=(Block.getIdFromBlock(Blocks.WATER));
         			META=(blockFillList.get(0).getMetadata());
         		}
-        		else if(blockFillList.get(0).getIsItemStackEqual(new ItemStack(Items.lava_bucket).setStackDisplayName("Lava"))){
-        			ID=(Block.getIdFromBlock(Blocks.lava));
+        		else if(ItemStack.areItemsEqual(blockFillList.get(0), new ItemStack(Items.LAVA_BUCKET).setStackDisplayName("Lava"))){
+        			ID=(Block.getIdFromBlock(Blocks.LAVA));
         			META=(blockFillList.get(0).getMetadata());
         		}
         		else{
@@ -147,16 +147,16 @@ public class GUISetLogMat extends GUIBlockSelection{
         			META=(blockFillList.get(0).getMetadata());
         		}
             	
-            	if(blockReplaceList.get(0).getIsItemStackEqual(new ItemStack(Items.bucket).setStackDisplayName("Air"))){
-        			ID2=(Block.getIdFromBlock(Blocks.air));
+            	if(ItemStack.areItemsEqual(blockReplaceList.get(0), new ItemStack(Items.BUCKET).setStackDisplayName("Air"))){
+        			ID2=(Block.getIdFromBlock(Blocks.AIR));
         			META2=(blockReplaceList.get(0).getMetadata());
         		}
-        		else if(blockReplaceList.get(0).getIsItemStackEqual(new ItemStack(Items.water_bucket).setStackDisplayName("Water"))){
-        			ID2=(Block.getIdFromBlock(Blocks.water));
+        		else if(ItemStack.areItemsEqual(blockReplaceList.get(0), new ItemStack(Items.WATER_BUCKET).setStackDisplayName("Water"))){
+        			ID2=(Block.getIdFromBlock(Blocks.WATER));
         			META2=(blockReplaceList.get(0).getMetadata());
         		}
-        		else if(blockReplaceList.get(0).getIsItemStackEqual(new ItemStack(Items.lava_bucket).setStackDisplayName("Lava"))){
-        			ID2=(Block.getIdFromBlock(Blocks.lava));
+        		else if(ItemStack.areItemsEqual(blockReplaceList.get(0), new ItemStack(Items.LAVA_BUCKET).setStackDisplayName("Lava"))){
+        			ID2=(Block.getIdFromBlock(Blocks.LAVA));
         			META2=(blockReplaceList.get(0).getMetadata());
         		}
         		else{
@@ -167,7 +167,7 @@ public class GUISetLogMat extends GUIBlockSelection{
             	PacketDispatcher.sendToServer(new SendSimpleReplacePacketToItemMessage(ID, META, ID2, META2));
             	
             	this.mc.displayGuiScreen((GuiScreen) null);
-    			this.mc.displayGuiScreen(new GUIEditTree(this.player, ((ToolFilter)(player.getHeldItem().getItem())).treeData));
+    			this.mc.displayGuiScreen(new GUIEditTree(this.player, ((ToolFilter)(player.getHeldItemMainhand().getItem())).treeData));
             	
             }
     	}

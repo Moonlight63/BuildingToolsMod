@@ -36,10 +36,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemDoor;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 import com.google.common.collect.ImmutableMap;
@@ -421,7 +421,7 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 			EnumFacing facing;
 			
 			if(bpos.setAir){
-				tempList.add(new ChangeBlockToThis(newPos, Blocks.air.getDefaultState()));
+				tempList.add(new ChangeBlockToThis(newPos, Blocks.AIR.getDefaultState()));
 			}
 			else{
 			
@@ -716,7 +716,7 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 			
 			if(!world.isAirBlock(pass.posToCheckForAir)){
 				if(pass.blockChange.getBlockState().getBlock() instanceof BlockDoor){
-					ItemDoor.placeDoor(world, pass.blockChange.getBlockPos(), (EnumFacing) pass.blockChange.getBlockState().getValue(BlockDoor.FACING), pass.blockChange.getBlockState().getBlock());
+					ItemDoor.placeDoor(world, pass.blockChange.getBlockPos(), (EnumFacing) pass.blockChange.getBlockState().getValue(BlockDoor.FACING), pass.blockChange.getBlockState().getBlock(), false);
 				}
 				else{
 					tempList.add(pass.blockChange);
@@ -729,7 +729,7 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 			//}
 			
 			if(pass.tries > 25){
-				entity.addChatComponentMessage(new ChatComponentText("Tried 25 times to place block at " + pass.blockChange.getBlockPos()));
+				entity.addChatMessage(new TextComponentString("Tried 25 times to place block at " + pass.blockChange.getBlockPos()));
 				BuildingTools.getPlayerRegistry().getPlayer(entity).get().rejectedSecondPass.add(pass);
 				secondPassSet.remove(pass);
 			}

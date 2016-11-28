@@ -8,7 +8,6 @@ import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
-import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityHanging;
@@ -16,10 +15,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 
@@ -85,7 +83,7 @@ public class ThreadAdvancedFill implements BlockChangeBase, IShapeable{
 		this.fillBlockChance = fillChance;
 		this.replaceBlockState = replaceBlock;
 		if(replaceBlockState.contains(BlockLoader.tempBlock.getDefaultState()))
-			replaceBlockState.add(Blocks.air.getDefaultState());
+			replaceBlockState.add(Blocks.AIR.getDefaultState());
 	}
 	
 	@Override
@@ -103,7 +101,7 @@ public class ThreadAdvancedFill implements BlockChangeBase, IShapeable{
 		}
 		
 		int random = new Random().nextInt(chanceTotal);
-		IBlockState blockstate = Blocks.air.getDefaultState();
+		IBlockState blockstate = Blocks.AIR.getDefaultState();
 		
 		int curVal = 0;
 		for(int i = 0; i < fillBlockChance.size(); i++){

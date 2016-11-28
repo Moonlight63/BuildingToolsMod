@@ -67,16 +67,16 @@ public class GUIReplaceTool extends GUIBlockSelection{
 	        			
 	        			int currID;
 		        		int currDATA;
-		        		if(slotIn.getStack().getIsItemStackEqual(new ItemStack(Items.bucket).setStackDisplayName("Air"))){
-		        			currID = Block.getIdFromBlock(Blocks.air);
+		        		if(ItemStack.areItemsEqual(slotIn.getStack(), new ItemStack(Items.BUCKET).setStackDisplayName("Air"))){
+		        			currID = Block.getIdFromBlock(Blocks.AIR);
 		        			currDATA = 0;
 		        		}
-		        		else if(slotIn.getStack().getIsItemStackEqual(new ItemStack(Items.water_bucket).setStackDisplayName("Water"))){
-		        			currID = Block.getIdFromBlock(Blocks.flowing_water);
+		        		else if(ItemStack.areItemsEqual(slotIn.getStack(), new ItemStack(Items.WATER_BUCKET).setStackDisplayName("Water"))){
+		        			currID = Block.getIdFromBlock(Blocks.FLOWING_WATER);
 		        			currDATA = 0;
 		        		}
-		        		else if(slotIn.getStack().getIsItemStackEqual(new ItemStack(Items.lava_bucket).setStackDisplayName("Lava"))){
-		        			currID = Block.getIdFromBlock(Blocks.flowing_lava);
+		        		else if(ItemStack.areItemsEqual(slotIn.getStack(), new ItemStack(Items.LAVA_BUCKET).setStackDisplayName("Lava"))){
+		        			currID = Block.getIdFromBlock(Blocks.FLOWING_LAVA);
 		        			currDATA = 0;
 		        		}
 		        		else{
@@ -86,16 +86,16 @@ public class GUIReplaceTool extends GUIBlockSelection{
 		        		
 		        		int currID2;
 		        		int currDATA2 = 0;
-		        		if(blockReplaceList.get(0).getIsItemStackEqual(new ItemStack(Items.bucket).setStackDisplayName("Air"))){
-		        			currID2 = Block.getIdFromBlock(Blocks.air);
+		        		if(ItemStack.areItemsEqual(blockReplaceList.get(0), new ItemStack(Items.BUCKET).setStackDisplayName("Air"))){
+		        			currID2 = Block.getIdFromBlock(Blocks.AIR);
 		        			currDATA = 0;
 		        		}
-		        		else if(blockReplaceList.get(0).getIsItemStackEqual(new ItemStack(Items.water_bucket).setStackDisplayName("Water"))){
-		        			currID2 = Block.getIdFromBlock(Blocks.flowing_water);
+		        		else if(ItemStack.areItemsEqual(blockReplaceList.get(0), new ItemStack(Items.WATER_BUCKET).setStackDisplayName("Water"))){
+		        			currID2 = Block.getIdFromBlock(Blocks.FLOWING_WATER);
 		        			currDATA = 0;
 		        		}
-		        		else if(blockReplaceList.get(0).getIsItemStackEqual(new ItemStack(Items.lava_bucket).setStackDisplayName("Lava"))){
-		        			currID2 = Block.getIdFromBlock(Blocks.flowing_lava);
+		        		else if(ItemStack.areItemsEqual(blockReplaceList.get(0), new ItemStack(Items.LAVA_BUCKET).setStackDisplayName("Lava"))){
+		        			currID2 = Block.getIdFromBlock(Blocks.FLOWING_LAVA);
 		        			currDATA = 0;
 		        		}
 		        		else{
@@ -138,7 +138,7 @@ public class GUIReplaceTool extends GUIBlockSelection{
 	        		}
 	        		else{
 	        			blockFillList.remove(slotIn.getStack());
-	        			slotIn.getStack().stackSize++;
+	        			slotIn.getStack().func_190920_e(slotIn.getStack().func_190916_E()-1);
 	        			blockFillList.add(slotIn.getStack());
 	        		}
 	        		System.out.println(blockFillList);
@@ -155,11 +155,11 @@ public class GUIReplaceTool extends GUIBlockSelection{
 	        		}
 	        		else{
 	        			blockFillList.remove(slotIn.getStack());
-	        			if(slotIn.getStack().stackSize>1){
-	        				slotIn.getStack().stackSize--;
+	        			if(slotIn.getStack().func_190916_E()>1){
+	        				slotIn.getStack().func_190920_e(slotIn.getStack().func_190916_E()-1);
 	        				blockFillList.add(slotIn.getStack());
 	        			}
-	        			else if (slotIn.getStack().stackSize == 1){
+	        			else if (slotIn.getStack().func_190916_E() == 1){
 	        				//((ContainerBlockSelMenu.CustomSlot) slotIn).clearColor();
 	        			}
 	        			
@@ -194,20 +194,20 @@ public class GUIReplaceTool extends GUIBlockSelection{
 	        	
 	        	for(int i = 0; i < blockFillList.size(); i++){
 	        		System.out.println("SIZE = " + blockFillList.size());
-	        		if(blockFillList.get(i).getIsItemStackEqual(new ItemStack(Items.bucket).setStackDisplayName("Air"))){
-	        			ID.add(i, Block.getIdFromBlock(Blocks.air));
+	        		if(ItemStack.areItemsEqual(blockFillList.get(i), new ItemStack(Items.BUCKET).setStackDisplayName("Air"))){
+	        			ID.add(i, Block.getIdFromBlock(Blocks.AIR));
 	        		}
-	        		else if(blockFillList.get(i).getIsItemStackEqual(new ItemStack(Items.water_bucket).setStackDisplayName("Water"))){
-	        			ID.add(i, Block.getIdFromBlock(Blocks.flowing_water));
+	        		else if(ItemStack.areItemsEqual(blockFillList.get(i), new ItemStack(Items.WATER_BUCKET).setStackDisplayName("Water"))){
+	        			ID.add(i, Block.getIdFromBlock(Blocks.FLOWING_WATER));
 	        		}
-	        		else if(blockFillList.get(i).getIsItemStackEqual(new ItemStack(Items.lava_bucket).setStackDisplayName("Lava"))){
-	        			ID.add(i, Block.getIdFromBlock(Blocks.flowing_lava));
+	        		else if(ItemStack.areItemsEqual(blockFillList.get(i), new ItemStack(Items.LAVA_BUCKET).setStackDisplayName("Lava"))){
+	        			ID.add(i, Block.getIdFromBlock(Blocks.FLOWING_LAVA));
 	        		}
 	        		else{
 	        			ID.add(i, Block.getIdFromBlock(Block.getBlockFromItem(blockFillList.get(i).getItem())));
 	        		}
 	        		META.add(i, blockFillList.get(i).getMetadata());
-	        		CHANCE.add(i, blockFillList.get(i).stackSize);
+	        		CHANCE.add(i, blockFillList.get(i).func_190916_E());
 	        	}
 	        	
 	        	List<Integer> ID2 = Lists.<Integer>newArrayList();
@@ -215,19 +215,19 @@ public class GUIReplaceTool extends GUIBlockSelection{
 	        	
 	        	for(int i = 0; i < blockReplaceList.size(); i++){
 	        		
-	        		if(blockReplaceList.get(i).getIsItemStackEqual(new ItemStack(Items.bucket).setStackDisplayName("Air"))){
-	        			ID2.add(Block.getIdFromBlock(Blocks.air));
+	        		if(ItemStack.areItemsEqual(blockReplaceList.get(i), new ItemStack(Items.BUCKET).setStackDisplayName("Air"))){
+	        			ID2.add(Block.getIdFromBlock(Blocks.AIR));
 	        			META2.add(i, blockReplaceList.get(i).getMetadata());
 	        		}
-	        		else if(blockReplaceList.get(i).getIsItemStackEqual(new ItemStack(Items.water_bucket).setStackDisplayName("Water"))){
-	        			ID2.add(Block.getIdFromBlock(Blocks.flowing_water));
-	        			ID2.add(Block.getIdFromBlock(Blocks.water));
+	        		else if(ItemStack.areItemsEqual(blockReplaceList.get(i), new ItemStack(Items.WATER_BUCKET).setStackDisplayName("Water"))){
+	        			ID2.add(Block.getIdFromBlock(Blocks.FLOWING_WATER));
+	        			ID2.add(Block.getIdFromBlock(Blocks.WATER));
 	        			META2.add(i, blockReplaceList.get(i).getMetadata());
 	        			META2.add(i, blockReplaceList.get(i).getMetadata());
 	        		}
-	        		else if(blockReplaceList.get(i).getIsItemStackEqual(new ItemStack(Items.lava_bucket).setStackDisplayName("Lava"))){
-	        			ID2.add(Block.getIdFromBlock(Blocks.flowing_lava));
-	        			ID2.add(Block.getIdFromBlock(Blocks.lava));
+	        		else if(ItemStack.areItemsEqual(blockReplaceList.get(i), new ItemStack(Items.LAVA_BUCKET).setStackDisplayName("Lava"))){
+	        			ID2.add(Block.getIdFromBlock(Blocks.FLOWING_LAVA));
+	        			ID2.add(Block.getIdFromBlock(Blocks.LAVA));
 	        			META2.add(i, blockReplaceList.get(i).getMetadata());
 	        			META2.add(i, blockReplaceList.get(i).getMetadata());
 	        		}

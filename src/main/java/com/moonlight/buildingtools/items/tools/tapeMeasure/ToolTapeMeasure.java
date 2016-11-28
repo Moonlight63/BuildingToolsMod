@@ -4,10 +4,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 
@@ -37,9 +40,9 @@ public class ToolTapeMeasure extends Item implements IOutlineDrawer{
 		
 		if(world.isRemote){
 			RayTracing.instance().fire(1000, true);
-			MovingObjectPosition target = RayTracing.instance().getTarget();
+			RayTraceResult target = RayTracing.instance().getTarget();
 		
-			if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){				
+			if (target != null && target.typeOfHit == RayTraceResult.Type.BLOCK){				
 				PacketDispatcher.sendToServer(new SendRaytraceResult(target.getBlockPos(), target.sideHit));
 				this.targetBlock = target.getBlockPos();
 				this.targetFace = target.sideHit;
@@ -58,28 +61,30 @@ public class ToolTapeMeasure extends Item implements IOutlineDrawer{
 		this.targetFace = side;
 	}
 	
-	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
+	@Override
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
+		ItemStack itemStackIn = playerIn.getHeldItemMainhand();
 		if(!worldIn.isRemote){
 			if(this.firstPos != BlockPos.ORIGIN){
 				System.out.println(firstPos);
 				if (Math.abs(this.firstPos.getX() - targetBlock.getX()) != 0) {
-					playerIn.addChatComponentMessage(new ChatComponentText("X: " + (this.firstPos.getX() - targetBlock.getX())));
+					playerIn.addChatMessage(new TextComponentString("X: " + (this.firstPos.getX() - targetBlock.getX())));
 				}
 				if (Math.abs(this.firstPos.getY() - targetBlock.getY()) != 0) {
-					playerIn.addChatComponentMessage(new ChatComponentText("Y: " + (this.firstPos.getY() - targetBlock.getY())));
+					playerIn.addChatMessage(new TextComponentString("Y: " + (this.firstPos.getY() - targetBlock.getY())));
 				}
 				if (Math.abs(this.firstPos.getZ() - targetBlock.getZ()) != 0) {
-					playerIn.addChatComponentMessage(new ChatComponentText("Z: " + (this.firstPos.getZ() - targetBlock.getZ())));
+					playerIn.addChatMessage(new TextComponentString("Z: " + (this.firstPos.getZ() - targetBlock.getZ())));
 				}
 				firstPos = BlockPos.ORIGIN;
 			}
 			else{
-				playerIn.addChatComponentMessage(new ChatComponentText("Position 1 Set"));
+				playerIn.addChatMessage(new TextComponentString("Position 1 Set"));
 				firstPos = targetBlock;
 			}
 		}
-        return itemStackIn;
+		return new ActionResult(EnumActionResult.PASS, itemStackIn);
     }
 		
 	public boolean onItemUse(ItemStack stack,
@@ -91,7 +96,7 @@ public class ToolTapeMeasure extends Item implements IOutlineDrawer{
             float hitY,
             float hitZ){
 		
-		onItemRightClick(stack, worldIn, playerIn);
+		onItemRightClick(worldIn, playerIn, EnumHand.MAIN_HAND);
 		
 		return true;
 	}
@@ -100,10 +105,10 @@ public class ToolTapeMeasure extends Item implements IOutlineDrawer{
 	public boolean drawOutline(DrawBlockHighlightEvent event) {
 		
 		if(firstPos != BlockPos.ORIGIN){
-			RenderHelper.renderBlockOutline(event.context, event.player, firstPos, RGBA.Green.setAlpha(150), 1.5f, event.partialTicks);
+			RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), firstPos, RGBA.Green.setAlpha(150), 1.5f, event.getPartialTicks());
 		}
 		if(targetBlock != null){
-			RenderHelper.renderBlockOutline(event.context, event.player, targetBlock, RGBA.White.setAlpha(150), 1.0f, event.partialTicks);
+			RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), targetBlock, RGBA.White.setAlpha(150), 1.0f, event.getPartialTicks());
 		}
 		return true;
 	}
