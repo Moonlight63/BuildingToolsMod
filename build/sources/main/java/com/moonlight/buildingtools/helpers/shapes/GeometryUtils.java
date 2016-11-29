@@ -3,9 +3,9 @@ package com.moonlight.buildingtools.helpers.shapes;
 import java.util.EnumSet;
 import java.util.Set;
 
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 public class GeometryUtils {
 
@@ -185,7 +185,7 @@ public class GeometryUtils {
 		}
 	}
 
-	public static void line3D(Vec3 start, Vec3 end, IShapeable shapeable) {
+	public static void line3D(Vec3d start, Vec3d end, IShapeable shapeable) {
 
 		int dx = (int)(end.xCoord - start.xCoord);
 		int dy = (int)(end.yCoord - start.yCoord);

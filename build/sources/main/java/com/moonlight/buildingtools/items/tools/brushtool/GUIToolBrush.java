@@ -73,7 +73,7 @@ public class GUIToolBrush extends GuiScreen{
 		buttonList.clear();
 		buttons.clear();
 		
-		NBTTagCompound heldnbt = ToolBrush.getNBT(player.getHeldItem());
+		NBTTagCompound heldnbt = ToolBrush.getNBT(player.getHeldItemMainhand());
 		Shapes gen = Shapes.VALUES[heldnbt.getInteger("generator")];
 		
 		generator.displayString = gen.getLocalizedName();
@@ -92,7 +92,7 @@ public class GUIToolBrush extends GuiScreen{
 						);
 		
 		radiusz.enabled = !gen.fixedRatio;
-		setblock.enabled = ((ToolBrush)player.getHeldItem().getItem()).targetBlock != null;
+		setblock.enabled = ((ToolBrush)player.getHeldItemMainhand().getItem()).targetBlock != null;
 		
 		showBlockRep.enabled = heldnbt.getInteger("replacemode") == 4;
 		
@@ -138,10 +138,10 @@ public class GUIToolBrush extends GuiScreen{
                 if (MinecraftForge.EVENT_BUS.post(event))
                     break;
                 //this.selectedButton = event.button;
-                event.button.playPressSound(this.mc.getSoundHandler());
-                this.actionPerformed(event.button, mouseButton);
+                event.getButton().playPressSound(this.mc.getSoundHandler());
+                this.actionPerformed(event.getButton(), mouseButton);
                 if (this.equals(this.mc.currentScreen))
-                    MinecraftForge.EVENT_BUS.post(new ActionPerformedEvent.Post(this, event.button, this.buttonList));
+                    MinecraftForge.EVENT_BUS.post(new ActionPerformedEvent.Post(this, event.getButton(), this.buttonList));
             }
         }
     }

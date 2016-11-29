@@ -2,8 +2,8 @@ package com.moonlight.buildingtools.network.packethandleing;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
@@ -53,9 +53,9 @@ public class SendRaytraceResult implements IMessage {
 		@Override
 		public IMessage handleServerMessage(EntityPlayer player, SendRaytraceResult message, MessageContext ctx) {
 			//System.out.println(player);
-			if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof IOutlineDrawer){
+			if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof IOutlineDrawer){
 				
-				((IOutlineDrawer)player.getHeldItem().getItem()).setTargetBlock(message.target, message.face);
+				((IOutlineDrawer)player.getHeldItemMainhand().getItem()).setTargetBlock(message.target, message.face);
 			}
 			return null;
 		}	

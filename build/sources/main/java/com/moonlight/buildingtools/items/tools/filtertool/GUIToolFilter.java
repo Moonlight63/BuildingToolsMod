@@ -72,7 +72,7 @@ public class GUIToolFilter extends GuiScreen{
 		buttons.clear();
 		
 		
-		NBTTagCompound heldnbt = ToolFilter.getNBT(player.getHeldItem());
+		NBTTagCompound heldnbt = ToolFilter.getNBT(player.getHeldItemMainhand());
 		Shapes gen = Shapes.VALUES[heldnbt.getInteger("generator")];
 		
 		//filter.displayString = heldnbt.getInteger("filter") == 1 ? "Topsoil" : heldnbt.getInteger("filter") == 2 ? "Clear Water" : "Clear Junk";
@@ -174,10 +174,10 @@ public class GUIToolFilter extends GuiScreen{
                 if (MinecraftForge.EVENT_BUS.post(event))
                     break;
                 //this.selectedButton = event.button;
-                event.button.playPressSound(this.mc.getSoundHandler());
-                this.actionPerformed(event.button, mouseButton);
+                event.getButton().playPressSound(this.mc.getSoundHandler());
+                this.actionPerformed(event.getButton(), mouseButton);
                 if (this.equals(this.mc.currentScreen))
-                    MinecraftForge.EVENT_BUS.post(new ActionPerformedEvent.Post(this, event.button, this.buttonList));
+                    MinecraftForge.EVENT_BUS.post(new ActionPerformedEvent.Post(this, event.getButton(), this.buttonList));
             }
         }
     }
@@ -186,7 +186,7 @@ public class GUIToolFilter extends GuiScreen{
 	protected void actionPerformed(GuiButton button, int mouseButton){
 		if(button == editTree){
 			this.mc.displayGuiScreen((GuiScreen) null);
-			this.mc.displayGuiScreen(new GUIEditTree(this.player, ((ToolFilter)(player.getHeldItem().getItem())).treeData));
+			this.mc.displayGuiScreen(new GUIEditTree(this.player, ((ToolFilter)(player.getHeldItemMainhand().getItem())).treeData));
 		}
 		else
 			PacketDispatcher.sendToServer(new SendGuiButtonPressedToItemMessage((byte) button.id, mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));

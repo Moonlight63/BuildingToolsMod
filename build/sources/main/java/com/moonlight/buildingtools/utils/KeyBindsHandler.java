@@ -54,7 +54,7 @@ public class KeyBindsHandler
             if (player != null)
             {
                 //LogHelper.info("PlayerNotNull");
-                ItemStack equippedItem = player.getCurrentEquippedItem();
+                ItemStack equippedItem = player.getHeldItemMainhand();
                 
                 //Key.KeyCode keyCode = whichKeyPressed();
                 //((BlockChangerBase)player.getCurrentEquippedItem().getItem()).handleKey(player, equippedItem, keyCode);
@@ -64,7 +64,7 @@ public class KeyBindsHandler
                 	Key.KeyCode keyCode = whichKeyPressed();
                 	Set<Key.KeyCode> handledKeyCodes = ((IKeyHandler) equippedItem.getItem()).getHandledKeys();
                 	if (!handledKeyCodes.contains(keyCode)) return;
-                	((IKeyHandler) player.getCurrentEquippedItem().getItem()).handleKey(player, equippedItem, keyCode);
+                	((IKeyHandler) player.getHeldItemMainhand().getItem()).handleKey(player, equippedItem, keyCode);
 
                     //((BlockChangerBase)equippedItem.getItem()).setTargetRadius(equippedItem, radius);
                 	

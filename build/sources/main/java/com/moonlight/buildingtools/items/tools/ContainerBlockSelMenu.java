@@ -4,13 +4,16 @@ import java.util.List;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -22,7 +25,6 @@ import com.moonlight.buildingtools.utils.RGBA;
 public final class ContainerBlockSelMenu extends Container{
 	
 	private static InventoryBasic blocksINV = new InventoryBasic("tmp", true, 45);
-	
     public static List<ItemStack> itemList = Lists.<ItemStack>newArrayList();
 
     public ContainerBlockSelMenu(){
@@ -59,7 +61,7 @@ public final class ContainerBlockSelMenu extends Container{
                     blocksINV.setInventorySlotContents(l + k * 9, (ItemStack)ContainerBlockSelMenu.itemList.get(i1));
                 }
                 else{
-                    blocksINV.setInventorySlotContents(l + k * 9, (ItemStack)null);
+                    blocksINV.setInventorySlotContents(l + k * 9, (ItemStack)new ItemStack((Item)null));
                 }
             }
         }
@@ -121,7 +123,7 @@ public final class ContainerBlockSelMenu extends Container{
 //	        }
 	
 	        Tessellator tessellator = Tessellator.getInstance();
-	        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+	        VertexBuffer worldrenderer = tessellator.getBuffer();
 	        GlStateManager.enableBlend();
 	        GlStateManager.disableTexture2D();
 	        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);

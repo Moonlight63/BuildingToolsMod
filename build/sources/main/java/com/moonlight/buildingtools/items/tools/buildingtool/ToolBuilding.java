@@ -10,9 +10,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 
@@ -60,7 +63,8 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
 	
 	public ToolBuilding(){
 		super();
-		setUnlocalizedName("buildingTool");
+		setUnlocalizedName("ToolBuilding");
+		setRegistryName("buildingtool");
 		setCreativeTab(BuildingTools.tabBT);
 		setMaxStackSize(1);
 	}
@@ -74,9 +78,9 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
 		
 		if(world.isRemote){
 			RayTracing.instance().fire(1000, true);
-			MovingObjectPosition target = RayTracing.instance().getTarget();
+			RayTraceResult target = RayTracing.instance().getTarget();
 		
-			if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){				
+			if (target != null && target.typeOfHit == RayTraceResult.Type.BLOCK){				
 				PacketDispatcher.sendToServer(new SendRaytraceResult(target.getBlockPos(), target.sideHit));
 				this.targetBlock = target.getBlockPos();
 				this.targetFace = target.sideHit;
@@ -126,8 +130,11 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
     }
 	
 	@Override
-	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
+		
+		ItemStack itemStackIn = playerIn.getHeldItemMainhand();
+		
 		if (targetBlock != null  && !worldIn.isAirBlock(targetBlock)) {
 			if (playerIn.isSneaking()) {
 				playerIn.openGui(BuildingTools.instance,
@@ -148,11 +155,11 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
 									.getInteger("radiusZ"), targetFace,
 							playerIn));
 
-					return itemStackIn;
+					return new ActionResult(EnumActionResult.PASS, itemStackIn);
 				}
 			}
 		}
-		return itemStackIn;
+		return new ActionResult(EnumActionResult.PASS, itemStackIn);
     }
 		
 	public boolean onItemUse(ItemStack stack,
@@ -164,7 +171,7 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
             float hitY,
             float hitZ){
 		
-		onItemRightClick(stack, worldIn, playerIn);
+		onItemRightClick(worldIn, playerIn, EnumHand.MAIN_HAND);
 		return true;
 		
 	}
@@ -245,19 +252,19 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
         	
         	renderer.startDraw();
         	
-	        if (event.player.isSneaking())
+	        if (event.getPlayer().isSneaking())
 	        {
-	        	renderer.addOutlineToBuffer(event.player, targetBlock, RGBA.Green.setAlpha(150), event.partialTicks);
+	        	renderer.addOutlineToBuffer(event.getPlayer(), targetBlock, RGBA.Green.setAlpha(150), event.getPartialTicks());
 	        	renderer.finalizeDraw();
 	            //RenderHelper.renderBlockOutline(event.context, event.player, targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
 	            return true;
 	        }
 	        	
-        	if(checkVisualizer(visualizer, event.currentItem)){
+        	if(checkVisualizer(visualizer, event.getPlayer().getHeldItemMainhand())){
                 visualizer.RegenShape(
             			Shapes.Cuboid.generator, 
-            			getNBT(event.currentItem).getInteger("radiusX"),
-            			getNBT(event.currentItem).getInteger("radiusZ"),
+            			getNBT(event.getPlayer().getHeldItemMainhand()).getInteger("radiusX"),
+            			getNBT(event.getPlayer().getHeldItemMainhand()).getInteger("radiusZ"),
             			true
         		);
                 updateVisualizer = false;
@@ -271,7 +278,7 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
 		        		BlockPos newPos = visualizer.CalcOffset(pos, targetBlock, targetFace, world);
 		        		
 		        		if(newPos != null){
-		        			renderer.addOutlineToBuffer(event.player, newPos, RGBA.White.setAlpha(150), event.partialTicks);
+		        			renderer.addOutlineToBuffer(event.getPlayer(), newPos, RGBA.White.setAlpha(150), event.getPartialTicks());
 		        			//RenderHelper.renderBlockOutline(event.context, event.player, newPos, RGBA.White.setAlpha(150), 1.0f, event.partialTicks);
 		        		}
 		        	}

@@ -13,8 +13,8 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import com.google.common.collect.Lists;
@@ -59,8 +59,8 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 	
 	protected boolean forceBlocksToFall = false;
 	protected boolean fillmode = true;
-	protected IBlockState blockStateToPlace = Blocks.stone.getDefaultState();
-	protected IBlockState blockStateToReplace = Blocks.air.getDefaultState();
+	protected IBlockState blockStateToPlace = Blocks.STONE.getDefaultState();
+	protected IBlockState blockStateToReplace = Blocks.AIR.getDefaultState();
 	protected boolean replaceAll = false;
 	
 	protected List<IBlockState> fillBlockStates = Lists.<IBlockState>newArrayList();
@@ -77,7 +77,7 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 		this.entity = entity;
 		this.generator = shapegen;
 		if(blockStateToCreate == BlockLoader.tempBlock.getDefaultState())
-			this.blockStateToPlace = Blocks.air.getDefaultState();
+			this.blockStateToPlace = Blocks.AIR.getDefaultState();
 		else
 			this.blockStateToPlace = blockStateToCreate;
 		this.forceBlocksToFall = forceblockstofall;
@@ -97,7 +97,7 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 		this.entity = entity;
 		this.generator = shapegen;
 		if(blockStateToCreate == BlockLoader.tempBlock.getDefaultState())
-			this.blockStateToPlace = Blocks.air.getDefaultState();
+			this.blockStateToPlace = Blocks.AIR.getDefaultState();
 		else
 			this.blockStateToPlace = blockStateToCreate;
 		this.blockStateToReplace = blockStateToReplace;
@@ -118,7 +118,7 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 		this.entity = entity;
 		this.generator = shapegen;
 		if(blockStateToCreate == BlockLoader.tempBlock.getDefaultState())
-			this.blockStateToPlace = Blocks.air.getDefaultState();
+			this.blockStateToPlace = Blocks.AIR.getDefaultState();
 		else
 			this.blockStateToPlace = blockStateToCreate;
 		this.replaceAll = replaceAllBlocks;
@@ -139,7 +139,7 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 		this.entity = entity;
 		this.generator = shapegen;
 		if(blockStateToCreate == BlockLoader.tempBlock.getDefaultState())
-			this.blockStateToPlace = Blocks.air.getDefaultState();
+			this.blockStateToPlace = Blocks.AIR.getDefaultState();
 		else
 			this.blockStateToPlace = blockStateToCreate;
 		this.replaceAll = true;
@@ -156,7 +156,7 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 			
 		currentlyCalculating = true;
 		
-		IBlockState blockstate = Blocks.air.getDefaultState();
+		IBlockState blockstate = Blocks.AIR.getDefaultState();
 		
 		if(!fillBlockStates.isEmpty()){
 			int chanceTotal = 0;
@@ -238,9 +238,9 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
         	return false;
         }
         if (worldIn.isAirBlock(pos)) return true;
-        Block block = worldIn.getBlockState(pos).getBlock();
-        Material material = block.getMaterial();
-        return block == Blocks.fire || material == Material.air || material == Material.water || material == Material.lava || block == BlockLoader.tempBlock;
+        Block block = worldIn.getBlockState(pos).getActualState(worldIn, pos).getBlock();
+        Material material = worldIn.getBlockState(pos).getActualState(worldIn, pos).getMaterial();
+        return block == Blocks.FIRE || material == Material.AIR || material == Material.WATER || material == Material.LAVA || block == BlockLoader.tempBlock;
     }
 	
 	

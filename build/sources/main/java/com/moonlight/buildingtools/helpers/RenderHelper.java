@@ -1,18 +1,21 @@
 package com.moonlight.buildingtools.helpers;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
@@ -20,20 +23,26 @@ import com.moonlight.buildingtools.utils.RGBA;
 
 public class RenderHelper
 {
-	
+	public static final AxisAlignedBB FULL_BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
 	public Tessellator tessellator;
-	public WorldRenderer worldrenderer;
+	public VertexBuffer worldrenderer;
 	
 	public RenderHelper(){
 		tessellator = new Tessellator(2097152*4);
-        worldrenderer = tessellator.getWorldRenderer();
+        worldrenderer = tessellator.getBuffer();
 	}
 	
 	public void addOutlineToBuffer(EntityPlayer entityPlayer, BlockPos blockpos, RGBA colour, float partialTicks){
-		if(entityPlayer.worldObj == null)
+		addOutlineToBuffer(entityPlayer, blockpos, colour, partialTicks, FULL_BLOCK_AABB);
+	}
+	
+	public void addOutlineToBuffer(EntityPlayer entityPlayer, BlockPos blockpos, RGBA colour, float partialTicks, AxisAlignedBB aabb){
+		World world = entityPlayer.worldObj;
+		if(world == null)
         	return;
-    	Block block = entityPlayer.worldObj.getBlockState(blockpos).getBlock();
-        block.setBlockBoundsBasedOnState(entityPlayer.worldObj, blockpos);
+		//IBlockState state = world.getBlockState(blockpos);
+    	//state.getCollisionBoundingBox(world, blockpos);
+        //block.setBlockBoundsBasedOnState(entityPlayer.worldObj, blockpos);
 		
         float f1 = 0.02F;
 
@@ -41,8 +50,8 @@ public class RenderHelper
         double d1 = entityPlayer.lastTickPosY + (entityPlayer.posY - entityPlayer.lastTickPosY) * (double) partialTicks;
         double d2 = entityPlayer.lastTickPosZ + (entityPlayer.posZ - entityPlayer.lastTickPosZ) * (double) partialTicks;
         
-        AxisAlignedBB box = block.getSelectedBoundingBox(entityPlayer.worldObj, blockpos).expand(f1, f1, f1).offset(-d0, -d1, -d2);
-        
+        //AxisAlignedBB box = state.getCollisionBoundingBox(entityPlayer.worldObj, blockpos).expand(f1, f1, f1).offset(-d0, -d1, -d2);
+        AxisAlignedBB box = aabb.expand(f1, f1, f1).offset(-d0, -d1, -d2).offset(blockpos);
         
         
         int h = worldrenderer.getVertexCount() * worldrenderer.getVertexFormat().getNextOffset();
@@ -103,16 +112,25 @@ public class RenderHelper
 	
     // Similar to vanilla's "drawSelectionBox" with some customizability and without block checks
     public static void renderBlockOutline(RenderGlobal context, EntityPlayer entityPlayer, BlockPos blockpos, RGBA colour, float lineWidth, float partialTicks){
-        if(entityPlayer.worldObj == null)
+    	World world = entityPlayer.worldObj;
+		if(world == null)
         	return;
-    	Block block = entityPlayer.worldObj.getBlockState(blockpos).getBlock();
-        block.setBlockBoundsBasedOnState(entityPlayer.worldObj, blockpos);
+		//IBlockState state = world.getBlockState(blockpos);
+    	//state.getCollisionBoundingBox(world, blockpos);
         
-        
-        
-        renderAABBOutline(context, entityPlayer, block.getSelectedBoundingBox(entityPlayer.worldObj, blockpos), colour, lineWidth, partialTicks);
+        renderAABBOutline(context, entityPlayer, FULL_BLOCK_AABB.offset(blockpos), colour, lineWidth, partialTicks);
     }
 
+    public void renderSelectionOutline(EntityPlayer entityPlayer, BlockPos blockpos, BlockPos blockpos2, RGBA colour, float partialTicks){
+    	int p1x = (blockpos.getX() <= blockpos2.getX()) ? blockpos.getX() : blockpos.getX() + 1;
+        int p1y = (blockpos.getY() <= blockpos2.getY()) ? blockpos.getY() : blockpos.getY() + 1;
+        int p1z = (blockpos.getZ() <= blockpos2.getZ()) ? blockpos.getZ() : blockpos.getZ() + 1;
+        int p2x = (blockpos2.getX() < blockpos.getX()) ? blockpos2.getX() : blockpos2.getX() + 1;
+        int p2y = (blockpos2.getY() < blockpos.getY()) ? blockpos2.getY() : blockpos2.getY() + 1;
+        int p2z = (blockpos2.getZ() < blockpos.getZ()) ? blockpos2.getZ() : blockpos2.getZ() + 1;
+        
+		addOutlineToBuffer(entityPlayer, new BlockPos(0,0,0), colour, partialTicks, new AxisAlignedBB(new BlockPos(p1x, p1y, p1z), new BlockPos(p2x, p2y, p2z)));
+	}
     public static void renderSelectionBox(RenderGlobal context, EntityPlayer entityPlayer, BlockPos blockpos, BlockPos blockpos2, RGBA colour, float lineWidth, float partialTicks){
        
         int p1x = (blockpos.getX() <= blockpos2.getX()) ? blockpos.getX() : blockpos.getX() + 1;
@@ -122,7 +140,7 @@ public class RenderHelper
         int p2y = (blockpos2.getY() < blockpos.getY()) ? blockpos2.getY() : blockpos2.getY() + 1;
         int p2z = (blockpos2.getZ() < blockpos.getZ()) ? blockpos2.getZ() : blockpos2.getZ() + 1;
         
-        renderAABBOutline(context, entityPlayer, new AxisAlignedBB(new BlockPos(p1x, p1y, p1z), new BlockPos(p2x, p2y, p2z)), colour, lineWidth, partialTicks);
+        //renderAABBOutline(context, entityPlayer, new AxisAlignedBB(new BlockPos(p1x, p1y, p1z), new BlockPos(p2x, p2y, p2z)), colour, lineWidth, partialTicks);
         
         Entity entity = Minecraft.getMinecraft().getRenderViewEntity();
         
@@ -198,20 +216,20 @@ public class RenderHelper
         double d0 = entityPlayer.lastTickPosX + (entityPlayer.posX - entityPlayer.lastTickPosX) * (double) partialTicks;
         double d1 = entityPlayer.lastTickPosY + (entityPlayer.posY - entityPlayer.lastTickPosY) * (double) partialTicks;
         double d2 = entityPlayer.lastTickPosZ + (entityPlayer.posZ - entityPlayer.lastTickPosZ) * (double) partialTicks;
-        RenderGlobal.drawOutlinedBoundingBox(aabb.expand((double) f1, (double) f1, (double) f1).offset(-d0, -d1, -d2), colour.red, colour.green, colour.blue, colour.alpha);
+        RenderGlobal.drawSelectionBoundingBox(aabb.expand((double) f1, (double) f1, (double) f1).offset(-d0, -d1, -d2), colour.red, colour.green, colour.blue, colour.alpha);
 
         GL11.glDepthMask(true);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_BLEND);
     }
     
-    public static Vec3 translateToWorldCoords(Entity entity, float frame) {
+    public static Vec3d translateToWorldCoords(Entity entity, float frame) {
         double interpPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double) frame;
         double interpPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double) frame;
         double interpPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double) frame;
 
         //System.out.println(new Vec3(interpPosX, interpPosY, interpPosZ));
-        return new Vec3(-interpPosX, -interpPosY, -interpPosZ);
+        return new Vec3d(-interpPosX, -interpPosY, -interpPosZ);
         
         //GlStateManager.translate(-interpPosX, -interpPosY, -interpPosZ);
     }

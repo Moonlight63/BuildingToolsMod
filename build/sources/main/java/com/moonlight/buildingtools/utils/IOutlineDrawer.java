@@ -1,7 +1,7 @@
 package com.moonlight.buildingtools.utils;
 
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 
 public interface IOutlineDrawer {

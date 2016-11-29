@@ -1,13 +1,13 @@
 package com.moonlight.buildingtools.helpers;
 
-import net.minecraft.util.StatCollector;
-
 import com.moonlight.buildingtools.helpers.shapes.IShapeGenerator;
 import com.moonlight.buildingtools.helpers.shapes.ShapeCuboidGenerator;
 import com.moonlight.buildingtools.helpers.shapes.ShapeCylinderGenerator;
 import com.moonlight.buildingtools.helpers.shapes.ShapeDomeGenerator;
 import com.moonlight.buildingtools.helpers.shapes.ShapeEquilateral2dGenerator;
 import com.moonlight.buildingtools.helpers.shapes.ShapeSphereGenerator;
+
+import net.minecraft.client.resources.I18n;
 
 public enum Shapes {
 	Sphere(false, new ShapeSphereGenerator(), "sphere"),
@@ -30,7 +30,7 @@ public enum Shapes {
 	}
 
 	public String getLocalizedName() {
-		return StatCollector.translateToLocal(unlocalizedName);
+		return I18n.format(unlocalizedName);
 	}
 
 	public static final Shapes[] VALUES = values();

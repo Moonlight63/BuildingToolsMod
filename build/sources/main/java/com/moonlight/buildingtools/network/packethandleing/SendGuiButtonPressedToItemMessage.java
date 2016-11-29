@@ -58,9 +58,9 @@ public class SendGuiButtonPressedToItemMessage implements IMessage {
 		@Override
 		public IMessage handleServerMessage(EntityPlayer player, SendGuiButtonPressedToItemMessage message, MessageContext ctx) {
 			//System.out.println(player);
-			if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof IGetGuiButtonPressed){
+			if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof IGetGuiButtonPressed){
 				
-				((IGetGuiButtonPressed)player.getHeldItem().getItem()).GetGuiButtonPressed(message.buttonID, message.mouseButton, message.ctrlDown, message.altDown, message.shiftDown, player.getHeldItem());
+				((IGetGuiButtonPressed)player.getHeldItemMainhand().getItem()).GetGuiButtonPressed(message.buttonID, message.mouseButton, message.ctrlDown, message.altDown, message.shiftDown, player.getHeldItemMainhand());
 			}
 			return null;
 		}	

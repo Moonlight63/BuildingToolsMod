@@ -10,9 +10,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.common.DimensionManager;
@@ -49,7 +52,8 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 	
 	public ToolSelection(){
 		super();
-		setUnlocalizedName("selectionTool");
+		setUnlocalizedName("ToolSelection");
+		setRegistryName("selectiontool");
 		setCreativeTab(BuildingTools.tabBT);
 		setMaxStackSize(1);
 	}
@@ -84,9 +88,9 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 		
 		if(world.isRemote){
 			RayTracing.instance().fire(1000, true);
-			MovingObjectPosition target = RayTracing.instance().getTarget();
+			RayTraceResult target = RayTracing.instance().getTarget();
 		
-			if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK){				
+			if (target != null && target.typeOfHit == RayTraceResult.Type.BLOCK){				
 				PacketDispatcher.sendToServer(new SendRaytraceResult(target.getBlockPos(), target.sideHit));
 				this.targetBlock = target.getBlockPos();
 				this.targetFace = target.sideHit;
@@ -105,8 +109,10 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 	}
 	
 	@Override
-	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
+		
+		ItemStack itemStackIn = playerIn.getHeldItemMainhand();
 		currPlayer = playerIn;
 		if(targetBlock == null){
 			if(playerIn.isSneaking()){
@@ -136,7 +142,7 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 				}
 			}
 		}
-        return itemStackIn;
+		return new ActionResult(EnumActionResult.PASS, itemStackIn);
     }
 		
 	public boolean onItemUse(ItemStack stack,
@@ -148,7 +154,7 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
             float hitY,
             float hitZ){
 		
-		onItemRightClick(stack, worldIn, playerIn);
+		onItemRightClick(worldIn, playerIn, EnumHand.MAIN_HAND);
 		
 		return true;
 	}
@@ -199,29 +205,46 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
     public boolean drawOutline(DrawBlockHighlightEvent event)
     {
 		//BlockPos target = event.target.getBlockPos();
-		
+		if(renderer == null){
+	    	renderer = new RenderHelper();
+	    }
 		if(targetBlock!=null){
 			
-	        if (event.player.isSneaking())
-	        {
-	            RenderHelper.renderBlockOutline(event.context, event.player, targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
-	            return true;
+	        
+			
+	        //if (event.getPlayer().isSneaking())
+	        //{
+	        	renderer.startDraw();
+	        	renderer.addOutlineToBuffer(event.getPlayer(), targetBlock, RGBA.Green.setAlpha(150), event.getPartialTicks());
+	            renderer.finalizeDraw();
+	        	//RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.getPartialTicks());
+	        //    return true;
+	        //}
+	        
+	        if (getNBT(event.getPlayer().getHeldItemMainhand()).getBoolean("bpos1Set")){
+	        	renderer.startDraw();
+	        	renderer.addOutlineToBuffer(event.getPlayer(), getBlockPos1(event.getPlayer().getHeldItemMainhand()), RGBA.Blue.setAlpha(150), event.getPartialTicks());
+	        	renderer.finalizeDraw();
+	        	//RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), getBlockPos1(event.getPlayer().getHeldItemMainhand()), RGBA.Blue, 1.0f, event.getPartialTicks());
 	        }
 	        
-	        if (getNBT(event.currentItem).getBoolean("bpos1Set")){
-	        	RenderHelper.renderBlockOutline(event.context, event.player, getBlockPos1(event.currentItem), RGBA.Blue, 1.0f, event.partialTicks);
+	        if (getNBT(event.getPlayer().getHeldItemMainhand()).getBoolean("bpos2Set")){
+	        	renderer.startDraw();
+	        	renderer.addOutlineToBuffer(event.getPlayer(), getBlockPos2(event.getPlayer().getHeldItemMainhand()), RGBA.Blue.setAlpha(150), event.getPartialTicks());
+	        	renderer.finalizeDraw();
+	        	//RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), getBlockPos2(event.getPlayer().getHeldItemMainhand()), RGBA.Blue, 1.0f, event.getPartialTicks());
 	        }
 	        
-	        if (getNBT(event.currentItem).getBoolean("bpos2Set")){
-	        	RenderHelper.renderBlockOutline(event.context, event.player, getBlockPos2(event.currentItem), RGBA.Blue, 1.0f, event.partialTicks);
-	        }
-	        
-	        if (getNBT(event.currentItem).getBoolean("bpos1Set") && getNBT(event.currentItem).getBoolean("bpos2Set")){
-	        	RenderHelper.renderSelectionBox(event.context, event.player, getBlockPos1(event.currentItem), getBlockPos2(event.currentItem), RGBA.Red, 1.5f, event.partialTicks);
+	        if (getNBT(event.getPlayer().getHeldItemMainhand()).getBoolean("bpos1Set") && getNBT(event.getPlayer().getHeldItemMainhand()).getBoolean("bpos2Set")){
+	        	renderer.startDraw();
+	        	renderer.renderSelectionOutline(event.getPlayer(), getBlockPos1(event.getPlayer().getHeldItemMainhand()), getBlockPos2(event.getPlayer().getHeldItemMainhand()), RGBA.Red, event.getPartialTicks());
+	        	renderer.finalizeDraw();
+	        	RenderHelper.renderSelectionBox(event.getContext(), event.getPlayer(), getBlockPos1(event.getPlayer().getHeldItemMainhand()), getBlockPos2(event.getPlayer().getHeldItemMainhand()), RGBA.Red, 1.5f, event.getPartialTicks());
 	        }
 	        
 		}
-	        
+		
+		
         
         return true;
     }
@@ -249,7 +272,7 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 		thisStack = stack;
 		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
 		
-		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimensionId());
+		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
 		
 		if (buttonID == 1) {
 			System.out.println("Copying");
@@ -396,7 +419,7 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 		
 		IBlockState fillBlock = Block.getBlockById(ID).getStateFromMeta(DATA);
 		
-		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimensionId());
+		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
 		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
 		player.addPending(new ThreadSimpleFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, fillBlock));
 	}
@@ -411,7 +434,7 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 			blockStates.add(Block.getBlockById(ID.get(i)).getStateFromMeta(DATA.get(i)));
 		}
 		
-		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimensionId());
+		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
 		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
 		player.addPending(new ThreadAdvancedFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, blockStates, COUNT));
 		//player.addPending(new ThreadSimpleFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, fillBlock));
@@ -423,7 +446,7 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 		IBlockState fillBlock = Block.getBlockById(ID).getStateFromMeta(DATA);
 		IBlockState replaceBlock = Block.getBlockById(ID2).getStateFromMeta(DATA2);
 		
-		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimensionId());
+		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
 		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
 		player.addPending(new ThreadSimpleFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, fillBlock, replaceBlock));
 	}
@@ -447,7 +470,7 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 		
 		//IBlockState fillBlock = Block.getBlockById(ID).getStateFromMeta(DATA);
 		
-		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimensionId());
+		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
 		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
 		player.addPending(new ThreadAdvancedFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, blockStates, blockStatesReplace, COUNT));
 		//player.addPending(new ThreadSimpleFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, fillBlock));

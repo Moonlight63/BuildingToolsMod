@@ -59,7 +59,7 @@ public class GUIErosionTool extends GuiScreen{
 		buttonList.clear();
 		buttons.clear();
 		
-		NBTTagCompound heldnbt = ToolErosion.getNBT(player.getHeldItem());
+		NBTTagCompound heldnbt = ToolErosion.getNBT(player.getHeldItemMainhand());
 		ErosionVisuallizer.Preset gen = ErosionVisuallizer.Preset.values()[heldnbt.getInteger("preset")];
 		
 		presetButton.displayString = gen.name();
@@ -91,10 +91,10 @@ public class GUIErosionTool extends GuiScreen{
                     if (MinecraftForge.EVENT_BUS.post(event))
                         break;
                     //this.selectedButton = event.button;
-                    event.button.playPressSound(this.mc.getSoundHandler());
-                    this.actionPerformed(event.button, mouseButton);
+                    event.getButton().playPressSound(this.mc.getSoundHandler());
+                    this.actionPerformed(event.getButton(), mouseButton);
                     if (this.equals(this.mc.currentScreen))
-                        MinecraftForge.EVENT_BUS.post(new ActionPerformedEvent.Post(this, event.button, this.buttonList));
+                        MinecraftForge.EVENT_BUS.post(new ActionPerformedEvent.Post(this, event.getButton(), this.buttonList));
                 }
             }
         //}

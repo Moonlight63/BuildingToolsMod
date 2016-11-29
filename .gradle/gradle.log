@@ -1,7 +1,7 @@
-This mapping 'stable_20' was designed for MC 1.8.8! Use at your own peril.This mapping 'stable_20' was designed for MC 1.8.8! Use at your own peril.
+This mapping 'snapshot_20161111' was designed for MC 1.10.2! Use at your own peril.This mapping 'snapshot_20161111' was designed for MC 1.10.2! Use at your own peril.
 
 #################################################
-         ForgeGradle 2.1-SNAPSHOT-d98ae31        
+         ForgeGradle 2.2-SNAPSHOT-c438b06        
   https://github.com/MinecraftForge/ForgeGradle  
 #################################################
                Powered by MCP unknown               
@@ -17,33 +17,283 @@ This mapping 'stable_20' was designed for MC 1.8.8! Use at your own peril.This m
 :apiClasses UP-TO-DATE
 :sourceMainJava
 :compileJavawarning: [options] bootstrap class path not set in conjunction with -source 1.6
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:13: error: cannot find symbol
+import net.minecraft.util.BlockPos;
+                         ^
+  symbol:   class BlockPos
+  location: package net.minecraft.util
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:14: error: cannot find symbol
+import net.minecraft.util.MathHelper;
+                         ^
+  symbol:   class MathHelper
+  location: package net.minecraft.util
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:24: error: cannot find symbol
+    private BlockPos basePos = BlockPos.ORIGIN;
+            ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:343: error: cannot find symbol
+    static class FoliageCoordinates extends BlockPos{
+                                            ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:51: error: cannot find symbol
+    public CustomTreeTest(BlockPos pos){
+                          ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:178: error: cannot find symbol
+    void generateBranch(BlockPos pos1, BlockPos pos2){
+                        ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:178: error: cannot find symbol
+    void generateBranch(BlockPos pos1, BlockPos pos2){
+                                       ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:202: error: cannot find symbol
+    private int getGreatestDistance(BlockPos posIn){
+                                    ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:209: error: cannot find symbol
+    private BlockLog.EnumAxis getLogAxis(BlockPos startPos, BlockPos directionPos){
+                                         ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:209: error: cannot find symbol
+    private BlockLog.EnumAxis getLogAxis(BlockPos startPos, BlockPos directionPos){
+                                                            ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:356: error: cannot find symbol
+    public Set<BlockPos> taperedcylinder(BlockPos start, BlockPos end, float startsize, float endsize){
+                                         ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:356: error: cannot find symbol
+    public Set<BlockPos> taperedcylinder(BlockPos start, BlockPos end, float startsize, float endsize){
+                                                         ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:356: error: cannot find symbol
+    public Set<BlockPos> taperedcylinder(BlockPos start, BlockPos end, float startsize, float endsize){
+               ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:397: error: cannot find symbol
+    public Set<BlockPos> crossection(int[] center, float radius, int diraxis){
+               ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:428: error: cannot find symbol
+    public Set<BlockPos> foliagecluster(BlockPos center){
+                                        ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:428: error: cannot find symbol
+    public Set<BlockPos> foliagecluster(BlockPos center){
+               ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:346: error: cannot find symbol
+        public FoliageCoordinates(BlockPos pos, int branchY){
+                                  ^
+  symbol:   class BlockPos
+  location: class FoliageCoordinates
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:24: error: cannot find symbol
+    private BlockPos basePos = BlockPos.ORIGIN;
+                               ^
+  symbol:   variable BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:44: error: cannot find symbol
+    IBlockState logMat = Blocks.stone.getDefaultState();
+                               ^
+  symbol:   variable stone
+  location: class Blocks
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:45: error: cannot find symbol
+    IBlockState leafMat = Blocks.stone.getDefaultState();
+                                ^
+  symbol:   variable stone
+  location: class Blocks
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:93: error: cannot find symbol
+                    BlockPos blockpos = new BlockPos(d2, (double)(count - 1), d3);
+                    ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:93: error: cannot find symbol
+                    BlockPos blockpos = new BlockPos(d2, (double)(count - 1), d3);
+                                            ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:148: error: cannot find symbol
+            float dist = MathHelper.sqrt_float(rad * rad - adj * adj);
+                         ^
+  symbol:   variable MathHelper
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:179: error: cannot find symbol
+        BlockPos blockpos = pos2.add(-pos1.getX(), -pos1.getY(), -pos1.getZ());
+        ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:186: error: cannot find symbol
+        	BlockPos blockpos1 = pos1.add((double)(0.5F + (float)j * f), (double)(0.5F + (float)j * f1), (double)(0.5F + (float)j * f2));
+        	^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:187: error: cannot find symbol
+        	if(this.logMat.getBlock().equals(Blocks.log) || this.logMat.getBlock().equals(Blocks.log2)){
+        	                                       ^
+  symbol:   variable log
+  location: class Blocks
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:187: error: cannot find symbol
+        	if(this.logMat.getBlock().equals(Blocks.log) || this.logMat.getBlock().equals(Blocks.log2)){
+        	                                                                                    ^
+  symbol:   variable log2
+  location: class Blocks
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:203: error: cannot find symbol
+        int i = MathHelper.abs_int(posIn.getX());
+                ^
+  symbol:   variable MathHelper
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:204: error: cannot find symbol
+        int j = MathHelper.abs_int(posIn.getY());
+                ^
+  symbol:   variable MathHelper
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:205: error: cannot find symbol
+        int k = MathHelper.abs_int(posIn.getZ());
+                ^
+  symbol:   variable MathHelper
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:233: error: cannot find symbol
+        	for(BlockPos pos : this.foliagecluster(coord)){
+        	    ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:234: error: cannot find symbol
+        		if(this.leafMat.getBlock().equals(Blocks.leaves) || this.leafMat.getBlock().equals(Blocks.leaves2)){
+        		                                        ^
+  symbol:   variable leaves
+  location: class Blocks
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:234: error: cannot find symbol
+        		if(this.leafMat.getBlock().equals(Blocks.leaves) || this.leafMat.getBlock().equals(Blocks.leaves2)){
+        		                                                                                         ^
+  symbol:   variable leaves2
+  location: class Blocks
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:246: error: cannot find symbol
+        	for(BlockPos pos : this.foliagecluster(coord)){
+        	    ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:247: error: cannot find symbol
+        		if(this.leafMat.getBlock().equals(Blocks.leaves) || this.leafMat.getBlock().equals(Blocks.leaves2)){
+        		                                        ^
+  symbol:   variable leaves
+  location: class Blocks
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:247: error: cannot find symbol
+        		if(this.leafMat.getBlock().equals(Blocks.leaves) || this.leafMat.getBlock().equals(Blocks.leaves2)){
+        		                                                                                         ^
+  symbol:   variable leaves2
+  location: class Blocks
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:277: error: cannot find symbol
+        Set<BlockPos> blocks = Sets.newHashSet();
+            ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:279: error: cannot find symbol
+        blocks.addAll(taperedcylinder(BlockPos.ORIGIN, new BlockPos(0, midy, 0), trunkRadBot, trunkRadMid));
+                                      ^
+  symbol:   variable BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:279: error: cannot find symbol
+        blocks.addAll(taperedcylinder(BlockPos.ORIGIN, new BlockPos(0, midy, 0), trunkRadBot, trunkRadMid));
+                                                           ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:280: error: cannot find symbol
+        blocks.addAll(taperedcylinder(new BlockPos(0, midy, 0), new BlockPos(0, topy, 0), trunkRadMid, trunkRadTop));
+                                          ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:280: error: cannot find symbol
+        blocks.addAll(taperedcylinder(new BlockPos(0, midy, 0), new BlockPos(0, topy, 0), trunkRadMid, trunkRadTop));
+                                                                    ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:283: error: cannot find symbol
+        	blocks.removeAll(taperedcylinder(BlockPos.ORIGIN, new BlockPos(0, midy, 0), trunkRadBot - trunkWallThickness, trunkRadMid - trunkWallThickness));
+        	                                 ^
+  symbol:   variable BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:283: error: cannot find symbol
+        	blocks.removeAll(taperedcylinder(BlockPos.ORIGIN, new BlockPos(0, midy, 0), trunkRadBot - trunkWallThickness, trunkRadMid - trunkWallThickness));
+        	                                                      ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:284: error: cannot find symbol
+        	blocks.removeAll(taperedcylinder(new BlockPos(0, midy,0), new BlockPos(0, topy, 0), trunkRadMid - trunkWallThickness, trunkRadTop - trunkWallThickness));
+        	                                     ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:284: error: cannot find symbol
+        	blocks.removeAll(taperedcylinder(new BlockPos(0, midy,0), new BlockPos(0, topy, 0), trunkRadMid - trunkWallThickness, trunkRadTop - trunkWallThickness));
+        	                                                              ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:288: error: cannot find symbol
+        for(BlockPos pos : blocks){
+            ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:306: error: cannot find symbol
+	            BlockPos blockpos = new BlockPos(this.basePos.getX(), i, this.basePos.getZ());
+	            ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:306: error: cannot find symbol
+	            BlockPos blockpos = new BlockPos(this.basePos.getX(), i, this.basePos.getZ());
+	                                    ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:378: error: cannot find symbol
+        Set<BlockPos> set = Sets.newHashSet();
+            ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:407: error: cannot find symbol
+        Set<BlockPos> set = Sets.newHashSet();
+            ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:422: error: cannot find symbol
+                set.add(new BlockPos(coord[0], coord[1], coord[2]));
+                            ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java\com\moonlight\buildingtools\items\tools\filtertool\CustomTreeTest.java:429: error: cannot find symbol
+    	Set<BlockPos> set = Sets.newHashSet();
+    	    ^
+  symbol:   class BlockPos
+  location: class CustomTreeTest
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
 Note: Some input files use unchecked or unsafe operations.
 Note: Recompile with -Xlint:unchecked for details.
+52 errors
 1 warning
+ FAILED
 
-:processResources
-:classes
-:jar
-:sourceTestJava
-:compileTestJava UP-TO-DATE
-:processTestResources UP-TO-DATE
-:testClasses UP-TO-DATE
-:test UP-TO-DATE
-:extractMcpData SKIPPED
-:extractMcpMappings
-:getVersionJson
-:extractUserdev
-:genSrgs SKIPPED
-:reobfJar
-:extractRangemapReplacedMain
-C:\Users\Dalen\workspace\BuildingToolsMod\build\sources\main\java
-:retromapReplacedMain
-remapping source...
-:sourceJar
-:assemble
-:check UP-TO-DATE
-:build
+FAILURE: Build failed with an exception.
 
-BUILD SUCCESSFUL
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler error output for details.
 
-Total time: 25.365 secs
+* Try:
+Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output.
+
+BUILD FAILED
+
+Total time: 11.44 secs

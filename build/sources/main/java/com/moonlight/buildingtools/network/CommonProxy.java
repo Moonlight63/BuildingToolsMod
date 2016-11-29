@@ -52,7 +52,7 @@ public class CommonProxy {
         public Optional<Pair<String, PlayerWrapper>> get(String name)
         {
             EntityPlayer player = null;
-            for (Object e : MinecraftServer.getServer().getConfigurationManager().playerEntityList)
+            for (Object e : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerList())
             {
             	System.out.println("\n\n\n\n" + e + "\n\n\n\n");
                 EntityPlayer entity = (EntityPlayer) e;

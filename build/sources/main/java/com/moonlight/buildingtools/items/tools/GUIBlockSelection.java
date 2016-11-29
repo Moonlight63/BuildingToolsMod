@@ -21,9 +21,10 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiCheckBox;
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.relauncher.Side;
@@ -60,6 +61,7 @@ public class GUIBlockSelection extends GuiContainer{
     
     public static List<ItemStack> blockList = Lists.<ItemStack>newArrayList();
     public static List<ItemStack> blockListMeta = Lists.<ItemStack>newArrayList();
+    //public static NonNullList<ItemStack> blockListMeta = NonNullList.<ItemStack>func_191196_a();
     
     protected List<ItemStack> blockFillList = Lists.<ItemStack>newCopyOnWriteArrayList();
     protected List<ItemStack> blockReplaceList = Lists.<ItemStack>newCopyOnWriteArrayList();
@@ -89,9 +91,9 @@ public class GUIBlockSelection extends GuiContainer{
      * Click Type 4 = Drop Key, Click outside of GUI
      * Click Type 5 =
      */
-    protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType){
-
-    }
+//    protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType){
+//
+//    }
     
     protected boolean showModeSwitchButton(){
     	return true;
@@ -129,21 +131,23 @@ public class GUIBlockSelection extends GuiContainer{
         blockListMeta.clear();
         
         for(Block b : GameData.getBlockRegistry()){
-    		if(Item.getItemFromBlock(b) != null/* && Item.getItemFromBlock(b).getCreativeTab() != null*/)
+    		if(Item.getItemFromBlock(b) != Item.getItemFromBlock(Blocks.AIR)/* && Item.getItemFromBlock(b).getCreativeTab() != null*/)
     			blockList.add(new ItemStack(b));
     	}
+        NonNullList<ItemStack> tempStacks = NonNullList.<ItemStack>func_191196_a();
         for(Block b : GameData.getBlockRegistry()){
-    		if(Item.getItemFromBlock(b) != null/* && Item.getItemFromBlock(b).getCreativeTab() != null*/)
-    			Item.getItemFromBlock(b).getSubItems(Item.getItemFromBlock(b), null, blockListMeta);
+    		if(Item.getItemFromBlock(b) != Item.getItemFromBlock(Blocks.AIR)/* && Item.getItemFromBlock(b).getCreativeTab() != null*/)
+    			Item.getItemFromBlock(b).getSubItems(Item.getItemFromBlock(b), null, tempStacks);
     	}
+        blockListMeta.addAll(tempStacks);
         
-        blockList.add(new ItemStack(Items.bucket).setStackDisplayName("Air"));
-        blockList.add(new ItemStack(Items.water_bucket).setStackDisplayName("Water"));
-        blockList.add(new ItemStack(Items.lava_bucket).setStackDisplayName("Lava"));
+        blockList.add(new ItemStack(Items.BUCKET).setStackDisplayName("Air"));
+        blockList.add(new ItemStack(Items.WATER_BUCKET).setStackDisplayName("Water"));
+        blockList.add(new ItemStack(Items.LAVA_BUCKET).setStackDisplayName("Lava"));
         
-        blockListMeta.add(new ItemStack(Items.bucket).setStackDisplayName("Air"));
-        blockListMeta.add(new ItemStack(Items.water_bucket).setStackDisplayName("Water"));
-        blockListMeta.add(new ItemStack(Items.lava_bucket).setStackDisplayName("Lava"));
+        blockListMeta.add(new ItemStack(Items.BUCKET).setStackDisplayName("Air"));
+        blockListMeta.add(new ItemStack(Items.WATER_BUCKET).setStackDisplayName("Water"));
+        blockListMeta.add(new ItemStack(Items.LAVA_BUCKET).setStackDisplayName("Lava"));
         
         this.updateCreativeSearch();        
     }
@@ -203,7 +207,7 @@ public class GUIBlockSelection extends GuiContainer{
             boolean flag = false;
 
             for (String s : itemstack.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips)){
-                if (EnumChatFormatting.getTextWithoutFormattingCodes(s).toLowerCase().contains(s1)){
+                if (TextFormatting.getTextWithoutFormattingCodes(s).toLowerCase().contains(s1)){
                     flag = true;
                     break;
                 }
@@ -338,7 +342,7 @@ public class GUIBlockSelection extends GuiContainer{
         			if(slot != null){
 	        			slot.clearColor();
 	        			if(slot.getStack() != null)
-	        				slot.getStack().stackSize = 1;
+	        				slot.getStack().func_190920_e(1);
         			}
         		}
         		
@@ -397,7 +401,7 @@ public class GUIBlockSelection extends GuiContainer{
             CreativeTabs creativetabs = stack.getItem().getCreativeTab();
 
             if (creativetabs != null){
-                list.add(1, "" + EnumChatFormatting.BOLD + EnumChatFormatting.BLUE + I18n.format(creativetabs.getTranslatedTabLabel(), new Object[0]));
+                list.add(1, "" + TextFormatting.BOLD + TextFormatting.BLUE + I18n.format(creativetabs.getTranslatedTabLabel(), new Object[0]));
             }
 
             for (int i = 0; i < list.size(); ++i){
@@ -405,7 +409,7 @@ public class GUIBlockSelection extends GuiContainer{
                     list.set(i, stack.getRarity().rarityColor + (String)list.get(i));
                 }
                 else{
-                    list.set(i, EnumChatFormatting.GRAY + (String)list.get(i));
+                    list.set(i, TextFormatting.GRAY + (String)list.get(i));
                 }
             }
 
@@ -446,7 +450,7 @@ public class GUIBlockSelection extends GuiContainer{
 	        		for (ItemStack itemStack2 : blockListMeta) {
 						if(itemStack.getItem() == itemStack2.getItem() && itemStack.getMetadata() == itemStack2.getMetadata()){
 							blockFillList.remove(itemStack);
-							itemStack2.stackSize = itemStack.stackSize;
+							itemStack2.func_190920_e(itemStack.func_190916_E());
 							blockFillList.add(itemStack2);
 						}
 					}
@@ -455,7 +459,7 @@ public class GUIBlockSelection extends GuiContainer{
         			for (ItemStack itemStack2 : blockList) {
 						if(itemStack.getItem() == itemStack2.getItem() && itemStack.getMetadata() == itemStack2.getMetadata()){
 							blockFillList.remove(itemStack);
-							itemStack2.stackSize = itemStack.stackSize;
+							itemStack2.func_190920_e(itemStack.func_190916_E());
 							blockFillList.add(itemStack2);
 						}
 					}

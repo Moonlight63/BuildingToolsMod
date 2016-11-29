@@ -10,8 +10,8 @@ import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import com.google.common.collect.Lists;
@@ -64,9 +64,9 @@ public class ThreadBonemeal implements IShapeable, BlockChangeBase{
         if(bpos.add(origin).getY() > 0 && bpos.add(origin).getY() < 256 && !world.isAirBlock(bpos.add(origin)) && world.isAirBlock(bpos.add(origin).up()))
         {
         	if(world.rand.nextInt(8) <= 0){
-            	if(world.getBlockState(bpos.add(origin)) == Blocks.grass.getDefaultState()){
+            	if(world.getBlockState(bpos.add(origin)) == Blocks.GRASS.getDefaultState()){
             		if(world.rand.nextInt(8) == 0){
-            			BlockFlower.EnumFlowerType blockflower$enumflowertype = world.getBiomeGenForCoords(bpos.add(origin).up()).pickRandomFlower(world.rand, bpos.add(origin).up());
+            			BlockFlower.EnumFlowerType blockflower$enumflowertype = world.getBiomeForCoordsBody(bpos.add(origin).up()).pickRandomFlower(world.rand, bpos.add(origin).up());
                         BlockFlower blockflower = blockflower$enumflowertype.getBlockType().getBlock();
                         IBlockState iblockstate = blockflower.getDefaultState().withProperty(blockflower.getTypeProperty(), blockflower$enumflowertype);
 
@@ -75,9 +75,9 @@ public class ThreadBonemeal implements IShapeable, BlockChangeBase{
                         
             		}
             		else{
-            			IBlockState iblockstate1 = Blocks.tallgrass.getDefaultState().withProperty(BlockTallGrass.TYPE, BlockTallGrass.EnumType.GRASS);
+            			IBlockState iblockstate1 = Blocks.TALLGRASS.getDefaultState().withProperty(BlockTallGrass.TYPE, BlockTallGrass.EnumType.GRASS);
 
-                        if (Blocks.tallgrass.canBlockStay(world, bpos.add(origin).up(), iblockstate1))
+                        if (Blocks.TALLGRASS.canBlockStay(world, bpos.add(origin).up(), iblockstate1))
                         	tempList.add(new ChangeBlockToThis(bpos.add(origin).up(), iblockstate1));
                         
             		}

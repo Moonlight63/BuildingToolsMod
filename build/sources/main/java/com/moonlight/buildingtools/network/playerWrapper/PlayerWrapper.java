@@ -13,7 +13,7 @@ import java.util.Set;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 
 import com.google.common.collect.Sets;
 import com.moonlight.buildingtools.items.tools.BlockChangeBase;

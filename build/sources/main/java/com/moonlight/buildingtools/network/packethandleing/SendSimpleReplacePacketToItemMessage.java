@@ -59,13 +59,13 @@ public class SendSimpleReplacePacketToItemMessage implements IMessage {
 		@Override
 		public IMessage handleServerMessage(EntityPlayer player, SendSimpleReplacePacketToItemMessage message, MessageContext ctx) {
 			System.out.println(player);
-			if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ToolSelection){
-				((ToolSelection)player.getHeldItem().getItem()).SimpleReplace(message.fillBlockID, message.fillBlockData, message.replaceBlockID, message.replaceBlockData);
+			if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof ToolSelection){
+				((ToolSelection)player.getHeldItemMainhand().getItem()).SimpleReplace(message.fillBlockID, message.fillBlockData, message.replaceBlockID, message.replaceBlockData);
 				System.out.println("Sent message to player");
 			}
 			
-			if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ToolFilter){
-				((ToolFilter)player.getHeldItem().getItem()).SetTreeMaterials(message.fillBlockID, message.fillBlockData, message.replaceBlockID, message.replaceBlockData);
+			if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof ToolFilter){
+				((ToolFilter)player.getHeldItemMainhand().getItem()).SetTreeMaterials(message.fillBlockID, message.fillBlockData, message.replaceBlockID, message.replaceBlockData);
 				System.out.println("Sent message to player");
 			}
 			

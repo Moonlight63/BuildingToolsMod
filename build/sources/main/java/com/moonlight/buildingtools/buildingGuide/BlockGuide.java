@@ -7,8 +7,10 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -18,37 +20,41 @@ public class BlockGuide extends BlockContainer{
 	public World world;
 	public BlockPos pos;
 	
+	
+	
 	private Class<? extends TileEntity> teClass = null;
 
 	public BlockGuide() {
-		super(Material.rock);
+		super(Material.ROCK);
 		//setCreativeTab(BuildingTools.tabBT);
 		setUnlocalizedName("blockGuide");
 		setTickRandomly(true);
 	}
 	
 	@Override
-	public int getRenderType()
+	public EnumBlockRenderType getRenderType(IBlockState state)
     {
-        return 3;
+        return EnumBlockRenderType.MODEL;
     }
 	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
 		TileEntity te = world.getTileEntity(pos);
 		
-		world.forceBlockUpdateTick(this, pos, new Random());
+		world.immediateBlockTick(pos, state, new Random());
+		
+		//world.forceBlockUpdateTick(this, pos, new Random());
 
-		if (te instanceof IActivateAwareTile) return ((IActivateAwareTile)te).onBlockActivated(world, pos, state, player, side, hitX, hitY, hitZ);
+		if (te instanceof IActivateAwareTile) return ((IActivateAwareTile)te).onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
 		return false;
 		
 	}
 	
 	@Override
-	public boolean removedByPlayer(World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
 		TileEntity te = world.getTileEntity(pos);
-		if (te instanceof IActivateAwareTile) ((IActivateAwareTile)te).removedByPlayer(world, pos, player, willHarvest);
-		return super.removedByPlayer(world, pos, player, willHarvest);
+		if (te instanceof IActivateAwareTile) ((IActivateAwareTile)te).removedByPlayer(state, world, pos, player, willHarvest);
+		return super.removedByPlayer(state, world, pos, player, willHarvest);
 	}
 	
 	@Override
@@ -71,8 +77,8 @@ public class BlockGuide extends BlockContainer{
 	}
 	
 	@Override
-	public boolean onBlockEventReceived(World world, BlockPos pos, IBlockState state, int eventId, int eventParam) {
-		super.onBlockEventReceived(world, pos, state, eventId, eventParam);
+	public boolean eventReceived(IBlockState state, World world, BlockPos pos, int eventId, int eventParam) {
+		super.eventReceived(state, world, pos, eventId, eventParam);
 		TileEntity te = getTileEntity(world, pos, TileEntity.class);
 		if (te != null) { return te.receiveClientEvent(eventId, eventParam); }
 		return false;

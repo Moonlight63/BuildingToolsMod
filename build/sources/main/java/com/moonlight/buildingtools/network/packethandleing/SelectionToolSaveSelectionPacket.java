@@ -58,9 +58,9 @@ public class SelectionToolSaveSelectionPacket implements IMessage {
 
 		@Override
 		public IMessage handleServerMessage(EntityPlayer player, SelectionToolSaveSelectionPacket message, MessageContext ctx) {
-			if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ToolSelection){
+			if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof ToolSelection){
 				
-				((ToolSelection)player.getHeldItem().getItem()).SaveSelectionToFile(message.savename, message.mouseButton, message.ctrlDown, message.altDown, message.shiftDown, player.getHeldItem());
+				((ToolSelection)player.getHeldItemMainhand().getItem()).SaveSelectionToFile(message.savename, message.mouseButton, message.ctrlDown, message.altDown, message.shiftDown, player.getHeldItemMainhand());
 			}
 			return null;
 		}	

@@ -7,7 +7,6 @@ import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
-import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityHanging;
@@ -15,10 +14,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 
@@ -90,13 +88,13 @@ public class ThreadSimpleFill implements BlockChangeBase, IShapeable{
 		System.out.println(world.getBlockState(bpos) + "         " + replaceBlockState);
 		
 		if(replaceBlockState != null){
-			if(replaceBlockState.getBlock() == Blocks.flowing_water){
-				if(!(world.getBlockState(bpos).getBlock() == Blocks.flowing_water || world.getBlockState(bpos).getBlock() == Blocks.water)){
+			if(replaceBlockState.getBlock() == Blocks.FLOWING_WATER){
+				if(!(world.getBlockState(bpos).getBlock() == Blocks.FLOWING_WATER || world.getBlockState(bpos).getBlock() == Blocks.WATER)){
 					return;
 				}
 			}
-			else if(replaceBlockState.getBlock() == Blocks.flowing_lava){
-				if(!(world.getBlockState(bpos).getBlock() == Blocks.flowing_lava || world.getBlockState(bpos).getBlock() == Blocks.lava))
+			else if(replaceBlockState.getBlock() == Blocks.FLOWING_LAVA){
+				if(!(world.getBlockState(bpos).getBlock() == Blocks.FLOWING_LAVA || world.getBlockState(bpos).getBlock() == Blocks.LAVA))
 					return;
 			}
 			else{

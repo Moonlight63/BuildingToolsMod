@@ -21,8 +21,8 @@ public class BlockChangeQueue {
 	protected World world;
 	protected boolean isFinished = false;
 	public Set<ChangeBlockToThis> blockpos = Sets.newConcurrentHashSet();
-	protected IBlockState blockStateToPlace = Blocks.stone.getDefaultState();
-	protected IBlockState blockStateToReplace = Blocks.air.getDefaultState();
+	protected IBlockState blockStateToPlace = Blocks.STONE.getDefaultState();
+	protected IBlockState blockStateToReplace = Blocks.AIR.getDefaultState();
 	protected boolean replaceAll = false;
 	
 	public BlockChangeQueue(Set<ChangeBlockToThis> tempList, World world, IBlockState stateToReplace){

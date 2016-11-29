@@ -36,12 +36,12 @@ public class SendFileSelection implements IMessage {
 
 		@Override
 		public IMessage handleServerMessage(EntityPlayer player, SendFileSelection message, MessageContext ctx) {
-			if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ToolSelection){
-				((ToolSelection)player.getHeldItem().getItem()).LoadSelectionFromFile(message.file, player.getHeldItem());
+			if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof ToolSelection){
+				((ToolSelection)player.getHeldItemMainhand().getItem()).LoadSelectionFromFile(message.file, player.getHeldItemMainhand());
 			}
 			
-			if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ToolUndo){
-				((ToolUndo)player.getHeldItem().getItem()).loadUndos(message.file);
+			if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof ToolUndo){
+				((ToolUndo)player.getHeldItemMainhand().getItem()).loadUndos(message.file);
 			}
 			return null;
 		}	
