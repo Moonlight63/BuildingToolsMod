@@ -63,7 +63,8 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
 	
 	public ToolBuilding(){
 		super();
-		setUnlocalizedName("buildingTool");
+		setUnlocalizedName("ToolBuilding");
+		setRegistryName("buildingtool");
 		setCreativeTab(BuildingTools.tabBT);
 		setMaxStackSize(1);
 	}

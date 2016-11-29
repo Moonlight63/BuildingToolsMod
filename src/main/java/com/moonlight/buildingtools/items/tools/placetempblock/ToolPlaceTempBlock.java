@@ -34,7 +34,8 @@ public class ToolPlaceTempBlock extends Item implements IOutlineDrawer{
 	
 	public ToolPlaceTempBlock(){
 		super();
-		setUnlocalizedName("tempblockplacer");
+		setUnlocalizedName("ToolPlaceTempBlock");
+		setRegistryName("tempblockplacer");
 		setCreativeTab(BuildingTools.tabBT);
 		setMaxStackSize(1);
 	}
@@ -100,8 +101,16 @@ public class ToolPlaceTempBlock extends Item implements IOutlineDrawer{
 
 	@Override
 	public boolean drawOutline(DrawBlockHighlightEvent event) {
-		if(targetBlock != null)
-			RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.getPartialTicks());
+		if(targetBlock != null){
+			if(renderer == null){
+	    		renderer = new RenderHelper();
+	    	}
+	        renderer.startDraw();
+			renderer.addOutlineToBuffer(event.getPlayer(), targetBlock, RGBA.Green.setAlpha(150), event.getPartialTicks());
+			//RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.getPartialTicks());
+			renderer.finalizeDraw();
+			
+		}
 		return true;
 	}
 	

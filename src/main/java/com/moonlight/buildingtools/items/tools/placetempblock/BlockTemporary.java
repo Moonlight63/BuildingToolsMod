@@ -20,23 +20,24 @@ public class BlockTemporary extends Block {
 	public BlockTemporary() {
 		super(Material.ROCK);
 		//setCreativeTab(BuildingTools.tabBT);
-		setUnlocalizedName("tempBlock");
+		setUnlocalizedName("BlockTemporary");
+		setRegistryName("tempblock");
 	}
 	@Override
     public boolean isOpaqueCube(IBlockState state){
         return false;
     }
 	
-	@Nullable
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
-    {
-        return NULL_AABB;
-    }
+//	@Nullable
+//    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
+//    {
+//        return NULL_AABB;
+//    }
 	
     @Override
     public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid)
     {
-        return true;
+        return false;
     }
     
     @Override

@@ -1,7 +1,7 @@
 {
-	"parent": "builtin/generated",
+	"parent": "item/generated",
 	"textures": {
-		"layer0": "buildingtools:items/Paint_Brush"
+		"layer0": "buildingtools:items/Filter_Tool"
 	},
 	"display": {
 		"thirdperson": {

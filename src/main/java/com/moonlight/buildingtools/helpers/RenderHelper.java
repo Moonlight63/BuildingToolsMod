@@ -23,7 +23,7 @@ import com.moonlight.buildingtools.utils.RGBA;
 
 public class RenderHelper
 {
-	
+	public static final AxisAlignedBB FULL_BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
 	public Tessellator tessellator;
 	public VertexBuffer worldrenderer;
 	
@@ -33,11 +33,15 @@ public class RenderHelper
 	}
 	
 	public void addOutlineToBuffer(EntityPlayer entityPlayer, BlockPos blockpos, RGBA colour, float partialTicks){
+		addOutlineToBuffer(entityPlayer, blockpos, colour, partialTicks, FULL_BLOCK_AABB);
+	}
+	
+	public void addOutlineToBuffer(EntityPlayer entityPlayer, BlockPos blockpos, RGBA colour, float partialTicks, AxisAlignedBB aabb){
 		World world = entityPlayer.worldObj;
 		if(world == null)
         	return;
-		IBlockState state = world.getBlockState(blockpos);
-    	state.getBoundingBox(world, blockpos);
+		//IBlockState state = world.getBlockState(blockpos);
+    	//state.getCollisionBoundingBox(world, blockpos);
         //block.setBlockBoundsBasedOnState(entityPlayer.worldObj, blockpos);
 		
         float f1 = 0.02F;
@@ -46,8 +50,8 @@ public class RenderHelper
         double d1 = entityPlayer.lastTickPosY + (entityPlayer.posY - entityPlayer.lastTickPosY) * (double) partialTicks;
         double d2 = entityPlayer.lastTickPosZ + (entityPlayer.posZ - entityPlayer.lastTickPosZ) * (double) partialTicks;
         
-        AxisAlignedBB box = state.getSelectedBoundingBox(entityPlayer.worldObj, blockpos).expand(f1, f1, f1).offset(-d0, -d1, -d2);
-        
+        //AxisAlignedBB box = state.getCollisionBoundingBox(entityPlayer.worldObj, blockpos).expand(f1, f1, f1).offset(-d0, -d1, -d2);
+        AxisAlignedBB box = aabb.expand(f1, f1, f1).offset(-d0, -d1, -d2).offset(blockpos);
         
         
         int h = worldrenderer.getVertexCount() * worldrenderer.getVertexFormat().getNextOffset();
@@ -111,12 +115,22 @@ public class RenderHelper
     	World world = entityPlayer.worldObj;
 		if(world == null)
         	return;
-		IBlockState state = world.getBlockState(blockpos);
-    	state.getBoundingBox(world, blockpos);
+		//IBlockState state = world.getBlockState(blockpos);
+    	//state.getCollisionBoundingBox(world, blockpos);
         
-        renderAABBOutline(context, entityPlayer, state.getSelectedBoundingBox(entityPlayer.worldObj, blockpos), colour, lineWidth, partialTicks);
+        renderAABBOutline(context, entityPlayer, FULL_BLOCK_AABB.offset(blockpos), colour, lineWidth, partialTicks);
     }
 
+    public void renderSelectionOutline(EntityPlayer entityPlayer, BlockPos blockpos, BlockPos blockpos2, RGBA colour, float partialTicks){
+    	int p1x = (blockpos.getX() <= blockpos2.getX()) ? blockpos.getX() : blockpos.getX() + 1;
+        int p1y = (blockpos.getY() <= blockpos2.getY()) ? blockpos.getY() : blockpos.getY() + 1;
+        int p1z = (blockpos.getZ() <= blockpos2.getZ()) ? blockpos.getZ() : blockpos.getZ() + 1;
+        int p2x = (blockpos2.getX() < blockpos.getX()) ? blockpos2.getX() : blockpos2.getX() + 1;
+        int p2y = (blockpos2.getY() < blockpos.getY()) ? blockpos2.getY() : blockpos2.getY() + 1;
+        int p2z = (blockpos2.getZ() < blockpos.getZ()) ? blockpos2.getZ() : blockpos2.getZ() + 1;
+        
+		addOutlineToBuffer(entityPlayer, new BlockPos(0,0,0), colour, partialTicks, new AxisAlignedBB(new BlockPos(p1x, p1y, p1z), new BlockPos(p2x, p2y, p2z)));
+	}
     public static void renderSelectionBox(RenderGlobal context, EntityPlayer entityPlayer, BlockPos blockpos, BlockPos blockpos2, RGBA colour, float lineWidth, float partialTicks){
        
         int p1x = (blockpos.getX() <= blockpos2.getX()) ? blockpos.getX() : blockpos.getX() + 1;
@@ -126,7 +140,7 @@ public class RenderHelper
         int p2y = (blockpos2.getY() < blockpos.getY()) ? blockpos2.getY() : blockpos2.getY() + 1;
         int p2z = (blockpos2.getZ() < blockpos.getZ()) ? blockpos2.getZ() : blockpos2.getZ() + 1;
         
-        renderAABBOutline(context, entityPlayer, new AxisAlignedBB(new BlockPos(p1x, p1y, p1z), new BlockPos(p2x, p2y, p2z)), colour, lineWidth, partialTicks);
+        //renderAABBOutline(context, entityPlayer, new AxisAlignedBB(new BlockPos(p1x, p1y, p1z), new BlockPos(p2x, p2y, p2z)), colour, lineWidth, partialTicks);
         
         Entity entity = Minecraft.getMinecraft().getRenderViewEntity();
         

@@ -52,7 +52,8 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
 	
 	public ToolSelection(){
 		super();
-		setUnlocalizedName("selectionTool");
+		setUnlocalizedName("ToolSelection");
+		setRegistryName("selectiontool");
 		setCreativeTab(BuildingTools.tabBT);
 		setMaxStackSize(1);
 	}
@@ -204,29 +205,46 @@ public class ToolSelection extends Item implements IOutlineDrawer, IGetGuiButton
     public boolean drawOutline(DrawBlockHighlightEvent event)
     {
 		//BlockPos target = event.target.getBlockPos();
-		
+		if(renderer == null){
+	    	renderer = new RenderHelper();
+	    }
 		if(targetBlock!=null){
 			
-	        if (event.getPlayer().isSneaking())
-	        {
-	            RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.getPartialTicks());
-	            return true;
-	        }
+	        
+			
+	        //if (event.getPlayer().isSneaking())
+	        //{
+	        	renderer.startDraw();
+	        	renderer.addOutlineToBuffer(event.getPlayer(), targetBlock, RGBA.Green.setAlpha(150), event.getPartialTicks());
+	            renderer.finalizeDraw();
+	        	//RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.getPartialTicks());
+	        //    return true;
+	        //}
 	        
 	        if (getNBT(event.getPlayer().getHeldItemMainhand()).getBoolean("bpos1Set")){
-	        	RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), getBlockPos1(event.getPlayer().getHeldItemMainhand()), RGBA.Blue, 1.0f, event.getPartialTicks());
+	        	renderer.startDraw();
+	        	renderer.addOutlineToBuffer(event.getPlayer(), getBlockPos1(event.getPlayer().getHeldItemMainhand()), RGBA.Blue.setAlpha(150), event.getPartialTicks());
+	        	renderer.finalizeDraw();
+	        	//RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), getBlockPos1(event.getPlayer().getHeldItemMainhand()), RGBA.Blue, 1.0f, event.getPartialTicks());
 	        }
 	        
 	        if (getNBT(event.getPlayer().getHeldItemMainhand()).getBoolean("bpos2Set")){
-	        	RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), getBlockPos2(event.getPlayer().getHeldItemMainhand()), RGBA.Blue, 1.0f, event.getPartialTicks());
+	        	renderer.startDraw();
+	        	renderer.addOutlineToBuffer(event.getPlayer(), getBlockPos2(event.getPlayer().getHeldItemMainhand()), RGBA.Blue.setAlpha(150), event.getPartialTicks());
+	        	renderer.finalizeDraw();
+	        	//RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), getBlockPos2(event.getPlayer().getHeldItemMainhand()), RGBA.Blue, 1.0f, event.getPartialTicks());
 	        }
 	        
 	        if (getNBT(event.getPlayer().getHeldItemMainhand()).getBoolean("bpos1Set") && getNBT(event.getPlayer().getHeldItemMainhand()).getBoolean("bpos2Set")){
+	        	renderer.startDraw();
+	        	renderer.renderSelectionOutline(event.getPlayer(), getBlockPos1(event.getPlayer().getHeldItemMainhand()), getBlockPos2(event.getPlayer().getHeldItemMainhand()), RGBA.Red, event.getPartialTicks());
+	        	renderer.finalizeDraw();
 	        	RenderHelper.renderSelectionBox(event.getContext(), event.getPlayer(), getBlockPos1(event.getPlayer().getHeldItemMainhand()), getBlockPos2(event.getPlayer().getHeldItemMainhand()), RGBA.Red, 1.5f, event.getPartialTicks());
 	        }
 	        
 		}
-	        
+		
+		
         
         return true;
     }

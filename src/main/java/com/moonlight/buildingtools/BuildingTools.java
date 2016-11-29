@@ -53,6 +53,8 @@ public class BuildingTools
     	ItemLoader.loadItems();
     	BlockLoader.loadBlocks();
     	
+    	proxy.registerRenderInformation();
+    	
     	if (FMLCommonHandler.instance().getSide().isClient()){
     		MinecraftForge.EVENT_BUS.register(new KeyBindsHandler());
     		MinecraftForge.EVENT_BUS.register(new DrawBlockHighlightEventHandler());
@@ -86,9 +88,7 @@ public class BuildingTools
     @EventHandler
     public void init(FMLInitializationEvent event){    	
     	proxy.init(event);
-    	proxy.registerRenderInformation();
-    	
-    	
+    	//proxy.registerRenderInformation();
     }
     
     @EventHandler

@@ -97,7 +97,8 @@ public class ToolFilter extends Item
 
     public ToolFilter()
     {
-        setUnlocalizedName("filterTool");
+        setUnlocalizedName("ToolFilter");
+        setRegistryName("filtertool");
         setCreativeTab(BuildingTools.tabBT);
         setMaxStackSize(1);
     }

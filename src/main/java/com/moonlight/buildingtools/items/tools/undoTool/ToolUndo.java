@@ -31,7 +31,8 @@ public class ToolUndo extends Item{
 	
 	public ToolUndo(){
 		super();
-		setUnlocalizedName("undoTool");
+		setUnlocalizedName("ToolUndo");
+		setRegistryName("undotool");
 		setCreativeTab(BuildingTools.tabBT);
 		setMaxStackSize(1);
 	}

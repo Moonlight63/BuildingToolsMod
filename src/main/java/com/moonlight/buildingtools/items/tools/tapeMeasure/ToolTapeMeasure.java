@@ -28,9 +28,12 @@ public class ToolTapeMeasure extends Item implements IOutlineDrawer{
 	public BlockPos targetBlock;
 	public EnumFacing targetFace;
 	
+	private RenderHelper renderer;
+	
 	public ToolTapeMeasure(){
 		super();
-		setUnlocalizedName("tape");
+		setUnlocalizedName("ToolTapeMeasure");
+		setRegistryName("tape");
 		setCreativeTab(BuildingTools.tabBT);
 		setMaxStackSize(1);
 	}	
@@ -104,12 +107,24 @@ public class ToolTapeMeasure extends Item implements IOutlineDrawer{
 	@Override
 	public boolean drawOutline(DrawBlockHighlightEvent event) {
 		
-		if(firstPos != BlockPos.ORIGIN){
-			RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), firstPos, RGBA.Green.setAlpha(150), 1.5f, event.getPartialTicks());
-		}
-		if(targetBlock != null){
-			RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), targetBlock, RGBA.White.setAlpha(150), 1.0f, event.getPartialTicks());
-		}
+		if(renderer == null){
+    		renderer = new RenderHelper();
+    	}
+    	
+        if(targetBlock != null){        	
+        	renderer.startDraw();
+		
+			if(firstPos != BlockPos.ORIGIN){
+				renderer.addOutlineToBuffer(event.getPlayer(), firstPos, RGBA.Green.setAlpha(150), event.getPartialTicks());
+				//RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), firstPos, RGBA.Green.setAlpha(150), 1.5f, event.getPartialTicks());
+			}
+			if(targetBlock != null){
+				renderer.addOutlineToBuffer(event.getPlayer(), targetBlock, RGBA.White.setAlpha(150), event.getPartialTicks());
+				//RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), targetBlock, RGBA.White.setAlpha(150), 1.0f, event.getPartialTicks());
+			}
+			
+			renderer.finalizeDraw();
+        }
 		return true;
 	}
 	

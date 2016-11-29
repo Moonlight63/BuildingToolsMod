@@ -50,7 +50,8 @@ public class ToolErosion extends Item implements IKeyHandler, IOutlineDrawer, IG
 	
 	public ToolErosion(){
 		super();
-		setUnlocalizedName("erosionTool");
+		setUnlocalizedName("ToolErosion");
+		setRegistryName("erosionTool");
 		setCreativeTab(BuildingTools.tabBT);
 		setMaxStackSize(1);
 	}

@@ -79,7 +79,8 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
 	
 	public ToolBrush(){
 		super();
-		setUnlocalizedName("brushTool");
+		setUnlocalizedName("ToolBrush");
+		setRegistryName("brushtool");
 		setCreativeTab(BuildingTools.tabBT);
 		setMaxStackSize(1);
 	}
@@ -99,7 +100,7 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
 			RayTracing.instance().fire(1000, true);
 			RayTraceResult target = RayTracing.instance().getTarget();
 		
-			if (target != null && target.typeOfHit == RayTraceResult.Type.BLOCK){				
+			if (target != null && target.typeOfHit == RayTraceResult.Type.BLOCK){		
 				PacketDispatcher.sendToServer(new SendRaytraceResult(target.getBlockPos(), target.sideHit));
 				this.targetBlock = target.getBlockPos();
 				this.targetFace = target.sideHit;
