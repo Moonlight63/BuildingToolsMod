@@ -552,10 +552,10 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 				case Logs:
 					System.out.println("LOGS");
 					if(blockState.getValue(logDirectionProperty) == BlockLog.EnumAxis.X){
-						tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(logDirectionProperty, BlockLog.EnumAxis.Z), compound));
+						tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(logDirectionProperty, BlockLog.EnumAxis.X), compound));
 					}
 					else if(blockState.getValue(logDirectionProperty) == BlockLog.EnumAxis.Z){
-						tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(logDirectionProperty, BlockLog.EnumAxis.X), compound));
+						tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(logDirectionProperty, BlockLog.EnumAxis.Z), compound));
 					}
 					else{
 						tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
@@ -565,10 +565,10 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 				case Quartz_Pillar:
 					System.out.println("QUARTZ");
 					if(blockState.getValue(quartzPillerProperty) == BlockQuartz.EnumType.LINES_X){
-						tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(quartzPillerProperty, BlockQuartz.EnumType.LINES_Z), compound));
+						tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(quartzPillerProperty, BlockQuartz.EnumType.LINES_X), compound));
 					}
 					else if(blockState.getValue(quartzPillerProperty) == BlockQuartz.EnumType.LINES_Z){
-						tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(quartzPillerProperty, BlockQuartz.EnumType.LINES_X), compound));
+						tempList.add(new ChangeBlockToThis(newPos, blockState.withProperty(quartzPillerProperty, BlockQuartz.EnumType.LINES_Z), compound));
 					}
 					else{
 						tempList.add(new ChangeBlockToThis(newPos, blockState, compound));
