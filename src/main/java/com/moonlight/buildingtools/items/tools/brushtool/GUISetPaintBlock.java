@@ -14,6 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
@@ -32,13 +33,14 @@ public class GUISetPaintBlock extends GUIBlockSelection{
      * Click Type 5 =
      */
 	@Override
-    protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType){
+	protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, ClickType clickType){
+    //protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType){
         this.keyOrButtonClicked = true;
-        clickType = slotId == -999 && clickType == 0 ? 4 : clickType;
+        //clickType = slotId == -999 && clickType == 0 ? 4 : clickType;
         
         if (mode == 0){
 	        if(clickedButton == 0){
-	        	if(clickType == 0){
+	        	if(clickType == ClickType.PICKUP){
 	        		if(slotIn.getStack() == null)
 	        			return;
 	        		int currID;
@@ -66,23 +68,23 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 	        		PacketDispatcher.sendToServer(new SendSimpleFillPacketToItemMessage(currID, currDATA));
 	        		this.mc.thePlayer.closeScreen();
 	        	}
-	        	else if(clickType == 1){
-	        		//((ContainerBlockSelMenu.CustomSlot) slotIn).setColor(RGBA.Red.setAlpha(100));;
-	        		//slotIn.setColor(RGBA.Red.setAlpha(100));
-	        	}
+//	        	else if(clickType == 1){
+//	        		//((ContainerBlockSelMenu.CustomSlot) slotIn).setColor(RGBA.Red.setAlpha(100));;
+//	        		//slotIn.setColor(RGBA.Red.setAlpha(100));
+//	        	}
 	        }
-	        else if(clickedButton == 1){
-	        	if(clickType == 0){
-	        		
-	        	}
-	        	else if(clickType == 1){
-	        		
-	        	}
-	        }
+//	        else if(clickedButton == 1){
+//	        	if(clickType == 0){
+//	        		
+//	        	}
+//	        	else if(clickType == 1){
+//	        		
+//	        	}
+//	        }
         }
         else{
         	if(clickedButton == 0){
-	        	if(clickType == 0){
+	        	if(clickType == ClickType.PICKUP){
 	        		if(slotIn.getStack() == null)
 	        			return;
 	        		if(!blockFillList.contains(slotIn.getStack())){
@@ -95,13 +97,13 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 	        		}
 	        		System.out.println(blockFillList);
 	        	}
-	        	else if(clickType == 1){
-	        		
-	        		//slotIn.setColor(RGBA.Red.setAlpha(100));
-	        	}
+//	        	else if(clickType == 1){
+//	        		
+//	        		//slotIn.setColor(RGBA.Red.setAlpha(100));
+//	        	}
 	        }
 	        else if(clickedButton == 1){
-	        	if(clickType == 0){
+	        	if(clickType == ClickType.PICKUP){
 	        		if(slotIn.getStack() == null)
 	        			return;
 	        		if(!blockFillList.contains(slotIn.getStack())){
@@ -121,9 +123,9 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 	        		}
 	        		System.out.println(blockFillList);
 	        	}
-	        	else if(clickType == 1){
-	        		
-	        	}
+//	        	else if(clickType == 1){
+//	        		
+//	        	}
 	        }
         }
 

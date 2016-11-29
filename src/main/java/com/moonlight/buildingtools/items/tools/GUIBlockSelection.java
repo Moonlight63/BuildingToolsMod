@@ -60,7 +60,8 @@ public class GUIBlockSelection extends GuiContainer{
     protected GuiButton modeSwitch = new GuiButton(1, 0, 0, "Simple Replace");
     
     public static List<ItemStack> blockList = Lists.<ItemStack>newArrayList();
-    public static NonNullList<ItemStack> blockListMeta = NonNullList.<ItemStack>func_191196_a();
+    public static List<ItemStack> blockListMeta = Lists.<ItemStack>newArrayList();
+    //public static NonNullList<ItemStack> blockListMeta = NonNullList.<ItemStack>func_191196_a();
     
     protected List<ItemStack> blockFillList = Lists.<ItemStack>newCopyOnWriteArrayList();
     protected List<ItemStack> blockReplaceList = Lists.<ItemStack>newCopyOnWriteArrayList();
@@ -90,9 +91,9 @@ public class GUIBlockSelection extends GuiContainer{
      * Click Type 4 = Drop Key, Click outside of GUI
      * Click Type 5 =
      */
-    protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType){
-
-    }
+//    protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType){
+//
+//    }
     
     protected boolean showModeSwitchButton(){
     	return true;
@@ -130,13 +131,15 @@ public class GUIBlockSelection extends GuiContainer{
         blockListMeta.clear();
         
         for(Block b : GameData.getBlockRegistry()){
-    		if(Item.getItemFromBlock(b) != null/* && Item.getItemFromBlock(b).getCreativeTab() != null*/)
+    		if(Item.getItemFromBlock(b) != Item.getItemFromBlock(Blocks.AIR)/* && Item.getItemFromBlock(b).getCreativeTab() != null*/)
     			blockList.add(new ItemStack(b));
     	}
+        NonNullList<ItemStack> tempStacks = NonNullList.<ItemStack>func_191196_a();
         for(Block b : GameData.getBlockRegistry()){
-    		if(Item.getItemFromBlock(b) != null/* && Item.getItemFromBlock(b).getCreativeTab() != null*/)
-    			Item.getItemFromBlock(b).getSubItems(Item.getItemFromBlock(b), null, blockListMeta);
+    		if(Item.getItemFromBlock(b) != Item.getItemFromBlock(Blocks.AIR)/* && Item.getItemFromBlock(b).getCreativeTab() != null*/)
+    			Item.getItemFromBlock(b).getSubItems(Item.getItemFromBlock(b), null, tempStacks);
     	}
+        blockListMeta.addAll(tempStacks);
         
         blockList.add(new ItemStack(Items.BUCKET).setStackDisplayName("Air"));
         blockList.add(new ItemStack(Items.WATER_BUCKET).setStackDisplayName("Water"));

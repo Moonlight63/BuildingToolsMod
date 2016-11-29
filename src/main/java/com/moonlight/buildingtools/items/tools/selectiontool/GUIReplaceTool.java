@@ -16,6 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
@@ -35,9 +36,10 @@ public class GUIReplaceTool extends GUIBlockSelection{
      * Click Type 5 =
      */
 	@Override
-    protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType){
+	protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, ClickType clickType){
+    //protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType){
 		this.keyOrButtonClicked = true;
-        clickType = slotId == -999 && clickType == 0 ? 4 : clickType;
+        //clickType = slotId == -999 && clickType == 0 ? 4 : clickType;
         
         //if(slotIn != null && slotIn.getStack() != null)
         	//System.out.println("Button = " + clickedButton + "     Type = " + clickType);
@@ -47,20 +49,20 @@ public class GUIReplaceTool extends GUIBlockSelection{
         if (mode == 0){
 	        if(clickedButton == 0){
 	        	
-	        	if(clickType == 0){
+	        	if(clickType == ClickType.PICKUP){
 	        		if(slotIn.getStack() == null)
 	        			return;
 	        		blockReplaceList.clear();
 	        		blockReplaceList.add(0, slotIn.getStack());
 	        	}
-	        	else if(clickType == 1){
-	        		//((ContainerBlockSelMenu.CustomSlot) slotIn).setColor(RGBA.Red.setAlpha(100));;
-	        		//slotIn.setColor(RGBA.Red.setAlpha(100));
-	        	}
+//	        	else if(clickType == 1){
+//	        		//((ContainerBlockSelMenu.CustomSlot) slotIn).setColor(RGBA.Red.setAlpha(100));;
+//	        		//slotIn.setColor(RGBA.Red.setAlpha(100));
+//	        	}
 	        	System.out.println(blockReplaceList);
 	        }
 	        else if(clickedButton == 1){
-	        	if(clickType == 0){
+	        	if(clickType == ClickType.PICKUP){
 	        		if(slotIn.getStack() == null)
 	        			return;
 	        		if(!blockReplaceList.isEmpty()){
@@ -111,14 +113,14 @@ public class GUIReplaceTool extends GUIBlockSelection{
 		        		this.mc.thePlayer.closeScreen();
 	        		}
 	        	}
-	        	else if(clickType == 1){
-	        		
-	        	}
+//	        	else if(clickType == 1){
+//	        		
+//	        	}
 	        }
         }
         else{
         	if(clickedButton == 0){
-	        	if(clickType == 0){
+	        	if(clickType == ClickType.PICKUP){
 	        		if(slotIn.getStack() == null)
 	        			return;
 	        		if(blockReplaceList.contains(slotIn.getStack())){
@@ -132,13 +134,13 @@ public class GUIReplaceTool extends GUIBlockSelection{
 	        		System.out.println(blockReplaceList);
 	        		
 	        	}
-	        	else if(clickType == 1){
+	        	else if(clickType == ClickType.QUICK_MOVE){
 	        		if(!blockFillList.contains(slotIn.getStack())){
 	        			blockFillList.add(slotIn.getStack());
 	        		}
 	        		else{
 	        			blockFillList.remove(slotIn.getStack());
-	        			slotIn.getStack().func_190920_e(slotIn.getStack().func_190916_E()-1);
+	        			slotIn.getStack().func_190920_e(slotIn.getStack().func_190916_E()+1);
 	        			blockFillList.add(slotIn.getStack());
 	        		}
 	        		System.out.println(blockFillList);

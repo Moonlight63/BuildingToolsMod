@@ -40,7 +40,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenBigMushroom;
 import net.minecraft.world.gen.feature.WorldGenBigTree;
 import net.minecraft.world.gen.feature.WorldGenCanopyTree;
+import net.minecraft.world.gen.feature.WorldGenEndIsland;
+import net.minecraft.world.gen.feature.WorldGenEndPodium;
+import net.minecraft.world.gen.feature.WorldGenHellLava;
 import net.minecraft.world.gen.feature.WorldGenIceSpike;
+import net.minecraft.world.gen.feature.WorldGenLakes;
 import net.minecraft.world.gen.feature.WorldGenMegaJungle;
 import net.minecraft.world.gen.feature.WorldGenMegaPineTree;
 import net.minecraft.world.gen.feature.WorldGenSavannaTree;
@@ -223,7 +227,7 @@ public class ToolFilter extends Item
 						break;	
 					case BigMushroomRed:
 						new WorldGenBigMushroom(Blocks.RED_MUSHROOM_BLOCK).generate(world, new Random(), targetBlock.up());
-						break;	
+						break;
 					case Custom:
 						player.addPending(new ThreadMakeTree(worldIn, targetBlock, playerIn, treeData));
 						break;

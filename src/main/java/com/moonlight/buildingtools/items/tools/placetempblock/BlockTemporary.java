@@ -31,13 +31,14 @@ public class BlockTemporary extends Block {
 //	@Nullable
 //    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
 //    {
-//        return NULL_AABB;
+//		return new AxisAlignedBB(0,0,0,0,0,0);
+//        //return NULL_AABB;
 //    }
 	
     @Override
     public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid)
     {
-        return false;
+        return true;
     }
     
     @Override

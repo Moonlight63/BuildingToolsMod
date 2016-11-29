@@ -16,6 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
@@ -35,9 +36,10 @@ public class GUISetReplaceBlocks extends GUIBlockSelection{
      * Click Type 5 =
      */
 	@Override
-    protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType){
+	protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, ClickType clickType){
+    //protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType){
 		this.keyOrButtonClicked = true;
-        clickType = slotId == -999 && clickType == 0 ? 4 : clickType;
+        //clickType = slotId == -999 && clickType == 0 ? 4 : clickType;
         
         //if(slotIn != null && slotIn.getStack() != null)
         	//System.out.println("Button = " + clickedButton + "     Type = " + clickType);
@@ -46,7 +48,7 @@ public class GUISetReplaceBlocks extends GUIBlockSelection{
         
         if (mode == 0){
 	        if(clickedButton == 0){
-	        	if(clickType == 0){
+	        	if(clickType == ClickType.PICKUP){
 	        		if(slotIn.getStack() == null)
 	        			return;
 	        		if(blockReplaceList.contains(slotIn.getStack())){
@@ -58,33 +60,33 @@ public class GUISetReplaceBlocks extends GUIBlockSelection{
 	        		}
 	        		System.out.println(blockReplaceList);
 	        	}
-	        	else if(clickType == 1){
-	        		
-	        	}
+//	        	else if(clickType == 1){
+//	        		
+//	        	}
 	        	System.out.println(blockReplaceList);
 	        }
-	        else if(clickedButton == 1){
-	        	if(clickType == 0){
-	        		
-	        	}
-	        	else if(clickType == 1){
-	        		
-	        	}
-	        }
+//	        else if(clickedButton == 1){
+//	        	if(clickType == 0){
+//	        		
+//	        	}
+//	        	else if(clickType == 1){
+//	        		
+//	        	}
+//	        }
         }
-        else{
-        	if(clickedButton == 0){
-	        	if(clickType == 0){
-	        
-	        	}
-	        	else if(clickType == 1){
-	        		
-	        	}
-	        }
-	        else if(clickedButton == 1){
-	        	
-	        }
-        }
+//        else{
+//        	if(clickedButton == 0){
+//	        	if(clickType == 0){
+//	        
+//	        	}
+//	        	else if(clickType == 1){
+//	        		
+//	        	}
+//	        }
+//	        else if(clickedButton == 1){
+//	        	
+//	        }
+//        }
 
     }
 	
