@@ -265,7 +265,7 @@ public class ToolBuilding extends Item implements IKeyHandler, IOutlineDrawer, I
             			Shapes.Cuboid.generator, 
             			getNBT(event.getPlayer().getHeldItemMainhand()).getInteger("radiusX"),
             			getNBT(event.getPlayer().getHeldItemMainhand()).getInteger("radiusZ"),
-            			true
+            			getNBT(event.getPlayer().getHeldItemMainhand()).getBoolean("placeAll")
         		);
                 updateVisualizer = false;
         	}

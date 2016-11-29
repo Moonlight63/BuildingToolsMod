@@ -9,13 +9,13 @@ info.shape.octagon=Octagon
 
 itemGroup.buildingToolsMainTab=Building Tools
 
-item.brushTool.name=Brush Tool
-item.buildingTool.name=Building Tool
-item.filterTool.name=Filter Tool
-item.tempblockplacer.name=Temporary Block Tool
-item.selectionTool.name=Selection Tool
-item.smoothTool.name=Terrain Smooth Tool
-item.erosionTool.name=Erosion Tool
-item.undoTool.name=Undo Tool
-item.tape.name=Measuring Tape
+item.ToolBrush.name=Brush Tool
+item.ToolBuilding.name=Building Tool
+item.ToolFilter.name=Filter Tool
+item.ToolPlaceTempBlock.name=Temporary Block Tool
+item.ToolSelection.name=Selection Tool
+item.ToolSmooth.name=Terrain Smooth Tool
+item.ToolErosion.name=Erosion Tool
+item.ToolUndo.name=Undo Tool
+item.ToolTapeMeasure.name=Measuring Tape
 key.buildingTools.tools=Building Tools Controls

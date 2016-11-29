@@ -60,40 +60,40 @@ public class ThreadBuildersTool implements IShapeable, BlockChangeBase {
 		
 		//if(count<4096 && !checkedList.contains(tempPos)){
 			
-			currentlyCalculating = true;
-			
-			if (side == EnumFacing.UP || side == EnumFacing.DOWN){
-				bpos = new BlockPos(tempPos.getX(), side == EnumFacing.UP ? tempPos.getY() : -tempPos.getY(), tempPos.getZ());
-			}
-			else if (side == EnumFacing.NORTH || side == EnumFacing.SOUTH){
-				bpos = new BlockPos(tempPos.getX(), tempPos.getZ(), side == EnumFacing.NORTH ? -tempPos.getY() : tempPos.getY());
-			}
-			else if (side == EnumFacing.EAST || side == EnumFacing.WEST){
-				bpos = new BlockPos(side == EnumFacing.WEST ? -tempPos.getY() : tempPos.getY(), tempPos.getX(), tempPos.getZ());
-			}
-			
-            if(bpos.add(origin).getY() > 0 && bpos.add(origin).getY() < 256){
-            	if(!replaceAll && world.getBlockState(bpos.add(origin)) != world.getBlockState(origin))
-            		return;
-            	
-            	
-            	if(world.getTileEntity(bpos.add(origin)) != null){
-            		NBTTagCompound compound = new NBTTagCompound();
-            		world.getTileEntity(bpos.add(origin)).writeToNBT(compound);
-            		tempList.add(new ChangeBlockToThis(bpos.add(origin).offset(side), world.getBlockState(bpos.add(origin)), compound));
-            	}
-            	else{
-            		tempList.add(new ChangeBlockToThis(bpos.add(origin).offset(side), world.getBlockState(bpos.add(origin))));
-            	}
-            	
-            	//checkedList.add(tempPos);
-            	count++;
-            }
-            
-            if(count > 4096){
-    			addSetToList();
-    			return;
-    		}
+		currentlyCalculating = true;
+		
+		if (side == EnumFacing.UP || side == EnumFacing.DOWN){
+			bpos = new BlockPos(tempPos.getX(), side == EnumFacing.UP ? tempPos.getY() : -tempPos.getY(), tempPos.getZ());
+		}
+		else if (side == EnumFacing.NORTH || side == EnumFacing.SOUTH){
+			bpos = new BlockPos(tempPos.getX(), tempPos.getZ(), side == EnumFacing.NORTH ? -tempPos.getY() : tempPos.getY());
+		}
+		else if (side == EnumFacing.EAST || side == EnumFacing.WEST){
+			bpos = new BlockPos(side == EnumFacing.WEST ? -tempPos.getY() : tempPos.getY(), tempPos.getX(), tempPos.getZ());
+		}
+		
+        if(bpos.add(origin).getY() > 0 && bpos.add(origin).getY() < 256){
+        	if(!replaceAll && world.getBlockState(bpos.add(origin)) != world.getBlockState(origin))
+        		return;
+        	
+        	
+        	if(world.getTileEntity(bpos.add(origin)) != null){
+        		NBTTagCompound compound = new NBTTagCompound();
+        		world.getTileEntity(bpos.add(origin)).writeToNBT(compound);
+        		tempList.add(new ChangeBlockToThis(bpos.add(origin).offset(side), world.getBlockState(bpos.add(origin)), compound));
+        	}
+        	else{
+        		tempList.add(new ChangeBlockToThis(bpos.add(origin).offset(side), world.getBlockState(bpos.add(origin))));
+        	}
+        	
+        	//checkedList.add(tempPos);
+        	count++;
+        }
+        
+        if(count > 4096){
+			addSetToList();
+			return;
+		}
                 
 		//}
 	}
