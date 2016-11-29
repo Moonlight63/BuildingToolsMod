@@ -1,0 +1,291 @@
+package com.moonlight.buildingtools.helpers.shapes;
+
+import java.util.EnumSet;
+import java.util.Set;
+
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+
+public class GeometryUtils {
+
+	public enum Octant {
+		TopSouthWest(-1, 1, 1, "Top South West"),
+		TopNorthEast(1, 1, -1, "Top North East"),
+		TopNorthWest(1, 1, 1, "Top North West"),
+		TopSouthEast(-1, 1, -1, "Top South East"),
+		BottomSouthWest(-1, -1, 1, "Bottom South West"),
+		BottomNorthEast(1, -1, -1, "Bottom North East"),
+		BottomNorthWest(1, -1, 1, "Bottom North West"),
+		BottomSouthEast(-1, -1, -1, "Bottom South East");
+
+		public static final EnumSet<Octant> ALL = EnumSet.allOf(Octant.class);
+		public static final EnumSet<Octant> TOP = EnumSet.of(Octant.TopSouthEast, Octant.TopSouthWest, Octant.TopNorthEast, Octant.TopNorthWest);
+		public static final EnumSet<Octant> BOTTOM = EnumSet.of(Octant.BottomSouthEast, Octant.BottomSouthWest, Octant.BottomNorthEast, Octant.BottomNorthWest);
+
+		private final int x, y, z;
+		private final String name;
+
+		public int getXOffset() {
+			return x;
+		}
+
+		public int getYOffset() {
+			return y;
+		}
+
+		public int getZOffset() {
+			return z;
+		}
+
+		public String getFriendlyName() {
+			return name;
+		}
+
+		Octant(int x, int y, int z, String friendlyName) {
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			this.name = friendlyName;
+		}
+	}
+
+	/**
+	 * Makes a link of blocks in a shape
+	 *
+	 * @param startX
+	 *            X position of origin
+	 * @param startY
+	 *            Y position of origin
+	 * @param startZ
+	 *            Z position of origin
+	 * @param direction
+	 *            Direction to apply the line
+	 * @param length
+	 *            Length of the line
+	 * @param shapeable
+	 *            Shapeable object to set the blocks
+	 */
+	public static void makeLine(BlockPos bpos, EnumFacing direction, int length, IShapeable shapeable) {
+		if (length == 0) return;
+		for (int offset = 0; offset <= length; offset++)
+			/* Create a line in the direction of direction, length in size */
+			shapeable.setBlock(bpos.add((offset * direction.getFrontOffsetX()), (offset * direction.getFrontOffsetY()), (offset * direction.getFrontOffsetZ())));
+	}
+
+	/**
+	 * Makes a flat plane along two directions
+	 *
+	 * @param startX
+	 *            X position of origin
+	 * @param startY
+	 *            Y position of origin
+	 * @param startZ
+	 *            Z position of origin
+	 * @param width
+	 *            Width of the plane
+	 * @param height
+	 *            Height of the plane
+	 * @param right
+	 *            The right(width) direction of the plane
+	 * @param up
+	 *            The up(height) direction of the plane
+	 * @param shapeable
+	 *            The shape to apply the blocks to
+	 */
+	public static void makePlane(BlockPos startPos, int width, int height, EnumFacing right, EnumFacing up, IShapeable shapeable) {
+		if (width == 0 || height == 0) return;
+		//int lineOffsetX, lineOffsetY, lineOffsetZ;
+		// We offset each line by up, and then apply it right
+		for (int h = 0; h <= height; h++) {
+			makeLine(startPos.add(h * up.getFrontOffsetX(),	h * up.getFrontOffsetY(), h * up.getFrontOffsetZ()), right, width, shapeable);
+		}
+	}
+	
+	public static void makeFilledCube(BlockPos startPos, int width, int height, int depth, IShapeable shapeable){
+		
+		for(int y = 0;y<=height;y++){
+			for(int x = 0;x<=width;x++){
+				for(int z = 0;z<=depth;z++){
+					shapeable.setBlock(startPos.add(x, y, z));
+				}
+			}
+		}
+		shapeable.shapeFinished();
+		
+	}
+
+	public static void makeSphere(int radiusX, int radiusY, int radiusZ, IShapeable shapeable, EnumSet<Octant> octants, boolean fillMode) {
+
+		final double invRadiusX = 1.0 / (radiusX + 0.5);
+		final double invRadiusY = 1.0 / (radiusY + 0.5);
+		final double invRadiusZ = 1.0 / (radiusZ + 0.5);
+
+		final Set<Octant> octantSet = octants;
+
+		double nextXn = 0;
+		forX: for (int x = 0; x <= radiusX; ++x) {
+			final double xn = nextXn;
+			nextXn = (x + 1) * invRadiusX;
+			double nextYn = 0;
+			forY: for (int y = 0; y <= radiusY; ++y) {
+				final double yn = nextYn;
+				nextYn = (y + 1) * invRadiusY;
+				double nextZn = 0;
+				forZ: for (int z = 0; z <= radiusZ; ++z) {
+					final double zn = nextZn;
+					nextZn = (z + 1) * invRadiusZ;
+
+					double distanceSq = MathUtils.lengthSq(xn, yn, zn);
+					if (distanceSq > 1) {
+						if (z == 0) {
+							if (y == 0) {
+								break forX;
+							}
+							break forY;
+						}
+						break forZ;
+					}
+
+					if(!fillMode){
+						if (MathUtils.lengthSq(nextXn, yn, zn) <= 1
+								&& MathUtils.lengthSq(xn, nextYn, zn) <= 1
+								&& MathUtils.lengthSq(xn, yn, nextZn) <= 1) {
+							continue;
+						}
+					}
+
+					for (Octant octant : octantSet) {
+						shapeable.setBlock(new BlockPos(x * octant.getXOffset(), y * octant.getYOffset(), z * octant.getZOffset()));
+					}
+				}
+			}
+		}
+	}
+
+	public static void line2D(int y, int x0, int z0, int x1, int z1, IShapeable shapeable, boolean fillhelper) {
+		int dx = Math.abs(x1 - x0), sx = x0 < x1? 1 : -1;
+		int dy = -Math.abs(z1 - z0), sy = z0 < z1? 1 : -1;
+		int err = dx + dy, e2;
+
+		for (;;) {
+			shapeable.setBlock(new BlockPos(x0, y, z0));
+			if (x0 == x1 && z0 == z1) break;
+			e2 = 2 * err;
+			if (e2 >= dy) {
+				err += dy;
+				x0 += sx;
+			} /* e_xy+e_x > 0 */
+			if (e2 <= dx) {
+				err += dx;
+				z0 += sy;
+			} /* e_xy+e_y < 0 */
+			if(fillhelper)
+				shapeable.setBlock(new BlockPos(dx == 0 ? x0 : x0+sx, y, dy == 0 ? z0 : z0+sy));
+		}
+	}
+
+	public static void line3D(Vec3d start, Vec3d end, IShapeable shapeable) {
+
+		int dx = (int)(end.xCoord - start.xCoord);
+		int dy = (int)(end.yCoord - start.yCoord);
+		int dz = (int)(end.zCoord - start.zCoord);
+
+		int ax = Math.abs(dx) << 1;
+		int ay = Math.abs(dy) << 1;
+		int az = Math.abs(dz) << 1;
+
+		int signx = (int)Math.signum(dx);
+		int signy = (int)Math.signum(dy);
+		int signz = (int)Math.signum(dz);
+
+		int x = (int)start.xCoord;
+		int y = (int)start.yCoord;
+		int z = (int)start.zCoord;
+
+		int deltax, deltay, deltaz;
+		if (ax >= Math.max(ay, az)) {
+			deltay = ay - (ax >> 1);
+			deltaz = az - (ax >> 1);
+			while (true) {
+				shapeable.setBlock(new BlockPos(x, y, z));
+				if (x == (int)end.xCoord) { return; }
+
+				if (deltay >= 0) {
+					y += signy;
+					deltay -= ax;
+				}
+
+				if (deltaz >= 0) {
+					z += signz;
+					deltaz -= ax;
+				}
+
+				x += signx;
+				deltay += ay;
+				deltaz += az;
+			}
+		} else if (ay >= Math.max(ax, az)) {
+			deltax = ax - (ay >> 1);
+			deltaz = az - (ay >> 1);
+			while (true) {
+				shapeable.setBlock(new BlockPos(x, y, z));
+				if (y == (int)end.yCoord) { return; }
+
+				if (deltax >= 0) {
+					x += signx;
+					deltax -= ay;
+				}
+
+				if (deltaz >= 0) {
+					z += signz;
+					deltaz -= ay;
+				}
+
+				y += signy;
+				deltax += ax;
+				deltaz += az;
+			}
+		} else if (az >= Math.max(ax, ay)) {
+			deltax = ax - (az >> 1);
+			deltay = ay - (az >> 1);
+			while (true) {
+				shapeable.setBlock(new BlockPos(x, y, z));
+				if (z == (int)end.zCoord) { return; }
+
+				if (deltax >= 0) {
+					x += signx;
+					deltax -= az;
+				}
+
+				if (deltay >= 0) {
+					y += signy;
+					deltay -= az;
+				}
+
+				z += signz;
+				deltax += ax;
+				deltay += ay;
+			}
+		}
+	}
+
+	public static double normalizeAngle(double angle) {
+		while (angle > 180.0)
+			angle -= 360.0;
+		while (angle < -180.0)
+			angle += 360.0;
+		return angle;
+	}
+
+	public static double compareAngles(double current, double target) {
+		current = normalizeAngle(current);
+		target = normalizeAngle(target);
+		return Math.signum(target - current);
+	}
+
+	public static double getAngleDistance(double current, double target) {
+		double result = target - current;
+		return Math.abs(result) > 180? 180 - result : result;
+	}
+}
