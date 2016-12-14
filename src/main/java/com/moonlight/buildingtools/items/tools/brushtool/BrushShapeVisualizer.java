@@ -9,7 +9,10 @@ import com.google.common.collect.Sets;
 import com.moonlight.buildingtools.helpers.shapes.IShapeGenerator;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -34,7 +37,7 @@ public class BrushShapeVisualizer implements IShapeable{
 		
 	}
 	
-	public void RegenShape(IShapeGenerator generator, int x, int y, int z, int replace, List<IBlockState> replaceBlocks){
+	public void RegenShape(IShapeGenerator generator, int x, int y, int z, int replace, NBTTagCompound replaceBlocksNBT){
 		
 		//System.out.println("Starting Regen");
 		this.replaceblock = replace;
@@ -46,7 +49,14 @@ public class BrushShapeVisualizer implements IShapeable{
 		finishedGenerating = false;
 		this.currentGen = generator;
 		generator.generateShape(x, y, z, this, replace == 2 || replace == 4);
-		this.replaceBlocks = replaceBlocks;
+		
+		replaceBlocks.clear();
+		for(String key : replaceBlocksNBT.getKeySet()){
+			ItemStack item = new ItemStack(replaceBlocksNBT.getCompoundTag(key));
+			item.deserializeNBT(replaceBlocksNBT.getCompoundTag("blockstate"));
+			this.replaceBlocks.add(Block.getBlockFromItem(item.getItem()).getStateFromMeta(item.getMetadata()));
+		}
+		//this.replaceBlocks = replaceBlocks;
 	}
 	
 	public Set<BlockPos> GetBlocks(){

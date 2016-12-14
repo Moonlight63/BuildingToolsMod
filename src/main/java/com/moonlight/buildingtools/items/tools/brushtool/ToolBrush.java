@@ -1,81 +1,38 @@
 package com.moonlight.buildingtools.items.tools.brushtool;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 //import java.util.Optional;
 import java.util.Set;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.World;
-import net.minecraftforge.client.event.DrawBlockHighlightEvent;
-import net.minecraftforge.common.DimensionManager;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.moonlight.buildingtools.BuildingTools;
-import com.moonlight.buildingtools.helpers.RayTracing;
 import com.moonlight.buildingtools.helpers.RenderHelper;
 import com.moonlight.buildingtools.helpers.Shapes;
-import com.moonlight.buildingtools.helpers.loaders.BlockLoader;
-import com.moonlight.buildingtools.helpers.shapes.IShapeable;
-import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
-import com.moonlight.buildingtools.items.tools.buildingtool.ToolBuilding;
-import com.moonlight.buildingtools.items.tools.filtertool.FilterShapeVisualizer;
-import com.moonlight.buildingtools.items.tools.selectiontool.ThreadAdvancedFill;
-import com.moonlight.buildingtools.items.tools.selectiontool.ThreadSimpleFill;
+import com.moonlight.buildingtools.items.tools.ToolBase;
 import com.moonlight.buildingtools.network.GuiHandler;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
-import com.moonlight.buildingtools.network.packethandleing.SendRaytraceResult;
 import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
-import com.moonlight.buildingtools.utils.IItemBlockAffector;
-import com.moonlight.buildingtools.utils.IKeyHandler;
-import com.moonlight.buildingtools.utils.IOutlineDrawer;
 import com.moonlight.buildingtools.utils.Key;
 import com.moonlight.buildingtools.utils.KeyHelper;
 import com.moonlight.buildingtools.utils.RGBA;
 //import com.moonlight.buildingtools.utils.KeyBindsHandler.ETKeyBinding;
 
-public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGetGuiButtonPressed{
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+
+public class ToolBrush extends ToolBase{
 	
-	private static Set<Key.KeyCode> handledKeys;
-	public Set<BlockPos> blocksForOutline;
-	public World world;
-	public BlockPos targetBlock;
-	public EnumFacing targetFace;
-	
-	public ItemStack thisStack;
-	public EntityPlayer currPlayer;
-	
-	private List<IBlockState> blockStates = Lists.<IBlockState>newArrayList();
-	private List<IBlockState> replaceBlocks = Lists.<IBlockState>newArrayList();
-	private List<Integer> fillBlockChance = Lists.<Integer>newArrayList();
-	
-	public boolean updateVisualizer = true;
 	private BrushShapeVisualizer visualizer;
-	
-	private RenderHelper renderer;
-	
-	static{
-        handledKeys = new HashSet<Key.KeyCode>();
-        handledKeys.add(Key.KeyCode.TOOL_INCREASE);
-        handledKeys.add(Key.KeyCode.TOOL_DECREASE);
-    }
-	
 	
 	public ToolBrush(){
 		super();
@@ -83,39 +40,6 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
 		setRegistryName("brushtool");
 		setCreativeTab(BuildingTools.tabBT);
 		setMaxStackSize(1);
-	}
-	
-	@Override
-	public void onUpdate(ItemStack itemstack, World world, Entity entity, int metadata, boolean bool){		
-		if(this.world == null){
-			this.world = world;
-		}
-		if(this.currPlayer != entity)
-			this.currPlayer = (EntityPlayer) entity;
-		
-		if(this.thisStack != itemstack)
-			this.thisStack = itemstack;
-		
-		if(world.isRemote){
-			RayTracing.instance().fire(1000, true);
-			RayTraceResult target = RayTracing.instance().getTarget();
-		
-			if (target != null && target.typeOfHit == RayTraceResult.Type.BLOCK){		
-				PacketDispatcher.sendToServer(new SendRaytraceResult(target.getBlockPos(), target.sideHit));
-				this.targetBlock = target.getBlockPos();
-				this.targetFace = target.sideHit;
-			}
-			else{
-				PacketDispatcher.sendToServer(new SendRaytraceResult(null, null));
-				this.targetBlock = null;
-				this.targetFace = null;
-			}
-		}
-	}
-	
-	public void setTargetBlock(BlockPos pos, EnumFacing side){
-		this.targetBlock = pos;
-		this.targetFace = side;
 	}
 	
 	public static NBTTagCompound getNBT(ItemStack stack) {
@@ -128,13 +52,20 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
 	        stack.getTagCompound().setBoolean("forcefall", false);
 	        stack.getTagCompound().setBoolean("fillmode", true);
 	        stack.getTagCompound().setInteger("replacemode", 1);
-	        stack.getTagCompound().setTag("sourceblock", new ItemStack(Blocks.STONE).writeToNBT(new NBTTagCompound()));
-	        stack.getTagCompound().setIntArray("sourceBlockValues", new int[2]);
-	        stack.getTagCompound().setBoolean("useNBTBlock", true);
-	        stack.getTagCompound().setIntArray("targetBlockPos", new int[]{0,0,0});
+	        
+	        ItemStack defaultFill = new ItemStack(Blocks.STONE);
+	        stack.getTagCompound().setTag("fillblocks", new NBTTagCompound());
+	        stack.getTagCompound().getCompoundTag("fillblocks").setTag("0", new NBTTagCompound());
+	        stack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag("0").setInteger("chance", 1);
+	        stack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag("0").setTag("blockstate", defaultFill.writeToNBT(new NBTTagCompound()));
+	        
+	        ItemStack defaultReplace = new ItemStack(Blocks.AIR);
+	        stack.getTagCompound().setTag("replaceblocks", new NBTTagCompound());
+	        stack.getTagCompound().getCompoundTag("replaceblocks").setTag("0", defaultReplace.writeToNBT(new NBTTagCompound()));
+	        
 	    }
 	    //thisStack = stack;
-	    return stack.getTagCompound();	    
+	    return stack.getTagCompound();
 	}
 	
 	@Override
@@ -168,118 +99,19 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
     {
 		ItemStack itemStackIn = playerIn.getHeldItemMainhand();
 		
-		//System.out.println(targetBlock);
 		if(targetBlock != null && !worldIn.isAirBlock(targetBlock)){
-		
 			
-	//		targetBlock = null;
-	//		if(playerIn.isSneaking())
-	//			playerIn.openGui(BuildingTools.instance, GuiHandler.GUIBrushTool, worldIn, 0, 0, 0);
-	//		
-	//		
-	//        return itemStackIn;
-			
-			
-			//getNBT(itemStackIn).setIntArray("targetBlockPos", new int[]{targetBlock.getX(), targetBlock.getY(), targetBlock.getZ()});
 			PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(itemStackIn)));
-			//targetBlock = pos;
 			
 			if(playerIn.isSneaking()){
-				//getNBT(stack).setTag("sourceblock", new ItemStack(worldIn.getBlockState(pos).getBlock(), 1, worldIn.getBlockState(pos).getBlock().getMetaFromState(worldIn.getBlockState(pos))).writeToNBT(new NBTTagCompound()));
 				playerIn.openGui(BuildingTools.instance, GuiHandler.GUIBrushTool, worldIn, 0, 0, 0);
 				return new ActionResult(EnumActionResult.PASS, itemStackIn);
-				//return false;
 			}
 			
 			
 			if(!worldIn.isRemote){
-			
-				//System.out.print("Item used on block " + pos);
-				
-				//this.world = worldIn;			
-				
 				PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
-				
-				if(getNBT(itemStackIn).getInteger("replacemode") == 1){
-					player.addPending(new ThreadPaintShape(worldIn, targetBlock,					
-							getNBT(itemStackIn).getInteger("radiusX"),
-							getNBT(itemStackIn).getInteger("radiusY"), 
-							getNBT(itemStackIn).getInteger("radiusZ"), 
-							targetFace,
-							
-							playerIn, Shapes.VALUES[getNBT(itemStackIn).getInteger("generator")].generator, 
-							getNBT(itemStackIn).getBoolean("fillmode"), 
-							getNBT(itemStackIn).getBoolean("forcefall"),
-							getNBT(itemStackIn).getBoolean("useNBTBlock") ?
-								Block.getBlockFromItem(new ItemStack(getNBT(itemStackIn).getCompoundTag("sourceblock")).getItem()).getStateFromMeta(new ItemStack(getNBT(itemStackIn).getCompoundTag("sourceblock")).getMetadata())
-							:
-								Block.getBlockById(getNBT(itemStackIn).getIntArray("sourceBlockValues")[0]).getStateFromMeta(getNBT(itemStackIn).getIntArray("sourceBlockValues")[1]),
-							this.blockStates,
-							this.fillBlockChance
-							));
-				}
-				else if(getNBT(itemStackIn).getInteger("replacemode") == 2){
-					player.addPending(new ThreadPaintShape(worldIn, targetBlock,					
-							getNBT(itemStackIn).getInteger("radiusX"),
-							getNBT(itemStackIn).getInteger("radiusY"), 
-							getNBT(itemStackIn).getInteger("radiusZ"), 
-							targetFace,
-							
-							playerIn, Shapes.VALUES[getNBT(itemStackIn).getInteger("generator")].generator, 
-							getNBT(itemStackIn).getBoolean("fillmode"), 
-							getNBT(itemStackIn).getBoolean("forcefall"),
-							getNBT(itemStackIn).getBoolean("useNBTBlock") ?
-								Block.getBlockFromItem(new ItemStack(getNBT(itemStackIn).getCompoundTag("sourceblock")).getItem()).getStateFromMeta(new ItemStack(getNBT(itemStackIn).getCompoundTag("sourceblock")).getMetadata())
-							:
-								Block.getBlockById(getNBT(itemStackIn).getIntArray("sourceBlockValues")[0]).getStateFromMeta(getNBT(itemStackIn).getIntArray("sourceBlockValues")[1])
-							,
-							worldIn.getBlockState(targetBlock),
-							this.blockStates,
-							this.fillBlockChance
-							));
-				}
-				else if(getNBT(itemStackIn).getInteger("replacemode") == 3){
-					player.addPending(new ThreadPaintShape(worldIn, targetBlock,					
-							getNBT(itemStackIn).getInteger("radiusX"),
-							getNBT(itemStackIn).getInteger("radiusY"), 
-							getNBT(itemStackIn).getInteger("radiusZ"), 
-							targetFace,
-							
-							playerIn, Shapes.VALUES[getNBT(itemStackIn).getInteger("generator")].generator, 
-							getNBT(itemStackIn).getBoolean("fillmode"), 
-							getNBT(itemStackIn).getBoolean("forcefall"),
-							getNBT(itemStackIn).getBoolean("useNBTBlock") ?
-								Block.getBlockFromItem(new ItemStack(getNBT(itemStackIn).getCompoundTag("sourceblock")).getItem()).getStateFromMeta(new ItemStack(getNBT(itemStackIn).getCompoundTag("sourceblock")).getMetadata())
-							:
-								Block.getBlockById(getNBT(itemStackIn).getIntArray("sourceBlockValues")[0]).getStateFromMeta(getNBT(itemStackIn).getIntArray("sourceBlockValues")[1])
-							,
-							true,
-							this.blockStates,
-							this.fillBlockChance
-							));
-				}
-				else if(getNBT(itemStackIn).getInteger("replacemode") == 4){
-					player.addPending(new ThreadPaintShape(worldIn, targetBlock,					
-							getNBT(itemStackIn).getInteger("radiusX"),
-							getNBT(itemStackIn).getInteger("radiusY"), 
-							getNBT(itemStackIn).getInteger("radiusZ"), 
-							targetFace,
-							
-							playerIn, Shapes.VALUES[getNBT(itemStackIn).getInteger("generator")].generator, 
-							getNBT(itemStackIn).getBoolean("fillmode"), 
-							getNBT(itemStackIn).getBoolean("forcefall"),
-							getNBT(itemStackIn).getBoolean("useNBTBlock") ?
-								Block.getBlockFromItem(new ItemStack(getNBT(itemStackIn).getCompoundTag("sourceblock")).getItem()).getStateFromMeta(new ItemStack(getNBT(itemStackIn).getCompoundTag("sourceblock")).getMetadata())
-							:
-								Block.getBlockById(getNBT(itemStackIn).getIntArray("sourceBlockValues")[0]).getStateFromMeta(getNBT(itemStackIn).getIntArray("sourceBlockValues")[1])
-							,
-							this.replaceBlocks,
-							this.blockStates,
-							this.fillBlockChance
-							));
-				}
-				
-				
+				player.addPending(new ThreadPaintShape(worldIn, targetBlock, targetFace, playerIn, getNBT(itemStackIn)));
 			}
 			
 		}
@@ -287,19 +119,6 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
 		return new ActionResult(EnumActionResult.PASS, itemStackIn);
 		
     }
-		
-	public boolean onItemUse(ItemStack stack,
-            EntityPlayer playerIn,
-            World worldIn,
-            BlockPos pos,
-            EnumFacing side,
-            float hitX,
-            float hitY,
-            float hitZ){
-		
-		onItemRightClick(worldIn, playerIn, EnumHand.MAIN_HAND);
-		return true;
-	}
     
 	@Override
     public void handleKey(EntityPlayer player, ItemStack itemStack, Key.KeyCode key){
@@ -310,9 +129,6 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
         
         float yMult = 0;
         float zMult = 0;
-        
-        
-        
         
 	        if(getNBT(itemStack).getInteger("radiusX") > getNBT(itemStack).getInteger("radiusY")){
 	        	if(getNBT(itemStack).getInteger("radiusY") > 0)
@@ -374,19 +190,13 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
     }
 	
     @Override
-    public Set<Key.KeyCode> getHandledKeys()
-    {
-        return ToolBrush.handledKeys;
-    }
-	
-    @Override
     public boolean drawOutline(DrawBlockHighlightEvent event)
     {
 
     	if(visualizer==null){
     		visualizer = new BrushShapeVisualizer();
     	}
-    	if(renderer == null){
+    	if(this.renderer == null){
     		renderer = new RenderHelper();
     	}
     	
@@ -411,7 +221,7 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
             			getNBT(event.getPlayer().getHeldItemMainhand()).getInteger("radiusY"),
             			getNBT(event.getPlayer().getHeldItemMainhand()).getInteger("radiusZ"),
             			getNBT(event.getPlayer().getHeldItemMainhand()).getInteger("replacemode"),
-            			this.replaceBlocks
+            			getNBT(event.getPlayer().getHeldItemMainhand()).getCompoundTag("replaceblocks")
         		);
                 updateVisualizer = false;
         	}
@@ -445,7 +255,7 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
     			(visualizer.y != getNBT(stack).getInteger("radiusY")) ||
     			(visualizer.z != getNBT(stack).getInteger("radiusZ")) ||
     			(visualizer.replaceblock != getNBT(stack).getInteger("replacemode")) ||
-    			(visualizer.replaceBlocks != this.replaceBlocks) ||
+    			(visualizer.replaceBlocks != getNBT(stack).getCompoundTag("replaceblocks")) ||
     			updateVisualizer
     			);
     	
@@ -506,23 +316,16 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
 			System.out.println(world.getBlockState(targetBlock));
 			System.out.println(Block.getIdFromBlock(world.getBlockState(targetBlock).getBlock()));
 			System.out.println(world.getBlockState(targetBlock).getBlock().getMetaFromState(world.getBlockState(targetBlock)));
-			if(Item.getItemFromBlock(world.getBlockState(targetBlock).getBlock()) != null){
-				getNBT(stack).setTag("sourceblock", new ItemStack(world.getBlockState(targetBlock).getBlock(), 1, world.getBlockState(targetBlock).getBlock().getMetaFromState(world.getBlockState(targetBlock))).writeToNBT(new NBTTagCompound()));
-				getNBT(stack).setBoolean("useNBTBlock", true);
-				System.out.println("Using NBT");
-			}
-			else{
-				int[] values = {
-						Block.getIdFromBlock(world.getBlockState(targetBlock).getBlock()), 
-						world.getBlockState(targetBlock).getBlock().getMetaFromState(world.getBlockState(targetBlock))
-						};
-				getNBT(stack).setIntArray("sourceBlockValues", values);
-				getNBT(stack).setBoolean("useNBTBlock", false);
-				System.out.println("Using Basic Block Data");
-			}
-			this.blockStates.clear();
+			
+			int id = Block.getIdFromBlock(world.getBlockState(targetBlock).getBlock());
+			int meta = world.getBlockState(targetBlock).getBlock().getMetaFromState(world.getBlockState(targetBlock));
+			setFillBlocks(new ArrayList<Integer>(){{add(id);}}, new ArrayList<Integer>(){{add(meta);}}, new ArrayList<Integer>(){{add(1);}});
+			
 		} else if (buttonID == 6) {
-			getNBT(stack).setTag("sourceblock", new ItemStack(BlockLoader.tempBlock, 1, BlockLoader.tempBlock.getMetaFromState(BlockLoader.tempBlock.getDefaultState())).writeToNBT(new NBTTagCompound()));
+			int id = Block.getIdFromBlock(Blocks.AIR);
+			int meta = Blocks.AIR.getMetaFromState(Blocks.AIR.getDefaultState());
+			setFillBlocks(new ArrayList<Integer>(){{add(id);}}, new ArrayList<Integer>(){{add(meta);}}, new ArrayList<Integer>(){{add(1);}});
+		
 		} else if (buttonID == 7) {
 			getNBT(stack).setBoolean("fillmode", !getNBT(stack).getBoolean("fillmode"));
 		} else if (buttonID == 8) {
@@ -547,65 +350,31 @@ public class ToolBrush extends Item implements IKeyHandler, IOutlineDrawer, IGet
 		
 	}
 	
-	@Override
-	public int getMetadata(int damage)
-    {
-		System.out.println("Update Visualization");
-		updateVisualizer = true;
-        return super.getMetadata(damage);
-    }
-	
-	public void SimpleFill(int ID, int DATA){
-		System.out.println("Recieved Message!");
-		
-		IBlockState fillBlock = Block.getBlockById(ID).getStateFromMeta(DATA);
-		
-		if(Item.getItemFromBlock(fillBlock.getBlock()) != null){
-			getNBT(thisStack).setTag("sourceblock", new ItemStack(fillBlock.getBlock(), 1, DATA).writeToNBT(new NBTTagCompound()));
-			getNBT(thisStack).setBoolean("useNBTBlock", true);
-			System.out.println("Using NBT");
-		}
-		else{
-			int[] values = {
-					Block.getIdFromBlock(fillBlock.getBlock()), 
-					DATA
-					};
-			getNBT(thisStack).setIntArray("sourceBlockValues", values);
-			getNBT(thisStack).setBoolean("useNBTBlock", false);
-			System.out.println("Using Basic Block Data");
-		}
-		this.blockStates.clear();
-		//player.addPending(new ThreadSimpleFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, fillBlock));
-	}
-	
-	public void AdvancedFill(List<Integer> ID, List<Integer> DATA, List<Integer> COUNT){
+	public void setFillBlocks(List<Integer> ID, List<Integer> DATA, List<Integer> COUNT){
 		System.out.println("Recieved Message!");
 		System.out.println(ID + "   " + DATA + "   " + COUNT);
 		
-		List<IBlockState> blockStates = Lists.<IBlockState>newArrayList();
-		
 		for (int i = 0; i < ID.size(); i++) {
-			blockStates.add(Block.getBlockById(ID.get(i)).getStateFromMeta(DATA.get(i)));
+			ItemStack fill = new ItemStack(Block.getBlockById(ID.get(i)));
+			fill.setItemDamage(DATA.get(i));
+			thisStack.getTagCompound().setTag("fillblocks", new NBTTagCompound());
+			thisStack.getTagCompound().getCompoundTag("fillblocks").setTag(Integer.toString(i), new NBTTagCompound());
+			thisStack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag(Integer.toString(i)).setInteger("chance", COUNT.get(i));
+			thisStack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag(Integer.toString(i)).setTag("blockstate", fill.writeToNBT(new NBTTagCompound()));
 		}
-		
-		this.blockStates = blockStates;
-		this.fillBlockChance = COUNT;
-		
-		//player.addPending(new ThreadAdvancedFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, blockStates, COUNT));
-		//player.addPending(new ThreadSimpleFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, fillBlock));
+        
 	}
 	
-	public void AdvancedReplace(List<Integer> ID2, List<Integer> DATA2){
+	public void setReplaceBlocks(List<Integer> ID, List<Integer> DATA){
 		System.out.println("Recieved Message!");
+		System.out.println(ID + "   " + DATA);
 		
-		List<IBlockState> blockStatesReplace = Lists.<IBlockState>newArrayList();
-		
-		for (int i = 0; i < ID2.size(); i++) {
-			blockStatesReplace.add(Block.getBlockById(ID2.get(i)).getStateFromMeta(DATA2.get(i)));
+		for (int i = 0; i < ID.size(); i++) {			
+			ItemStack replace = new ItemStack(Block.getBlockById(ID.get(i)).getStateFromMeta(DATA.get(i)).getBlock());
+			thisStack.getTagCompound().setTag("replaceblocks", new NBTTagCompound());
+			thisStack.getTagCompound().getCompoundTag("replaceblocks").setTag(Integer.toString(i), replace.writeToNBT(new NBTTagCompound()));
 		}
-		
-		System.out.println("CUSTOM REPLACE " + blockStatesReplace);
-		this.replaceBlocks = blockStatesReplace;
+        
 	}
 	
 }

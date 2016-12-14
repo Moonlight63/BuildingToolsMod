@@ -43,6 +43,9 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 	        	if(clickType == ClickType.PICKUP){
 	        		if(slotIn.getStack() == null)
 	        			return;
+	        		
+	        		blockFillList.add(slotIn.getStack());
+	        		
 	        		int currID;
 	        		int currDATA;
 //	        		if(slotIn.getStack().getItem() instanceof ItemBucket){
@@ -65,7 +68,8 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 		        		currID = Block.getIdFromBlock(Block.getBlockFromItem(slotIn.getStack().getItem()));
 		        		currDATA = slotIn.getStack().getItem().getMetadata(slotIn.getStack());
 	        		}
-	        		PacketDispatcher.sendToServer(new SendSimpleFillPacketToItemMessage(currID, currDATA));
+	        		
+	        		//PacketDispatcher.sendToServer(new SendSimpleFillPacketToItemMessage(currID, currDATA));
 	        		this.mc.thePlayer.closeScreen();
 	        	}
 //	        	else if(clickType == 1){
@@ -141,7 +145,7 @@ public class GUISetPaintBlock extends GUIBlockSelection{
         super.onGuiClosed();
         Keyboard.enableRepeatEvents(false);
         
-        if(mode == 1){
+        //if(mode == 1){
         	
         	if(!blockFillList.isEmpty()){
         	
@@ -166,11 +170,6 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 	        			ID.add(i, Block.getIdFromBlock(Block.getBlockFromItem(blockFillList.get(i).getItem())));
 	        		}
 	        		
-//	        		ID.add(i, 
-//	        				blockFillList.get(i).getItem() instanceof ItemBucket ? (
-//	        						blockFillList.get(i).getItem() == Items.lava_bucket ? Block.getIdFromBlock(Blocks.flowing_lava) : Block.getIdFromBlock(Blocks.flowing_water)) :
-//	        				Block.getIdFromBlock(Block.getBlockFromItem(blockFillList.get(i).getItem()))
-//	        				);
 	        		META.add(i, blockFillList.get(i).getMetadata());
 	        		CHANCE.add(i, blockFillList.get(i).func_190916_E());
 	        	}
@@ -180,7 +179,7 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 	        	PacketDispatcher.sendToServer(new SendAdvancedFillPacketToItemMessage(ID, META, CHANCE));
 	        	
         	}
-        }
+        //}
     }
 
 }

@@ -12,6 +12,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -20,6 +21,7 @@ import net.minecraft.world.World;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.helpers.Shapes;
 import com.moonlight.buildingtools.helpers.loaders.BlockLoader;
 import com.moonlight.buildingtools.helpers.shapes.IShapeGenerator;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
@@ -43,7 +45,6 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 	protected int count = 0;
 	protected boolean shapeFinished = false;
 	
-	//protected List<BlockPos> tempList = new ArrayList<BlockPos>();
 	protected Set<ChangeBlockToThis> tempList = new HashSet<ChangeBlockToThis>();
 	
 	protected List<Set<ChangeBlockToThis>> listSet = Lists.newArrayList();
@@ -51,7 +52,6 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 	protected Set<BlockPos> checkedList = new LinkedHashSet<BlockPos>();
 	protected Set<BlockPos> checkedPos = new LinkedHashSet<BlockPos>();
 	
-	//protected Set<BlockPos> selectionSet = new CopyOnWriteArraySet<BlockPos>();
 	protected boolean selectionCalculated = false;
 	protected boolean currentlyCalculating = false;
 	
@@ -59,97 +59,63 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 	
 	protected boolean forceBlocksToFall = false;
 	protected boolean fillmode = true;
-	protected IBlockState blockStateToPlace = Blocks.STONE.getDefaultState();
-	protected IBlockState blockStateToReplace = Blocks.AIR.getDefaultState();
-	protected boolean replaceAll = false;
 	
 	protected List<IBlockState> fillBlockStates = Lists.<IBlockState>newArrayList();
 	protected List<Integer> fillBlockChance = Lists.<Integer>newArrayList();
 	protected List<IBlockState> replaceBlockStates = Lists.<IBlockState>newArrayList();
 	
-	public ThreadPaintShape(World world, BlockPos origin, int radiusX, int radiusY, int radiusZ, EnumFacing side, EntityPlayer entity, IShapeGenerator shapegen, boolean fill, boolean forceblockstofall, IBlockState blockStateToCreate, List<IBlockState> fillBlockStates, List<Integer> fillChances){
+	public ThreadPaintShape(World world, BlockPos origin, EnumFacing side, EntityPlayer entity, NBTTagCompound nbtData){
+		
 		this.world = world;
 		this.origin = origin;
-		this.radiusX = radiusX;
-		this.radiusY = radiusY;
-		this.radiusZ = radiusZ;
+		this.radiusX = nbtData.getInteger("radiusX");
+		this.radiusY = nbtData.getInteger("radiusY");
+		this.radiusZ = nbtData.getInteger("radiusZ");
 		this.side = side;
 		this.entity = entity;
-		this.generator = shapegen;
-		if(blockStateToCreate == BlockLoader.tempBlock.getDefaultState())
-			this.blockStateToPlace = Blocks.AIR.getDefaultState();
-		else
-			this.blockStateToPlace = blockStateToCreate;
-		this.forceBlocksToFall = forceblockstofall;
-		this.fillmode = fill;
-		this.fillBlockStates = fillBlockStates;
-		this.fillBlockChance = fillChances;
+		this.generator = Shapes.VALUES[nbtData.getInteger("generator")].generator;
+		this.forceBlocksToFall = nbtData.getBoolean("forcefall");
+		this.fillmode = nbtData.getBoolean("fillmode");
+		
+		this.fillBlockStates.clear();
+		this.fillBlockChance.clear();
+		
+		NBTTagCompound fillBlocks = nbtData.getCompoundTag("fillblocks");
+		for(String key : fillBlocks.getKeySet()){
+			ItemStack item = new ItemStack(fillBlocks.getCompoundTag(key).getCompoundTag("blockstate"));			
+			this.fillBlockStates.add(Block.getBlockFromItem(item.getItem()).getStateFromMeta(item.getMetadata()));
+			this.fillBlockChance.add(fillBlocks.getCompoundTag(key).getInteger("chance"));
+		}
+		
 		this.replaceBlockStates.clear();
-	}
-	
-	public ThreadPaintShape(World world, BlockPos origin, int radiusX, int radiusY, int radiusZ, EnumFacing side, EntityPlayer entity, IShapeGenerator shapegen, boolean fill, boolean forceblockstofall, IBlockState blockStateToCreate, IBlockState blockStateToReplace, List<IBlockState> fillBlockStates, List<Integer> fillChances){
-		this.world = world;
-		this.origin = origin;
-		this.radiusX = radiusX;
-		this.radiusY = radiusY;
-		this.radiusZ = radiusZ;
-		this.side = side;
-		this.entity = entity;
-		this.generator = shapegen;
-		if(blockStateToCreate == BlockLoader.tempBlock.getDefaultState())
-			this.blockStateToPlace = Blocks.AIR.getDefaultState();
-		else
-			this.blockStateToPlace = blockStateToCreate;
-		this.blockStateToReplace = blockStateToReplace;
-		this.forceBlocksToFall = forceblockstofall;
-		this.fillmode = fill;
-		this.fillBlockStates = fillBlockStates;
-		this.fillBlockChance = fillChances;
-		this.replaceBlockStates.clear();
-	}
-	
-	public ThreadPaintShape(World world, BlockPos origin, int radiusX, int radiusY, int radiusZ, EnumFacing side, EntityPlayer entity, IShapeGenerator shapegen, boolean fill, boolean forceblockstofall, IBlockState blockStateToCreate, boolean replaceAllBlocks, List<IBlockState> fillBlockStates, List<Integer> fillChances){
-		this.world = world;
-		this.origin = origin;
-		this.radiusX = radiusX;
-		this.radiusY = radiusY;
-		this.radiusZ = radiusZ;
-		this.side = side;
-		this.entity = entity;
-		this.generator = shapegen;
-		if(blockStateToCreate == BlockLoader.tempBlock.getDefaultState())
-			this.blockStateToPlace = Blocks.AIR.getDefaultState();
-		else
-			this.blockStateToPlace = blockStateToCreate;
-		this.replaceAll = replaceAllBlocks;
-		this.forceBlocksToFall = forceblockstofall;
-		this.fillmode = fill;
-		this.fillBlockStates = fillBlockStates;
-		this.fillBlockChance = fillChances;
-		this.replaceBlockStates.clear();
-	}
-	
-	public ThreadPaintShape(World world, BlockPos origin, int radiusX, int radiusY, int radiusZ, EnumFacing side, EntityPlayer entity, IShapeGenerator shapegen, boolean fill, boolean forceblockstofall, IBlockState blockStateToCreate, List<IBlockState> replaceBlocks, List<IBlockState> fillBlockStates, List<Integer> fillChances){
-		this.world = world;
-		this.origin = origin;
-		this.radiusX = radiusX;
-		this.radiusY = radiusY;
-		this.radiusZ = radiusZ;
-		this.side = side;
-		this.entity = entity;
-		this.generator = shapegen;
-		if(blockStateToCreate == BlockLoader.tempBlock.getDefaultState())
-			this.blockStateToPlace = Blocks.AIR.getDefaultState();
-		else
-			this.blockStateToPlace = blockStateToCreate;
-		this.replaceAll = true;
-		this.forceBlocksToFall = forceblockstofall;
-		this.fillmode = fill;
-		this.fillBlockStates = fillBlockStates;
-		this.fillBlockChance = fillChances;
-		this.replaceBlockStates = replaceBlocks;
-	}
-	
+		
+		int replace = nbtData.getInteger("replacemode");
+		switch (replace) {
+		case 1:
+			this.replaceBlockStates.add(Blocks.AIR.getDefaultState());
+			break;
+			
+		case 2:
+			this.replaceBlockStates.add(world.getBlockState(origin));
+			break;
+		
+		case 3:
+			//Do Nothing
+			break;
+		case 4:
+			NBTTagCompound replaceBlocks = nbtData.getCompoundTag("replaceblocks");
+			for(String key : replaceBlocks.getKeySet()){
+				ItemStack item = new ItemStack(replaceBlocks.getCompoundTag(key));
+				item.deserializeNBT(replaceBlocks.getCompoundTag("blockstate"));
+				this.replaceBlockStates.add(Block.getBlockFromItem(item.getItem()).getStateFromMeta(item.getMetadata()));
+				System.out.println(this.replaceBlockStates);
+			}
+			break;
+		default:
+			break;
+		}
+		
+	}	
 	
 	@Override
 	public void setBlock(BlockPos tempPos) {
@@ -158,28 +124,22 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 		
 		IBlockState blockstate = Blocks.AIR.getDefaultState();
 		
-		if(!fillBlockStates.isEmpty()){
-			int chanceTotal = 0;
-			
-			for (Integer integer : fillBlockChance) {
-				chanceTotal += integer;
-			}
-			
-			int random = new Random().nextInt(chanceTotal);
-			
-			int curVal = 0;
-			for(int i = 0; i < fillBlockChance.size(); i++){
-				curVal += fillBlockChance.get(i);
-				
-				if(random < curVal){
-					blockstate = fillBlockStates.get(i);
-					break;
-				}
-				
-			}
+		int chanceTotal = 0;
+		
+		for (Integer integer : fillBlockChance) {
+			chanceTotal += integer;
 		}
-		else{
-			blockstate = this.blockStateToPlace;
+		
+		int random = new Random().nextInt(chanceTotal);
+		
+		int curVal = 0;
+		for(int i = 0; i < fillBlockChance.size(); i++){
+			curVal += fillBlockChance.get(i);
+			
+			if(random < curVal){
+				blockstate = fillBlockStates.get(i);
+				break;
+			}
 		}
 		
 		BlockPos bpos = tempPos;
@@ -195,9 +155,7 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 		}
 		
 		if(this.replaceBlockStates != null && !this.replaceBlockStates.isEmpty() && !this.replaceBlockStates.contains(world.getBlockState(bpos.add(origin))))
-			return;
-		else if(!replaceAll && world.getBlockState(bpos.add(origin)) != blockStateToReplace)
-			return;
+			return;		
 	
 		BlockPos blockpos1;
 		if(forceBlocksToFall){
@@ -251,10 +209,6 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 			generator.generateShape(radiusX, radiusY, radiusZ, this, fillmode);
 		}
 		
-//		if(!listSet.isEmpty()){
-//			checkAndAddQueue();
-//		}
-		
 		if(listSet.isEmpty() && shapeFinished){
 			System.out.println("Finished");
 			MiscUtils.dumpUndoList(entity);
@@ -268,8 +222,7 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
      * 
      * @return the world
      */
-    public World getWorld()
-    {
+    public World getWorld(){
         return this.world;
     }
 
@@ -293,10 +246,8 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 
 	@Override
 	public void shapeFinished() {
-		//System.out.println("Shape Finished");
 		addSetToList();
 		shapeFinished = true;
-		//currentlyCalculating = false;
 	}
 
 	

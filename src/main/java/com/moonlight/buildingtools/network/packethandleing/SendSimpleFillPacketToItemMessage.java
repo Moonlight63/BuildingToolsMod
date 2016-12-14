@@ -59,10 +59,10 @@ public class SendSimpleFillPacketToItemMessage implements IMessage {
 				((ToolSelection)player.getHeldItemMainhand().getItem()).SimpleFill(message.fillBlockID, message.fillBlockData);
 				System.out.println("Sent message to player");
 			}
-			if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof ToolBrush){
-				((ToolBrush)player.getHeldItemMainhand().getItem()).SimpleFill(message.fillBlockID, message.fillBlockData);
-				System.out.println("Sent message to player");
-			}
+//			if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof ToolBrush){
+//				((ToolBrush)player.getHeldItemMainhand().getItem()).SimpleFill(message.fillBlockID, message.fillBlockData);
+//				System.out.println("Sent message to player");
+//			}
 			return null;
 		}	
 		

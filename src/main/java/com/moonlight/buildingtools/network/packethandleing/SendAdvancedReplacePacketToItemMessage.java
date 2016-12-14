@@ -113,7 +113,7 @@ public class SendAdvancedReplacePacketToItemMessage implements IMessage {
 				System.out.println("Sent message to player");
 			}
 			if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof ToolBrush){
-				((ToolBrush)player.getHeldItemMainhand().getItem()).AdvancedReplace(message.replaceBlockID, message.replaceBlockData);
+				((ToolBrush)player.getHeldItemMainhand().getItem()).setReplaceBlocks(message.replaceBlockID, message.replaceBlockData);
 				System.out.println("Sent message to player");
 			}
 			
