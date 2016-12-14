@@ -1,18 +1,21 @@
 package com.moonlight.buildingtools.items.tools.selectiontool;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.Reference;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SelectionToolSaveSelectionPacket;
 import com.moonlight.buildingtools.network.packethandleing.SendFileSelection;
-import com.moonlight.buildingtools.network.packethandleing.SendGuiButtonPressedToItemMessage;
 import com.moonlight.buildingtools.utils.IScrollButtonListener;
 import com.moonlight.buildingtools.utils.ScrollPane;
 
@@ -20,27 +23,23 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.config.GuiSlider;
 
 public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonListener{
 	
-	private EntityPlayer player;
-	
-	private boolean isScrollPressed = false;
-	private int scrollPos = 0;
 	private ScrollPane scrollpane;
 	
 	public static GuiTextField saveName;
 	public static final GuiButton save = new GuiButton(1, 0, 0, 80, 20, "Save");
 	public static File[] filelist;
 	
+	public static List<String[]> hoverTextList = new ArrayList<String[]>();
+	
 	
 	
 	public GUISaveLoadClipboard(EntityPlayer player){
-		this.player = player;
 	}
 	
 	@Override
@@ -48,7 +47,6 @@ public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonList
 		try {
 			super.handleMouseInput();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		int wheelState = Mouse.getEventDWheel();
@@ -66,6 +64,16 @@ public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonList
         
         saveName.drawTextBox();
 		super.drawScreen(mouseX, mouseY, partialTicks);
+		
+		for (int i = 0; i < scrollpane.GetButtons().size(); i++) {
+			if (scrollpane.GetButtons().get(i) instanceof GuiButton) {
+				GuiButton btn = scrollpane.GetButtons().get(i);
+				if (btn.isMouseOver()) { // Tells you if the button is hovered by mouse
+					List<String> temp = Arrays.asList(hoverTextList.get(i));
+					drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+				}
+			}
+		}
 		
 	}
 	
@@ -86,20 +94,69 @@ public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonList
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui(){
 		System.out.println("GUISaveLoadClipboard.initGui()");
-		NBTTagCompound heldnbt = ToolSelection.getNBT(player.getHeldItemMainhand());
 		scrollpane = new ScrollPane(this, this.width/2 - 85, this.height/2 - 100, 180, 140, 400);
         scrollpane.setClip(true);
         
         File savedirectory = BuildingTools.clipboardSaveDir;
         filelist = savedirectory.listFiles();
         
+//        List<File> versionList = new ArrayList<File>();
+        List<File> selectList = new ArrayList<File>();
+        
         for(int i = 0; i < filelist.length; i++){
-        	if(filelist[i].isFile())
-        		scrollpane.addButton(new GuiButton(i, 0, 0+(21*i), 170, 20, filelist[i].getName().replace(".json", "")));
+        	if(filelist[i].isFile()){
+        		String fileName = filelist[i].getName();
+        		
+        		if(fileName.endsWith(".json")){
+        			selectList.add(filelist[i]);
+        		}
+//        		else if (fileName.contains(".version.")) {
+//        			versionList.add(filelist[i]);
+//				}
+        	}
+        }
+        
+        
+        
+        for(int i = 0; i < selectList.size(); i++){
+        	if(selectList.get(i).isFile()){
+        		
+        		try {
+	        		String fileName = selectList.get(i).getName();
+	        		
+	        		String saveVersion;
+	        		if(new File(savedirectory, "/" + fileName.replace(".json", ".version")).exists()){
+	        			BufferedReader is = new BufferedReader(new FileReader(new File(savedirectory, "/" + fileName.replace(".json", ".version"))));
+	        			saveVersion = is.readLine();
+	        			is.close();
+	        		}
+	        		else {
+						saveVersion = "UNKNOWN";
+					}
+	        		
+	        		String flag = "Errors may occur! Please back up your save!";
+	        		if(saveVersion.contentEquals(Reference.VERSION)){
+	        			flag = "Everything should be fine!";
+	        		}
+	        		
+	        		String[] text = { 	"This selection was saved", 
+	        							"with version " + saveVersion + " of this mod.", 
+	        							"This is version " + Reference.VERSION + ".",
+	        							flag};
+	        		
+	        		hoverTextList.add(i, text);
+	        		
+					scrollpane.addButton(new GuiButton(i, 0, 0+(21*i), 170, 20, fileName.replace(".json", "")));
+        		
+        		} catch (Exception e) {
+					System.out.println(e);
+					e.printStackTrace();
+				}
+        		
+        	}
         }
         
         scrollpane.setContentHeight(scrollpane.GetButtons().size() * 21);
@@ -119,7 +176,7 @@ public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonList
         //{
             for (int l = 0; l < this.buttonList.size(); ++l)
             {
-                GuiButton guibutton = (GuiButton)this.buttonList.get(l);
+                GuiButton guibutton = this.buttonList.get(l);
 
                 if (guibutton.mousePressed(this.mc, mouseX, mouseY))
                 {
@@ -164,7 +221,6 @@ public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonList
 
 	@Override
 	public void GetGuiSliderValue(GuiSlider slider) {
-		// TODO Auto-generated method stub
 		
 	}
 

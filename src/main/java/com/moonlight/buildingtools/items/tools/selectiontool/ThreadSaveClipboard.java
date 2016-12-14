@@ -28,6 +28,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.Reference;
 import com.moonlight.buildingtools.items.tools.BlockChangeBase;
 import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
 import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
@@ -39,10 +40,12 @@ public class ThreadSaveClipboard implements BlockChangeBase{
 	protected boolean isFinished = false;
 	protected boolean currentlyCalculating = false;
 	protected String savename;
+	protected String versionName;
 	
 	public ThreadSaveClipboard(Entity playerIn, String savename){
 		this.player = (EntityPlayer) playerIn;	
 		this.savename = "/" + savename + ".json";
+		this.versionName = "/" + savename + ".version"; 
 	}
 	
 	public void perform(){
@@ -51,6 +54,7 @@ public class ThreadSaveClipboard implements BlockChangeBase{
 				currentlyCalculating = true;
 				
 				CopyData COPYDATA = new CopyData();
+				COPYDATA.saveVersion = Reference.VERSION;
 				COPYDATA.blocks = new LinkedList<BlockData>();
 				
 				String JSONDATA = "";
@@ -97,11 +101,15 @@ public class ThreadSaveClipboard implements BlockChangeBase{
 			    
 				File savedirectory = BuildingTools.clipboardSaveDir;
 				new File(savedirectory, savename).createNewFile();
+				new File(savedirectory, versionName).createNewFile();
 				BufferedWriter os = new BufferedWriter(new FileWriter(new File(savedirectory, savename)));
+				BufferedWriter os2 = new BufferedWriter(new FileWriter(new File(savedirectory, versionName)));
 				player.addChatMessage(new TextComponentString("Writing data"));
 				os.write(JSONDATA);
+				os2.write(COPYDATA.saveVersion);
 //				os.write(gson.toJson(tempdata));
 				os.close();
+				os2.close();
 				player.addChatMessage(new TextComponentString("Done"));
 				
 				//playerwrap.addPending(new ThreadLoadClipboard(player));
@@ -217,6 +225,7 @@ public class ThreadSaveClipboard implements BlockChangeBase{
 }
 
 class CopyData{
+	public String saveVersion;
 	public int[] maxPos;
 	public List<BlockData> blocks;
 	public List<List<NBTData>> entities;
