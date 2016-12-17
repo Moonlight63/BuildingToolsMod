@@ -113,13 +113,7 @@ public class ThreadBuildersTool implements IShapeable, BlockChangeBase {
 
 	}
 	
-	/**
-     * The world that this queue is change
-     * 
-     * @return the world
-     */
-    public World getWorld()
-    {
+    public World getWorld(){
         return this.world;
     }
 
@@ -128,14 +122,9 @@ public class ThreadBuildersTool implements IShapeable, BlockChangeBase {
 	}
 
 	public void checkAndAddQueue(){
-//		if(BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue != null)
-//			return;
-		
 		BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(listSet.get(0), world));
 		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(listSet.get(0), world, Blocks.AIR.getDefaultState()));
-		
 		listSet.remove(0);
-		
 	}
 	
 	public void addSetToList(){
@@ -147,12 +136,9 @@ public class ThreadBuildersTool implements IShapeable, BlockChangeBase {
 
 	@Override
 	public void shapeFinished() {
-		//System.out.println("Shape Finished");
 		addSetToList();
 		shapeFinished = true;
-		//currentlyCalculating = false;
 	}
 	
 
-	
 }

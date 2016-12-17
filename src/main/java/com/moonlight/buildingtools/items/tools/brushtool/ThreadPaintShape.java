@@ -6,18 +6,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockDoor;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.moonlight.buildingtools.BuildingTools;
@@ -28,9 +16,18 @@ import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 import com.moonlight.buildingtools.items.tools.BlockChangeBase;
 import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
 import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
-import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
-import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.MiscUtils;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 	
@@ -46,8 +43,6 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 	protected boolean shapeFinished = false;
 	
 	protected Set<ChangeBlockToThis> tempList = new HashSet<ChangeBlockToThis>();
-	
-	protected List<Set<ChangeBlockToThis>> listSet = Lists.newArrayList();
 	
 	protected Set<BlockPos> checkedList = new LinkedHashSet<BlockPos>();
 	protected Set<BlockPos> checkedPos = new LinkedHashSet<BlockPos>();
@@ -183,7 +178,7 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 		}
 		
 		if(count > 4096){
-			addSetToList();
+			checkAndAddQueue();
 			return;
 		}
 		
@@ -209,7 +204,7 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 			generator.generateShape(radiusX, radiusY, radiusZ, this, fillmode);
 		}
 		
-		if(listSet.isEmpty() && shapeFinished){
+		if(shapeFinished){
 			System.out.println("Finished");
 			MiscUtils.dumpUndoList(entity);
 			isFinished = true;
@@ -217,11 +212,6 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 
 	}
 	
-	/**
-     * The world that this queue is change
-     * 
-     * @return the world
-     */
     public World getWorld(){
         return this.world;
     }
@@ -229,24 +219,17 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 	public boolean isFinished(){
 		return isFinished;
 	}
-
-	public void checkAndAddQueue(){		
-		BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(listSet.get(0), world));
-		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(listSet.get(0), world, true));
-		listSet.remove(0);
-		
-	}
 	
-	public void addSetToList(){
-		listSet.add(Sets.newHashSet(tempList));
+	public void checkAndAddQueue(){		
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(tempList, world));
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(tempList, world, true));
 		tempList.clear();
 		count = 0;
-		checkAndAddQueue();
 	}
 
 	@Override
 	public void shapeFinished() {
-		addSetToList();
+		checkAndAddQueue();
 		shapeFinished = true;
 	}
 

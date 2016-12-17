@@ -71,12 +71,6 @@ public class BlockChangeQueue {
 		isFinished = true;
 	}
 	
-	
-	/**
-     * The world that this queue is change
-     * 
-     * @return the world
-     */
     public World getWorld()
     {
         return this.world;
