@@ -15,6 +15,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import net.minecraft.block.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -33,33 +34,21 @@ public class ThreadClearFoliage implements IShapeable, BlockChangeBase{
     protected boolean blocksCalculated;
     protected boolean alsofill;
     protected boolean currentlyCalculating;
-    protected Set<ChangeBlockToThis> tempList;
-    protected Set<ChangeBlockToThis> filledList;
-    protected Set<BlockPos> checkedList;
-    
-    protected List<Set<ChangeBlockToThis>> listSet = Lists.newArrayList();
+    protected Set<ChangeBlockToThis> tempList = new HashSet<ChangeBlockToThis>();
+    protected Set<ChangeBlockToThis> filledList = new CopyOnWriteArraySet<ChangeBlockToThis>();
+    protected Set<BlockPos> checkedList = new HashSet<BlockPos>();
 	protected boolean shapeFinished = false;
 	
 
-    public ThreadClearFoliage(World world, BlockPos origin, int radiusX, int radiusY, int radiusZ, boolean alsofill, EnumFacing side, 
-            EntityPlayer entity)
-    {
-        isFinished = false;
-        count = 0;
-        blocksCalculated = false;
-        this.alsofill = false;
-        currentlyCalculating = false;
-        tempList = new HashSet();
-        filledList = new CopyOnWriteArraySet();
-        checkedList = new HashSet();
+    public ThreadClearFoliage(World world, BlockPos origin, EnumFacing side, EntityPlayer entity, NBTTagCompound nbtdata){
         this.world = world;
         this.origin = origin;
-        this.radiusX = radiusX;
-        this.radiusY = radiusY;
-        this.radiusZ = radiusZ;
         this.side = side;
         this.entity = entity;
-        this.alsofill = alsofill;
+        this.radiusX = nbtdata.getInteger("radiusX");
+        this.radiusY = nbtdata.getInteger("radiusY");
+        this.radiusZ = nbtdata.getInteger("radiusZ");
+        this.alsofill = nbtdata.getInteger("fillorclear") != 1;
     }
 
     public void setBlock(BlockPos tempPos)
@@ -80,7 +69,7 @@ public class ThreadClearFoliage implements IShapeable, BlockChangeBase{
         }
         
         if(count > 4096){
-        	addSetToList();
+        	checkAndAddQueue();
         }
         
     }
@@ -95,7 +84,7 @@ public class ThreadClearFoliage implements IShapeable, BlockChangeBase{
             tempList.add(block);
             count++;
             if(count > 4096){
-            	addSetToList();
+            	checkAndAddQueue();
             }
         }
         
@@ -105,47 +94,37 @@ public class ThreadClearFoliage implements IShapeable, BlockChangeBase{
 
     public void perform()
     {
-        if(!currentlyCalculating)
-        {
+        if(!currentlyCalculating){
             this.tempList.clear();
             Shapes.Cuboid.generator.generateShape(radiusX, radiusY, radiusZ, this, true);
             ClearBlocks();
         }
         
-        if(listSet.isEmpty() && shapeFinished){
+        if(shapeFinished){
 			System.out.println("Finished");
 			MiscUtils.dumpUndoList(entity);
 			isFinished = true;
 		}
     }
 
-    public World getWorld()
-    {
+    public World getWorld(){
         return world;
     }
 
-    public boolean isFinished()
-    {
+    public boolean isFinished(){
         return isFinished;
     }
 	
-    public void checkAndAddQueue(){
-		BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(listSet.get(0), world));
-		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(listSet.get(0), world, true));
-		listSet.remove(0);
-	}
-	
-	public void addSetToList(){
-		listSet.add(Sets.newHashSet(tempList));
+    public void checkAndAddQueue(){		
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(tempList, world));
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(tempList, world, true));
 		tempList.clear();
 		count = 0;
-		checkAndAddQueue();
 	}
 
 	@Override
 	public void shapeFinished() {
-		addSetToList();
+		checkAndAddQueue();
 		shapeFinished = true;
-		//currentlyCalculating = false;
 	}
 }

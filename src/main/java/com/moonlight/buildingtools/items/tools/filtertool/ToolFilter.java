@@ -62,6 +62,7 @@ import com.moonlight.buildingtools.helpers.RenderHelper;
 import com.moonlight.buildingtools.helpers.Shapes;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
+import com.moonlight.buildingtools.items.tools.ToolBase;
 import com.moonlight.buildingtools.items.tools.buildingtool.BuildingShapeVisualizer;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendRaytraceResult;
@@ -75,28 +76,10 @@ import com.moonlight.buildingtools.utils.Key.KeyCode;
 import com.moonlight.buildingtools.utils.KeyHelper;
 import com.moonlight.buildingtools.utils.RGBA;
 
-public class ToolFilter extends Item
-    implements IKeyHandler, IOutlineDrawer, /*IItemBlockAffector, IShapeable,*/ IGetGuiButtonPressed
-{
-	
-	public EnumFacing targetFace;
-	private static Set<Key.KeyCode> handledKeys;
-    public BlockPos targetBlock;
-    public World world;
+public class ToolFilter extends ToolBase{
     
     public ProceduralTreeData treeData = new ProceduralTreeData();
-    
-    public boolean updateVisualizer = true;
 	private FilterShapeVisualizer visualizer;
-	
-	private RenderHelper renderer;
-
-    static 
-    {
-        handledKeys = new HashSet<KeyCode>();
-        handledKeys.add(com.moonlight.buildingtools.utils.Key.KeyCode.TOOL_INCREASE);
-        handledKeys.add(com.moonlight.buildingtools.utils.Key.KeyCode.TOOL_DECREASE);
-    }
     
 
     public ToolFilter()
@@ -122,34 +105,6 @@ public class ToolFilter extends Item
         }
         return stack.getTagCompound();
     }
-    
-    @Override
-	public void onUpdate(ItemStack itemstack, World world, Entity entity, int metadata, boolean bool){		
-		if(this.world == null){
-			this.world = world;
-		}
-		
-		if(world.isRemote){
-			RayTracing.instance().fire(1000, true);
-			RayTraceResult target = RayTracing.instance().getTarget();
-		
-			if (target != null && target.typeOfHit == RayTraceResult.Type.BLOCK){				
-				PacketDispatcher.sendToServer(new SendRaytraceResult(target.getBlockPos(), target.sideHit));
-				this.targetBlock = target.getBlockPos();
-				this.targetFace = target.sideHit;
-			}
-			else{
-				PacketDispatcher.sendToServer(new SendRaytraceResult(null, null));
-				this.targetBlock = null;
-				this.targetFace = null;
-			}
-		}
-	}
-    
-    public void setTargetBlock(BlockPos pos, EnumFacing side){
-		this.targetBlock = pos;
-		this.targetFace = side;
-	}
 
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean check)
     {
@@ -174,14 +129,13 @@ public class ToolFilter extends Item
 	            PlayerWrapper player = (PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
 	            System.out.println("FilterToolUsed");
 	            if(getNBT(itemStackIn).getInteger("filter") == 1)
-	            	//player.addPending(new ThreadBonemeal(worldIn, targetBlock, getNBT(itemStackIn).getInteger("radiusX"), getNBT(itemStackIn).getInteger("radiusY"), getNBT(itemStackIn).getInteger("radiusZ"), targetFace, playerIn));
-	                player.addPending(new ThreadTopsoil(worldIn, targetBlock, getNBT(itemStackIn).getInteger("radiusX"), getNBT(itemStackIn).getInteger("radiusY"), getNBT(itemStackIn).getInteger("radiusZ"), getNBT(itemStackIn).getInteger("topsoildepth"), targetFace, playerIn));
+	                player.addPending(new ThreadTopsoil(worldIn, targetBlock, targetFace, playerIn, getNBT(itemStackIn)));
 	            else if(getNBT(itemStackIn).getInteger("filter") == 2)
-	                player.addPending(new ThreadClearWater(worldIn, targetBlock, getNBT(itemStackIn).getInteger("radiusX"), getNBT(itemStackIn).getInteger("radiusY"), getNBT(itemStackIn).getInteger("radiusZ"), getNBT(itemStackIn).getInteger("fillorclear") != 1, targetFace, playerIn));
+	                player.addPending(new ThreadClearWater(worldIn, targetBlock, targetFace, playerIn, getNBT(itemStackIn)));
 	            else if(getNBT(itemStackIn).getInteger("filter") == 3)
-	                player.addPending(new ThreadClearFoliage(worldIn, targetBlock, getNBT(itemStackIn).getInteger("radiusX"), getNBT(itemStackIn).getInteger("radiusY"), getNBT(itemStackIn).getInteger("radiusZ"), getNBT(itemStackIn).getInteger("fillorclear") != 1, targetFace, playerIn));
+	                player.addPending(new ThreadClearFoliage(worldIn, targetBlock, targetFace, playerIn, getNBT(itemStackIn)));
 	            else if(getNBT(itemStackIn).getInteger("filter") == 4)
-	            	player.addPending(new ThreadBonemeal(worldIn, targetBlock, getNBT(itemStackIn).getInteger("radiusX"), getNBT(itemStackIn).getInteger("radiusY"), getNBT(itemStackIn).getInteger("radiusZ"), targetFace, playerIn));
+	            	player.addPending(new ThreadBonemeal(worldIn, targetBlock, targetFace, playerIn, getNBT(itemStackIn)));
 	            else if(getNBT(itemStackIn).getInteger("filter") == 5)
 	            	switch (ETreeTypes.values()[getNBT(itemStackIn).getInteger("treetype")]) {
 					case Tree:
@@ -234,20 +188,11 @@ public class ToolFilter extends Item
 					default:
 						break;
 					}
-	            		
-	            	//new CustomTreeTest(true).generate(world, new Random(), targetBlock);
 	            
 	        }
     	}
     	
     	return new ActionResult(EnumActionResult.PASS, itemStackIn);
-    }
-
-    public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumFacing side, float hitX, float hitY, 
-            float hitZ)
-    {
-    	onItemRightClick(worldIn, playerIn, EnumHand.MAIN_HAND);
-        return true;
     }
 
     public void handleKey(EntityPlayer player, ItemStack itemStack, KeyCode key)
@@ -293,11 +238,6 @@ public class ToolFilter extends Item
         else
             getNBT(itemStack).setInteger("radiusZ", (int)zMult != 0 ? (int)((float)radius * zMult) : 0);
         PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(itemStack)));
-    }
-
-    public Set getHandledKeys()
-    {
-        return handledKeys;
     }
     
     @Override
@@ -461,13 +401,6 @@ public class ToolFilter extends Item
         updateVisualizer = true;
     }
     
-    @Override
-	public int getMetadata(int damage)
-    {
-		updateVisualizer = true;
-        return super.getMetadata(damage);
-    }
-    
     public void SetTreeData(ProceduralTreeData data){
     	this.treeData = data;
     	for(List list : this.treeData.foliage_shape){
@@ -479,11 +412,5 @@ public class ToolFilter extends Item
     	System.out.println(meat1);
     	this.treeData.SetMatValues(id1, meat1, id2, meta2);
     }
-
-//	@Override
-//	public void shapeFinished() {
-//		// TODO Auto-generated method stub
-//		
-//	}
 
 }

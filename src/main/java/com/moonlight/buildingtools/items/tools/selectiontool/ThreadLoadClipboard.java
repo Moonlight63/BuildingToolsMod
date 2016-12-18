@@ -71,7 +71,8 @@ public class ThreadLoadClipboard implements BlockChangeBase{
 				String DATAIN = "";
 				File savedirectory = BuildingTools.clipboardSaveDir;
 				//new File(savedirectory, "/" + fileName.replace(".json", "") + ".json").createNewFile();
-				BufferedReader is = new BufferedReader(new FileReader(new File(savedirectory, "/" + fileName.replace(".json", "") + ".json")));
+				System.out.println(fileName);
+				BufferedReader is = new BufferedReader(new FileReader(new File(savedirectory, "/" + fileName + ".json")));
 				player.addChatMessage(new TextComponentString("Reading data"));
 
 				String line = null;

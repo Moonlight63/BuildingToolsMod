@@ -83,63 +83,34 @@ public class BrushShapeVisualizer implements IShapeable{
 	
 	public BlockPos CalcOffset(BlockPos bpos, BlockPos targetBlock, EnumFacing face, World world){
 		
+		BlockPos tempPos;
+		
 		if (face == EnumFacing.UP || face == EnumFacing.DOWN){
-			
-			if(replaceblock == 1){
-				if(!world.isAirBlock(new BlockPos(bpos.getX(), face == EnumFacing.UP ? bpos.getY() : -bpos.getY(), bpos.getZ()).add(targetBlock))){
-					return null;
-				}
-			}else if(replaceblock == 2){
-				if(world.getBlockState(new BlockPos(bpos.getX(), face == EnumFacing.UP ? bpos.getY() : -bpos.getY(), bpos.getZ()).add(targetBlock)) != world.getBlockState(targetBlock)){
-					return null;
-				}
-			}else if(replaceblock == 3){
-			}
-			else if(replaceblock == 4){
-				if(!this.replaceBlocks.contains(world.getBlockState(new BlockPos(bpos.getX(), face == EnumFacing.UP ? bpos.getY() : -bpos.getY(), bpos.getZ()).add(targetBlock))))
-					return null;
-			}
-			
-			return (new BlockPos(bpos.getX(), face == EnumFacing.UP ? bpos.getY() : -bpos.getY(), bpos.getZ()).add(targetBlock));
+			tempPos = new BlockPos(bpos.getX(), face == EnumFacing.UP ? bpos.getY() : -bpos.getY(), bpos.getZ());
 		}
 		else if (face == EnumFacing.NORTH || face == EnumFacing.SOUTH){
-			
-			if(replaceblock == 1){
-				if(!world.isAirBlock(new BlockPos(bpos.getX(), bpos.getZ(), face == EnumFacing.NORTH ? -bpos.getY() : bpos.getY()).add(targetBlock))){
-					return null;
-				}
-			}else if(replaceblock == 2){
-				if(world.getBlockState(new BlockPos(bpos.getX(), bpos.getZ(), face == EnumFacing.NORTH ? -bpos.getY() : bpos.getY()).add(targetBlock)) != world.getBlockState(targetBlock)){
-					return null;
-				}
-			}else if(replaceblock == 3){
-			}
-			else if(replaceblock == 4){
-				if(!this.replaceBlocks.contains(world.getBlockState(new BlockPos(bpos.getX(), bpos.getZ(), face == EnumFacing.NORTH ? -bpos.getY() : bpos.getY()).add(targetBlock))))
-					return null;
-			}
-			
-			return (new BlockPos(bpos.getX(), bpos.getZ(), face == EnumFacing.NORTH ? -bpos.getY() : bpos.getY()).add(targetBlock));
+			tempPos = new BlockPos(bpos.getX(), bpos.getZ(), face == EnumFacing.NORTH ? -bpos.getY() : bpos.getY());
 		}
 		else{
-			
-			if(replaceblock == 1){
-				if(!world.isAirBlock(new BlockPos(face == EnumFacing.WEST ? -bpos.getY() : bpos.getY(), bpos.getX(), bpos.getZ()).add(targetBlock))){
-					return null;
-				}
-			}else if(replaceblock == 2){
-				if(world.getBlockState(new BlockPos(face == EnumFacing.WEST ? -bpos.getY() : bpos.getY(), bpos.getX(), bpos.getZ()).add(targetBlock)) != world.getBlockState(targetBlock)){
-					return null;
-				}
-			}else if(replaceblock == 3){
-			}
-			else if(replaceblock == 4){
-				if(!this.replaceBlocks.contains(world.getBlockState(new BlockPos(face == EnumFacing.WEST ? -bpos.getY() : bpos.getY(), bpos.getX(), bpos.getZ()).add(targetBlock))))
-					return null;
-			}
-			
-			return (new BlockPos(face == EnumFacing.WEST ? -bpos.getY() : bpos.getY(), bpos.getX(), bpos.getZ()).add(targetBlock));
+			tempPos = new BlockPos(face == EnumFacing.WEST ? -bpos.getY() : bpos.getY(), bpos.getX(), bpos.getZ());
 		}
+		
+		if(replaceblock == 1){
+			if(!world.isAirBlock(tempPos.add(targetBlock))){
+				return null;
+			}
+		}else if(replaceblock == 2){
+			if(world.getBlockState(tempPos.add(targetBlock)) != world.getBlockState(targetBlock)){
+				return null;
+			}
+		}else if(replaceblock == 3){
+		}
+		else if(replaceblock == 4){
+			if(!this.replaceBlocks.contains(world.getBlockState(tempPos.add(targetBlock))))
+				return null;
+		}
+		
+		return tempPos.add(targetBlock);
 	
 	}
 

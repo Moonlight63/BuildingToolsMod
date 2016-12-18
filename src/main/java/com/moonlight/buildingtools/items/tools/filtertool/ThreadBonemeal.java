@@ -3,6 +3,7 @@ package com.moonlight.buildingtools.items.tools.filtertool;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockGrass;
@@ -10,6 +11,7 @@ import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -37,32 +39,24 @@ public class ThreadBonemeal implements IShapeable, BlockChangeBase{
     protected EntityPlayer entity;
     protected int count;
     protected boolean currentlyCalculating;
-    protected Set<ChangeBlockToThis> tempList;
-    protected Set<BlockPos> checkedList;
-    
-    protected List<Set<ChangeBlockToThis>> listSet = Lists.newArrayList();
+    protected Set<ChangeBlockToThis> tempList = new HashSet<ChangeBlockToThis>();
+    protected Set<BlockPos> checkedList = new HashSet<BlockPos>();
 	protected boolean shapeFinished = false;
 
-    public ThreadBonemeal(World world, BlockPos origin, int radiusX, int radiusY, int radiusZ, EnumFacing side, EntityPlayer entity){
-        isFinished = false;
-        count = 0;
-        currentlyCalculating = false;
-        tempList = new HashSet<ChangeBlockToThis>();
-        checkedList = new HashSet<BlockPos>();
+    public ThreadBonemeal(World world, BlockPos origin, EnumFacing side, EntityPlayer entity, NBTTagCompound nbtdata){
         this.world = world;
         this.origin = origin;
-        this.radiusX = radiusX;
-        this.radiusY = radiusY;
-        this.radiusZ = radiusZ;
         this.side = side;
         this.entity = entity;
+        this.radiusX = nbtdata.getInteger("radiusX");
+        this.radiusY = nbtdata.getInteger("radiusY");
+        this.radiusZ = nbtdata.getInteger("radiusZ");
     }
 
     public void setBlock(BlockPos tempPos)
     {
         BlockPos bpos = tempPos;
-        if(bpos.add(origin).getY() > 0 && bpos.add(origin).getY() < 256 && !world.isAirBlock(bpos.add(origin)) && world.isAirBlock(bpos.add(origin).up()))
-        {
+        if(bpos.add(origin).getY() > 0 && bpos.add(origin).getY() < 256 && !world.isAirBlock(bpos.add(origin)) && world.isAirBlock(bpos.add(origin).up())){
         	if(world.rand.nextInt(8) <= 0){
             	if(world.getBlockState(bpos.add(origin)) == Blocks.GRASS.getDefaultState()){
             		if(world.rand.nextInt(8) == 0){
@@ -90,52 +84,42 @@ public class ThreadBonemeal implements IShapeable, BlockChangeBase{
         }
         
         if(count > 4096){
-			addSetToList();
+        	checkAndAddQueue();
 		}	
         
     }
 
     public void perform()
     {
-        if(!currentlyCalculating)
-        {
+        if(!currentlyCalculating){
             tempList.clear();
             Shapes.Cuboid.generator.generateShape(radiusX, radiusY, radiusZ, this, true);
         }
-        if(listSet.isEmpty() && shapeFinished){
+        if(shapeFinished){
 			System.out.println("Finished");
 			MiscUtils.dumpUndoList(entity);
 			isFinished = true;
 		}
     }
 
-    public World getWorld()
-    {
+    public World getWorld(){
         return world;
     }
 
-    public boolean isFinished()
-    {
+    public boolean isFinished(){
         return isFinished;
     }
 
-    public void checkAndAddQueue(){
-		BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(listSet.get(0), world));
-		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(listSet.get(0), world, true));
-		listSet.remove(0);
-	}
-	
-	public void addSetToList(){
-		listSet.add(Sets.newHashSet(tempList));
+    public void checkAndAddQueue(){		
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(tempList, world));
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(tempList, world, true));
 		tempList.clear();
 		count = 0;
-		checkAndAddQueue();
 	}
 
 	@Override
 	public void shapeFinished() {
-		addSetToList();
+		checkAndAddQueue();
 		shapeFinished = true;
-		//currentlyCalculating = false;
 	}
 }

@@ -215,7 +215,7 @@ public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonList
 
 	@Override
 	public void ScrollButtonPressed(GuiButton button) {
-		PacketDispatcher.sendToServer(new SendFileSelection(filelist[button.id].getName()));
+		PacketDispatcher.sendToServer(new SendFileSelection(button.displayString));
 		this.mc.thePlayer.closeScreen();
 	}
 

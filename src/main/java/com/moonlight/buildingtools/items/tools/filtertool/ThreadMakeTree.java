@@ -41,8 +41,7 @@ public class ThreadMakeTree implements BlockChangeBase{
     protected EntityPlayer entity;
     protected int count;
     protected boolean currentlyCalculating;
-    protected Set<ChangeBlockToThis> tempList;
-    protected List<Set<ChangeBlockToThis>> listSet = Lists.newArrayList();
+    protected Set<ChangeBlockToThis> tempList = new HashSet<ChangeBlockToThis>();
     protected List<ChangeBlockToThis> data = Lists.newArrayList();
     protected Set<BlockPos> checkList = Sets.newHashSet();
     protected Set<BlockPos> checkPos = Sets.newHashSet();
@@ -72,15 +71,9 @@ public class ThreadMakeTree implements BlockChangeBase{
     IBlockState leafMat = Blocks.LEAVES.getDefaultState();
 
     public ThreadMakeTree(World world, BlockPos origin, EntityPlayer entity, ProceduralTreeData data){
-        isFinished = false;
-        count = 0;
-        currentlyCalculating = false;
-        tempList = new HashSet<ChangeBlockToThis>();
-        //data = new HashSet<ChangeBlockToThis>();
         this.world = world;
         this.origin = origin;
         this.entity = entity;
-        
         this.rand = new Random();
         //this.foliage_shape = new float[][]{/*{2, 4, 6, 6, 6, 6, 6, 5, 4, 3}, */{2, 3, 3, 2, 1}};
         
@@ -105,7 +98,6 @@ public class ThreadMakeTree implements BlockChangeBase{
         
         this.logMat = data.logMat;
         this.leafMat = data.leafMat;
-        
     }
     
     public void convertData(){
@@ -128,10 +120,10 @@ public class ThreadMakeTree implements BlockChangeBase{
     		count++;
     		if(count > 4096){
     			entity.addChatMessage(new TextComponentString(pos.getBlockPos().toString()));
-            	addSetToList();
+    			checkAndAddQueue();
             }
     	}
-    	addSetToList();
+    	checkAndAddQueue();
     }
     
     public void add(ChangeBlockToThis change){
@@ -167,40 +159,31 @@ public class ThreadMakeTree implements BlockChangeBase{
     		shapeFinished();
     	}
     	
-    	if(listSet.isEmpty() && shapeFinished){
+    	if(shapeFinished){
 			System.out.println("Finished");
 			MiscUtils.dumpUndoList(entity);
 			isFinished = true;
 		}        
     }
     
-    public World getWorld()
-    {
+    public World getWorld(){
         return world;
     }
 
-    public boolean isFinished()
-    {
+    public boolean isFinished(){
         return isFinished;
     }
     
-    public void checkAndAddQueue(){
-		BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(listSet.get(0), world));
-		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(listSet.get(0), world, true));
-		listSet.remove(0);
-	}
-	
-	public void addSetToList(){
-		listSet.add(Sets.newHashSet(tempList));
+    public void checkAndAddQueue(){		
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(tempList, world));
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(tempList, world, true));
 		tempList.clear();
 		count = 0;
-		checkAndAddQueue();
 	}
 
 	public void shapeFinished() {
-		addSetToList();
+		checkAndAddQueue();
 		shapeFinished = true;
-		//currentlyCalculating = false;
 	}
     
     

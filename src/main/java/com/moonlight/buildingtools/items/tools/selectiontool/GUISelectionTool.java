@@ -13,8 +13,10 @@ import net.minecraftforge.common.MinecraftForge;
 
 import org.lwjgl.opengl.GL11;
 
+import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendGuiButtonPressedToItemMessage;
+import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
 public class GUISelectionTool extends GuiScreen{
 	
@@ -79,11 +81,26 @@ public class GUISelectionTool extends GuiScreen{
 		buttonsRight.clear();
 		
 		NBTTagCompound heldnbt = ToolSelection.getNBT(player.getHeldItemMainhand());
+		PlayerWrapper playerwrap = BuildingTools.getPlayerRegistry().getPlayer(player).get();
 		
 		rotate90.displayString = "Rotate 90: " + heldnbt.getInteger("Rotation");
 		flipx.displayString = "Flip X: " + heldnbt.getBoolean("flipX");
 		flipy.displayString = "Flip Y: " + heldnbt.getBoolean("flipY");
 		flipz.displayString = "Flip Z: " + heldnbt.getBoolean("flipZ");
+		
+		if(heldnbt.getCompoundTag("bpos1").getBoolean("set") && heldnbt.getCompoundTag("bpos2").getBoolean("set")){
+			copytoclipboard.enabled = true;
+			clearsel.enabled = true;
+		}
+		else{
+			copytoclipboard.enabled = false;
+			clearsel.enabled = false;
+		}
+		
+		if(playerwrap.currentCopyClipboard.isEmpty())
+			pasteclipboard.enabled = false;
+		else
+			pasteclipboard.enabled = true;
 		
 		buttonsLeft.add(copytoclipboard);
 		buttonsLeft.add(pasteclipboard);

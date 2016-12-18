@@ -22,6 +22,7 @@ import com.moonlight.buildingtools.helpers.RayTracing;
 import com.moonlight.buildingtools.helpers.RenderHelper;
 import com.moonlight.buildingtools.helpers.Shapes;
 import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
+import com.moonlight.buildingtools.items.tools.ToolBase;
 import com.moonlight.buildingtools.items.tools.brushtool.GUIToolBrush;
 import com.moonlight.buildingtools.network.GuiHandler;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
@@ -33,20 +34,7 @@ import com.moonlight.buildingtools.utils.IOutlineDrawer;
 import com.moonlight.buildingtools.utils.Key;
 import com.moonlight.buildingtools.utils.RGBA;
 
-public class ToolErosion extends Item implements IKeyHandler, IOutlineDrawer, IGetGuiButtonPressed{
-	
-	private static Set<Key.KeyCode> handledKeys;
-	public BlockPos targetBlock;
-	public EnumFacing targetFace;
-	
-	private RenderHelper renderer;
-	
-	static
-    {
-        handledKeys = new HashSet<Key.KeyCode>();
-        handledKeys.add(Key.KeyCode.TOOL_INCREASE);
-        handledKeys.add(Key.KeyCode.TOOL_DECREASE);
-    }
+public class ToolErosion extends ToolBase{
 	
 	public ToolErosion(){
 		super();
@@ -54,30 +42,6 @@ public class ToolErosion extends Item implements IKeyHandler, IOutlineDrawer, IG
 		setRegistryName("erosionTool");
 		setCreativeTab(BuildingTools.tabBT);
 		setMaxStackSize(1);
-	}
-	
-	@Override
-	public void onUpdate(ItemStack itemstack, World world, Entity entity, int metadata, boolean bool){		
-		if(world.isRemote){
-			RayTracing.instance().fire(1000, true);
-			RayTraceResult target = RayTracing.instance().getTarget();
-		
-			if (target != null && target.typeOfHit == RayTraceResult.Type.BLOCK){				
-				PacketDispatcher.sendToServer(new SendRaytraceResult(target.getBlockPos(), target.sideHit));
-				this.targetBlock = target.getBlockPos();
-				this.targetFace = target.sideHit;
-			}
-			else{
-				PacketDispatcher.sendToServer(new SendRaytraceResult(null, null));
-				this.targetBlock = null;
-				this.targetFace = null;
-			}
-		}
-	}
-	
-	public void setTargetBlock(BlockPos pos, EnumFacing side){
-		this.targetBlock = pos;
-		this.targetFace = side;
 	}
 	
 	public static NBTTagCompound getNBT(ItemStack stack) {
@@ -107,29 +71,13 @@ public class ToolErosion extends Item implements IKeyHandler, IOutlineDrawer, IG
         return new ActionResult(EnumActionResult.PASS, itemStackIn);
         
     }
-	
-	public boolean onItemUse(ItemStack stack,
-            EntityPlayer playerIn,
-            World worldIn,
-            BlockPos pos,
-            EnumFacing side,
-            float hitX,
-            float hitY,
-            float hitZ){
-		
-		onItemRightClick(worldIn, playerIn, EnumHand.MAIN_HAND);
-		return true;
-	}
 	    
-	public void setTargetRadius(ItemStack stack, int radius)
-    {		
+	public void setTargetRadius(ItemStack stack, int radius){		
 		getNBT(stack).setInteger("radius", radius);
     }
 
-    public int getTargetRadius(ItemStack stack)
-    {
-        if (stack.hasTagCompound() && (getNBT(stack).hasKey("radius")))
-        {
+    public int getTargetRadius(ItemStack stack){
+        if (stack.hasTagCompound() && (getNBT(stack).hasKey("radius"))){
             return getNBT(stack).getInteger("radius");
         }
         else{
@@ -170,13 +118,6 @@ public class ToolErosion extends Item implements IKeyHandler, IOutlineDrawer, IG
         System.out.print(getNBT(itemStack).getInteger("radius"));
     }
 	
-    
-    @Override
-    public Set<Key.KeyCode> getHandledKeys()
-    {
-        return ToolErosion.handledKeys;
-    }
-
 	@Override
 	public void GetGuiButtonPressed(byte buttonID, int mouseButton, boolean isCtrlDown, boolean isAltDown, boolean isShiftDown, ItemStack stack) {
 		

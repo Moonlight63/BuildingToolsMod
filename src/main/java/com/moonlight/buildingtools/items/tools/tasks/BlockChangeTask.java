@@ -14,7 +14,7 @@ public class BlockChangeTask implements Runnable{
         if (n != 0){
         	for (PlayerWrapper p : BuildingTools.getPlayerRegistry().getPlayers()){
                 if(!p.pendingChangeQueue.isEmpty()){
-                	System.out.println(p.pendingChangeQueue);
+                	//System.out.println(p.pendingChangeQueue);
                 	if(!p.pendingChangeQueue.peek().isFinished()){
                 		p.pendingChangeQueue.poll().perform();
                 	}

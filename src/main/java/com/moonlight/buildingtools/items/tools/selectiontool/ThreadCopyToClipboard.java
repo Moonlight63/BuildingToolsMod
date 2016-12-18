@@ -64,14 +64,14 @@ public class ThreadCopyToClipboard implements BlockChangeBase, IShapeable{
     		return new ChangeBlockToThis(newPos, blockState, compound);
 		}
     	else{
-    		if(blockState.getBlock() instanceof BlockDoor){
-    			if(blockState.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.LOWER){
-					return new ChangeBlockToThis(newPos, blockState.withProperty(BlockDoor.HINGE, world.getBlockState(oldPosOrNull.up()).getValue(BlockDoor.HINGE)));
-				}
-    			else if(blockState.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.UPPER){
-					return new ChangeBlockToThis(newPos, blockState.withProperty(BlockDoor.FACING, world.getBlockState(oldPosOrNull.down()).getValue(BlockDoor.FACING)));
-				}
-    		}
+//    		if(blockState.getBlock() instanceof BlockDoor){
+//    			if(blockState.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.LOWER){
+//					return new ChangeBlockToThis(newPos, blockState.withProperty(BlockDoor.HINGE, world.getBlockState(oldPosOrNull.up()).getValue(BlockDoor.HINGE)));
+//				}
+//    			else if(blockState.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.UPPER){
+//					return new ChangeBlockToThis(newPos, blockState.withProperty(BlockDoor.FACING, world.getBlockState(oldPosOrNull.down()).getValue(BlockDoor.FACING)));
+//				}
+//    		}
     		return new ChangeBlockToThis(newPos, blockState);
     	}
 	}
@@ -87,14 +87,13 @@ public class ThreadCopyToClipboard implements BlockChangeBase, IShapeable{
 		
 	}
 	
-	//protected int count = 0;
 	public void perform(){
 		
 		if(!currentlyCalculating){
 			
 			if(!selectionCalculated){
 				
-				entity.addChatMessage(new TextComponentString("Copying Selection. Please Wait!"));
+				entity.addChatComponentMessage(new TextComponentString("Copying Selection. Please Wait!"), true);
 				
 				GeometryUtils.makeFilledCube(new BlockPos(structureBoundingBox.minX, structureBoundingBox.minY, structureBoundingBox.minZ), structureBoundingBox.getXSize()-1, structureBoundingBox.getYSize()-1, structureBoundingBox.getZSize()-1, this);
 				
