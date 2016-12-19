@@ -9,8 +9,6 @@ import com.moonlight.buildingtools.items.tools.GUIBlockSelection;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendAdvancedFillPacketToItemMessage;
 import com.moonlight.buildingtools.network.packethandleing.SendAdvancedReplacePacketToItemMessage;
-import com.moonlight.buildingtools.network.packethandleing.SendSimpleFillPacketToItemMessage;
-import com.moonlight.buildingtools.network.packethandleing.SendSimpleReplacePacketToItemMessage;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -138,7 +136,7 @@ public class GUISetReplaceBlocks extends GUIBlockSelection{
 	        	
 	        	System.out.println(ID2 + "   " + META2 + "   " + CHANCE);
 	        	
-	        	PacketDispatcher.sendToServer(new SendAdvancedReplacePacketToItemMessage(ID, META, CHANCE, ID2, META2));
+	        	PacketDispatcher.sendToServer(new SendAdvancedReplacePacketToItemMessage(ID2, META2));
 	        	
         	
         }

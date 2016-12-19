@@ -10,8 +10,7 @@ import com.moonlight.buildingtools.items.tools.GUIBlockSelection;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendAdvancedFillPacketToItemMessage;
 import com.moonlight.buildingtools.network.packethandleing.SendAdvancedReplacePacketToItemMessage;
-import com.moonlight.buildingtools.network.packethandleing.SendSimpleFillPacketToItemMessage;
-import com.moonlight.buildingtools.network.packethandleing.SendSimpleReplacePacketToItemMessage;
+import com.moonlight.buildingtools.network.packethandleing.SendSetTreeMaterialsPacketToItemMessage;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiButton;
@@ -166,7 +165,7 @@ public class GUISetLogMat extends GUIBlockSelection{
         			META2=(blockReplaceList.get(0).getMetadata());
         		}
             	
-            	PacketDispatcher.sendToServer(new SendSimpleReplacePacketToItemMessage(ID, META, ID2, META2));
+            	PacketDispatcher.sendToServer(new SendSetTreeMaterialsPacketToItemMessage(ID, META, ID2, META2));
             	
             	this.mc.displayGuiScreen((GuiScreen) null);
     			this.mc.displayGuiScreen(new GUIEditTree(this.player, ((ToolFilter)(player.getHeldItemMainhand().getItem())).treeData));

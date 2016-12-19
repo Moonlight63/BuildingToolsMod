@@ -353,11 +353,10 @@ public class ToolBrush extends ToolBase{
 	public void setFillBlocks(List<Integer> ID, List<Integer> DATA, List<Integer> COUNT){
 		System.out.println("Recieved Message!");
 		System.out.println(ID + "   " + DATA + "   " + COUNT);
-		
+		thisStack.getTagCompound().setTag("fillblocks", new NBTTagCompound());
 		for (int i = 0; i < ID.size(); i++) {
 			ItemStack fill = new ItemStack(Block.getBlockById(ID.get(i)));
 			fill.setItemDamage(DATA.get(i));
-			thisStack.getTagCompound().setTag("fillblocks", new NBTTagCompound());
 			thisStack.getTagCompound().getCompoundTag("fillblocks").setTag(Integer.toString(i), new NBTTagCompound());
 			thisStack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag(Integer.toString(i)).setInteger("chance", COUNT.get(i));
 			thisStack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag(Integer.toString(i)).setTag("blockstate", fill.writeToNBT(new NBTTagCompound()));
@@ -368,10 +367,10 @@ public class ToolBrush extends ToolBase{
 	public void setReplaceBlocks(List<Integer> ID, List<Integer> DATA){
 		System.out.println("Recieved Message!");
 		System.out.println(ID + "   " + DATA);
-		
+		thisStack.getTagCompound().setTag("replaceblocks", new NBTTagCompound());
 		for (int i = 0; i < ID.size(); i++) {			
-			ItemStack replace = new ItemStack(Block.getBlockById(ID.get(i)).getStateFromMeta(DATA.get(i)).getBlock());
-			thisStack.getTagCompound().setTag("replaceblocks", new NBTTagCompound());
+			ItemStack replace = new ItemStack(Block.getBlockById(ID.get(i)));
+			replace.setItemDamage(DATA.get(i));
 			thisStack.getTagCompound().getCompoundTag("replaceblocks").setTag(Integer.toString(i), replace.writeToNBT(new NBTTagCompound()));
 		}
         

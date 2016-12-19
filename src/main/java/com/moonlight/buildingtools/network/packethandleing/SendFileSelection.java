@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class SendFileSelection implements IMessage {
 	
-	String file = "";
+	String file;
 	
 	public SendFileSelection(){
 		

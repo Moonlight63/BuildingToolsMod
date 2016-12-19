@@ -7,6 +7,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -66,6 +67,16 @@ public class ToolSelection extends ToolBase{
 	        stack.getTagCompound().setInteger("repeatMovmentY", 0);
 	        stack.getTagCompound().setInteger("repeatMovmentZ", 0);
 	        
+	        ItemStack defaultFill = new ItemStack(Blocks.STONE);
+	        stack.getTagCompound().setTag("fillblocks", new NBTTagCompound());
+	        //stack.getTagCompound().getCompoundTag("fillblocks").setTag("0", new NBTTagCompound());
+	        //stack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag("0").setInteger("chance", 1);
+	        //stack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag("0").setTag("blockstate", defaultFill.writeToNBT(new NBTTagCompound()));
+	        
+	        ItemStack defaultReplace = new ItemStack(Blocks.AIR);
+	        stack.getTagCompound().setTag("replaceblocks", new NBTTagCompound());
+	        //stack.getTagCompound().getCompoundTag("replaceblocks").setTag("0", defaultReplace.writeToNBT(new NBTTagCompound()));
+	        
 	        stack.getTagCompound().setTag("bpos1", new NBTTagCompound());
 	        stack.getTagCompound().getCompoundTag("bpos1").setInteger("x", 0);
 	        stack.getTagCompound().getCompoundTag("bpos1").setInteger("y", 0);
@@ -82,9 +93,9 @@ public class ToolSelection extends ToolBase{
 	
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
-    {
-		
+    {		
 		ItemStack itemStackIn = playerIn.getHeldItemMainhand();
+		PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(itemStackIn)));
 		currPlayer = playerIn;
 		if(playerIn.isSneaking()){
 			playerIn.openGui(BuildingTools.instance, GuiHandler.GUISelectionTool, worldIn, 0, 0, 0);
@@ -216,9 +227,9 @@ public class ToolSelection extends ToolBase{
 		
 		int amount = 0;
 		if(mouseButton == 0)
-			amount = multiplier;
+			amount = 1;
 		else if(mouseButton == 1)
-			amount = -multiplier;
+			amount = -1;
 		else 
 			return;
 		
@@ -227,11 +238,11 @@ public class ToolSelection extends ToolBase{
 		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
 		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
 		
-		if (buttonID == 1) {
+		if (buttonID == GUISelectionTool.copytoclipboard.id) {
 			System.out.println("Copying");
 			player.addPending(new ThreadCopyToClipboard(getBlockPos1(stack), getBlockPos2(stack), world, currPlayer));
 			
-		} else if (buttonID == 2) {
+		} else if (buttonID == GUISelectionTool.pasteclipboard.id) {
 			player.addPending(new ThreadPasteClipboard(
 					world, currPlayer, targetBlock,
 					getNBT(stack).getInteger("Rotation"),
@@ -252,36 +263,43 @@ public class ToolSelection extends ToolBase{
 					getNBT(stack).getBoolean("flipZ")));
 				}				
 			}
-		} else if (buttonID == 3) {
+		} else if (buttonID == GUISelectionTool.selectpaste.id) {
 			if(player.clipboardMaxPos != null){
 				setBlockPos1(stack, targetBlock);
 				BlockPos tempPos = getAdjustedBlockPos(player.clipboardMaxPos).add(targetBlock);
 				setBlockPos2(stack, tempPos);
 			}
-		} else if (buttonID == 4) {
+		} else if (buttonID == GUISelectionTool.clearselction.id) {
 			getNBT(stack).getCompoundTag("bpos1").setBoolean("set", false);
 			getNBT(stack).getCompoundTag("bpos2").setBoolean("set", false);
-		} else if (buttonID == 5) {
-			getNBT(stack).setInteger("Rotation", getNBT(stack).getInteger("Rotation") == 3 ? 0 : getNBT(stack).getInteger("Rotation") + 1);
-		} else if (buttonID == 6) {
+		} else if (buttonID == GUISelectionTool.rotate90.id) {
+			int temp = getNBT(stack).getInteger("Rotation") + amount;
+			if(temp == -1)
+				temp = 3;
+			else if(temp == 4)
+				temp = 0;
+			getNBT(stack).setInteger("Rotation", temp);
+		} else if (buttonID == GUISelectionTool.flipx.id) {
 			getNBT(stack).setBoolean("flipX", !getNBT(stack).getBoolean("flipX"));
-		} else if (buttonID == 7) {
+		} else if (buttonID == GUISelectionTool.flipy.id) {
 			getNBT(stack).setBoolean("flipY", !getNBT(stack).getBoolean("flipY"));
-		} else if (buttonID == 8) {
+		} else if (buttonID == GUISelectionTool.flipz.id) {
 			getNBT(stack).setBoolean("flipZ", !getNBT(stack).getBoolean("flipZ"));
-		} else if (buttonID == 9) {
-			System.out.println("Clearing");
-			if(getBlockPos1(stack) != null && getBlockPos2(stack) != null){
-				player.addPending(new ThreadClearSelection(getBlockPos1(stack),	getBlockPos2(stack), world));
-			}
-		} else if (buttonID == 10) {
-			getNBT(stack).setInteger("repeat", getNBT(stack).getInteger("repeat") + amount);
-		} else if (buttonID == 11) {
-			getNBT(stack).setInteger("repeatMovmentX", getNBT(stack).getInteger("repeatMovmentX") + amount);
-		} else if (buttonID == 12) {
-			getNBT(stack).setInteger("repeatMovmentY", getNBT(stack).getInteger("repeatMovmentY") + amount);
-		} else if (buttonID == 13) {
-			getNBT(stack).setInteger("repeatMovmentZ", getNBT(stack).getInteger("repeatMovmentZ") + amount);
+		} 
+//		else if (buttonID == 9) {
+//			System.out.println("Clearing");
+//			if(getBlockPos1(stack) != null && getBlockPos2(stack) != null){
+//				player.addPending(new ThreadClearSelection(getBlockPos1(stack),	getBlockPos2(stack), world));
+//			}
+//		} 
+		else if (buttonID == GUISelectionTool.repeat.id) {
+			getNBT(stack).setInteger("repeat", getNBT(stack).getInteger("repeat") + (amount * multiplier));
+		} else if (buttonID == GUISelectionTool.moveX.id) {
+			getNBT(stack).setInteger("repeatMovmentX", getNBT(stack).getInteger("repeatMovmentX") + (amount * multiplier));
+		} else if (buttonID == GUISelectionTool.moveY.id) {
+			getNBT(stack).setInteger("repeatMovmentY", getNBT(stack).getInteger("repeatMovmentY") + (amount * multiplier));
+		} else if (buttonID == GUISelectionTool.moveZ.id) {
+			getNBT(stack).setInteger("repeatMovmentZ", getNBT(stack).getInteger("repeatMovmentZ") + (amount * multiplier));
 		} else if (buttonID == 14){
 			
 		} else if (buttonID == 16) {
@@ -344,61 +362,87 @@ public class ToolSelection extends ToolBase{
 		player.addPending(new ThreadLoadClipboard(currPlayer, file));
 	}
 	
-	public void SimpleFill(int ID, int DATA){
-		System.out.println("Recieved Message!");
+	
+//	NBTTagCompound tempNBT;
+//	
+//	public void setFillBlocks(List<Integer> ID, List<Integer> DATA, List<Integer> COUNT){
+//		System.out.println("Recieved Message!");
+//		System.out.println(ID + "   " + DATA + "   " + COUNT);
+//		
+//		thisStack.getTagCompound().setTag("fillblocks", new NBTTagCompound());
+//		for (int i = 0; i < ID.size(); i++) {
+//			ItemStack fill = new ItemStack(Block.getBlockById(ID.get(i)));
+//			fill.setItemDamage(DATA.get(i));
+//			thisStack.getTagCompound().getCompoundTag("fillblocks").setTag(Integer.toString(i), new NBTTagCompound());
+//			thisStack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag(Integer.toString(i)).setInteger("chance", COUNT.get(i));
+//			thisStack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag(Integer.toString(i)).setTag("blockstate", fill.writeToNBT(new NBTTagCompound()));
+//		}
+//		tempNBT = thisStack.getTagCompound();
+//		System.out.println(tempNBT);
+//		//PacketDispatcher.sendToServer(new SyncNBTDataMessage(thisStack.getTagCompound()));
+//		System.out.println(thisStack.getTagCompound().getCompoundTag("fillblocks"));
+//	}
+//	
+//	public void setReplaceBlocks(List<Integer> ID, List<Integer> DATA){
+//		System.out.println("Recieved Message!");
+//		System.out.println(ID + "   " + DATA);
+//		//System.out.println(tempNBT);
+//		thisStack.setTagCompound(tempNBT);
+//		thisStack.getTagCompound().setTag("replaceblocks", new NBTTagCompound());
+//		for (int i = 0; i < ID.size(); i++) {			
+//			ItemStack replace = new ItemStack(Block.getBlockById(ID.get(i)));
+//			replace.setItemDamage(DATA.get(i));
+//			thisStack.getTagCompound().getCompoundTag("replaceblocks").setTag(Integer.toString(i), replace.writeToNBT(new NBTTagCompound()));
+//		}
+//        
+//	}
+	
+	public void setReplaceBlocks(List<Integer> ID, List<Integer> DATA){
 		
-		IBlockState fillBlock = Block.getBlockById(ID).getStateFromMeta(DATA);
+	}
+	public void setFillBlocks(List<Integer> ID, List<Integer> DATA, List<Integer> COUNT){
 		
-		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
-		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
-		player.addPending(new ThreadSimpleFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, fillBlock));
 	}
 	
-	public void AdvancedFill(List<Integer> ID, List<Integer> DATA, List<Integer> COUNT){
+	public void setFillAndReplace(List<Integer> ID, List<Integer> DATA, List<Integer> COUNT, List<Integer> ID2, List<Integer> DATA2){
 		System.out.println("Recieved Message!");
 		System.out.println(ID + "   " + DATA + "   " + COUNT);
 		
-		List<IBlockState> blockStates = Lists.<IBlockState>newArrayList();
-		
+		thisStack.getTagCompound().setTag("fillblocks", new NBTTagCompound());
 		for (int i = 0; i < ID.size(); i++) {
-			blockStates.add(Block.getBlockById(ID.get(i)).getStateFromMeta(DATA.get(i)));
+			ItemStack fill = new ItemStack(Block.getBlockById(ID.get(i)));
+			fill.setItemDamage(DATA.get(i));
+			thisStack.getTagCompound().getCompoundTag("fillblocks").setTag(Integer.toString(i), new NBTTagCompound());
+			thisStack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag(Integer.toString(i)).setInteger("chance", COUNT.get(i));
+			thisStack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag(Integer.toString(i)).setTag("blockstate", fill.writeToNBT(new NBTTagCompound()));
+		}
+		System.out.println(thisStack.getTagCompound().getCompoundTag("fillblocks"));
+		
+		System.out.println("Recieved Message!");
+		System.out.println(ID2 + "   " + DATA2);
+		thisStack.getTagCompound().setTag("replaceblocks", new NBTTagCompound());
+		for (int i = 0; i < ID2.size(); i++) {			
+			ItemStack replace = new ItemStack(Block.getBlockById(ID2.get(i)));
+			replace.setItemDamage(DATA2.get(i));
+			thisStack.getTagCompound().getCompoundTag("replaceblocks").setTag(Integer.toString(i), replace.writeToNBT(new NBTTagCompound()));
 		}
 		
 		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
 		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
-		player.addPending(new ThreadAdvancedFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, blockStates, COUNT));
-	}
-
-	public void SimpleReplace(int ID, int DATA, int ID2, int DATA2){
-		System.out.println("Recieved Message!");
-		
-		IBlockState fillBlock = Block.getBlockById(ID).getStateFromMeta(DATA);
-		IBlockState replaceBlock = Block.getBlockById(ID2).getStateFromMeta(DATA2);
-		
-		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
-		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
-		player.addPending(new ThreadSimpleFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, fillBlock, replaceBlock));
+		player.addPending(new ThreadAdvancedFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, thisStack.getTagCompound()));
 	}
 	
-	public void AdvancedReplace(List<Integer> ID, List<Integer> DATA, List<Integer> COUNT, List<Integer> ID2, List<Integer> DATA2){
-		System.out.println("Recieved Message!");
-		System.out.println(ID + "   " + DATA + "   " + COUNT);
-		
-		List<IBlockState> blockStates = Lists.<IBlockState>newArrayList();
-		List<IBlockState> blockStatesReplace = Lists.<IBlockState>newArrayList();
-		
-		for (int i = 0; i < ID.size(); i++) {
-			blockStates.add(Block.getBlockById(ID.get(i)).getStateFromMeta(DATA.get(i)));
-		}
-		
-		for (int i = 0; i < ID2.size(); i++) {
-			blockStatesReplace.add(Block.getBlockById(ID2.get(i)).getStateFromMeta(DATA2.get(i)));
-		}
-		
-		System.out.println("Replacing: " + blockStatesReplace + "    With: " + blockStates);
-		
-		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
-		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
-		player.addPending(new ThreadAdvancedFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, blockStates, blockStatesReplace, COUNT));
-	}
+//	@Override
+//	public void readCustomCommand(String message){
+//		System.out.println("Got Command: " + message);
+//		if(message.equals("Fill/Replace")){
+//			System.out.println("Processing...");
+//			PacketDispatcher.sendToServer(new SyncNBTDataMessage(thisStack.getTagCompound()));
+//			System.out.println(thisStack.getTagCompound().getCompoundTag("fillblocks"));
+//			World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
+//			PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
+//			player.addPending(new ThreadAdvancedFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, thisStack.getTagCompound()));
+//		}
+//	}
+	
 }

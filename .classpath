@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="com/moonlight/buildingtools/items/tools/filtertool/CustomTreeTest.java" kind="src" path="src/main/java"/>
+	<classpathentry excluding="com/moonlight/buildingtools/items/tools/filtertool/CustomTreeTest.java|com/moonlight/buildingtools/network/packethandleing/SendSimpleFillPacketToItemMessage.java|com/moonlight/buildingtools/network/packethandleing/SendSimpleReplacePacketToItemMessage.java|com/moonlight/buildingtools/items/tools/selectiontool/GUIFillTool.java" kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="lib" path="C:/Users/Dalen/.gradle/caches/minecraft/net/minecraftforge/forge/1.11-13.19.0.2162/snapshot/20161111/forgeSrc-1.11-13.19.0.2162.jar" sourcepath="C:/Users/Dalen/.gradle/caches/minecraft/net/minecraftforge/forge/1.10.2-12.18.3.2185/snapshot/20161111/forgeSrc-1.10.2-12.18.3.2185-sources.jar"/>

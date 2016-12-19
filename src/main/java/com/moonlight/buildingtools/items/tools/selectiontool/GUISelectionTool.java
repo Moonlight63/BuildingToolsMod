@@ -27,21 +27,19 @@ public class GUISelectionTool extends GuiScreen{
 	
 	public static final GuiButton copytoclipboard = 	new GuiButton(1, 0, 0, 160, 20, "Copy Selection To Clipboard");
 	public static final GuiButton pasteclipboard = 		new GuiButton(2, 0, 0, 160, 20, "Paste Clipboard");
-	public static final GuiButton selectpaste = 		new GuiButton(3, 0, 0, 160, 20, "Select paste region");
-	public static final GuiButton clearselction = 		new GuiButton(4, 0, 0, 160, 20, "Clear Selection");
-	public static final GuiButton rotate90 = 			new GuiButton(5, 0, 0, 160, 20, "Rotate 90: ");
-	public static final GuiButton flipx = 				new GuiButton(6, 0, 0, 160, 20, "Flip X: ");
-	public static final GuiButton flipy = 				new GuiButton(7, 0, 0, 160, 20, "Flip Y: ");
-	public static final GuiButton flipz = 				new GuiButton(8, 0, 0, 160, 20, "Flip Z: ");
+	public static final GuiButton rotate90 = 			new GuiButton(3, 0, 0, 160, 20, "Rotate 90: ");
+	public static final GuiButton flipx = 				new GuiButton(4, 0, 0, 160, 20, "Flip X: ");
+	public static final GuiButton flipy = 				new GuiButton(5, 0, 0, 160, 20, "Flip Y: ");
+	public static final GuiButton flipz = 				new GuiButton(6, 0, 0, 160, 20, "Flip Z: ");
+	public static final GuiButton replace = 			new GuiButton(7, 0, 0, 160, 20, "Replace Mode");
 	
-	public static final GuiButton clearsel = 			new GuiButton(9, 0, 0, 160, 20, "Delete blocks in selection");
+	public static final GuiButton clearselction = 		new GuiButton(8, 0, 0, 160, 20, "Clear Selection");
+	public static final GuiButton selectpaste = 		new GuiButton(9, 0, 0, 160, 20, "Select paste region");
 	public static final GuiButton repeat = 				new GuiButton(10, 0, 0, 160, 20, "Repetitions: ");
 	public static final GuiButton moveX = 				new GuiButton(11, 0, 0, 160, 20, "X Movment: ");
 	public static final GuiButton moveY = 				new GuiButton(12, 0, 0, 160, 20, "Y Movment: ");
 	public static final GuiButton moveZ = 				new GuiButton(13, 0, 0, 160, 20, "Z Movment: ");
-	public static final GuiButton fill = 				new GuiButton(14, 0, 0, 160, 20, "Fill Mode");
-	public static final GuiButton replace = 			new GuiButton(15, 0, 0, 160, 20, "Replace Mode");
-	public static final GuiButton file = 				new GuiButton(16, 0, 0, 160, 20, "File Save / Load (WIP)");
+	public static final GuiButton file = 				new GuiButton(14, 0, 0, 160, 20, "File Save / Load (WIP)");
 	
 	
 	public GUISelectionTool(EntityPlayer player){
@@ -90,11 +88,9 @@ public class GUISelectionTool extends GuiScreen{
 		
 		if(heldnbt.getCompoundTag("bpos1").getBoolean("set") && heldnbt.getCompoundTag("bpos2").getBoolean("set")){
 			copytoclipboard.enabled = true;
-			clearsel.enabled = true;
 		}
 		else{
 			copytoclipboard.enabled = false;
-			clearsel.enabled = false;
 		}
 		
 		if(playerwrap.currentCopyClipboard.isEmpty())
@@ -104,12 +100,11 @@ public class GUISelectionTool extends GuiScreen{
 		
 		buttonsLeft.add(copytoclipboard);
 		buttonsLeft.add(pasteclipboard);
-		buttonsLeft.add(selectpaste);
-		buttonsLeft.add(clearselction);
 		buttonsLeft.add(rotate90);
 		buttonsLeft.add(flipx);
 		buttonsLeft.add(flipy);
 		buttonsLeft.add(flipz);
+		buttonsLeft.add(replace);
 		
 		for (GuiButton btn : buttonsLeft){
 			btn.xPosition = this.width / 2 - (160 + 1);
@@ -123,16 +118,15 @@ public class GUISelectionTool extends GuiScreen{
 		moveY.displayString = "Y Movment: " + heldnbt.getInteger("repeatMovmentY");
 		moveZ.displayString = "Z Movment: " + heldnbt.getInteger("repeatMovmentZ");
 		
-		fill.enabled = true;
+//		fill.enabled = true;
 		replace.enabled = true;
 		
-		buttonsRight.add(clearsel);
+		buttonsRight.add(clearselction);
+		buttonsRight.add(selectpaste);
 		buttonsRight.add(repeat);
 		buttonsRight.add(moveX);
 		buttonsRight.add(moveY);
 		buttonsRight.add(moveZ);
-		buttonsRight.add(fill);
-		buttonsRight.add(replace);
 		buttonsRight.add(file);
 		
 		for (GuiButton btn : buttonsRight){
@@ -170,17 +164,16 @@ public class GUISelectionTool extends GuiScreen{
 	//@Override
 	protected void actionPerformed(GuiButton button, int mouseButton){
 		PacketDispatcher.sendToServer(new SendGuiButtonPressedToItemMessage((byte) button.id, mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));
-		if(button.id == copytoclipboard.id || button.id == pasteclipboard.id || button.id == selectpaste.id || button.id == clearselction.id
-				 || button.id == clearsel.id)
+		if(button.id == copytoclipboard.id || button.id == pasteclipboard.id || button.id == selectpaste.id || button.id == clearselction.id)
 			this.mc.thePlayer.closeScreen();
 		else if (button.id == file.id){
 			this.mc.displayGuiScreen((GuiScreen) null);
 			this.mc.displayGuiScreen(new GUISaveLoadClipboard(this.player));
 		}
-		else if (button.id == fill.id){
-			this.mc.displayGuiScreen((GuiScreen) null);
-			this.mc.displayGuiScreen(new GUIFillTool(this.player));
-		}
+//		else if (button.id == fill.id){
+//			this.mc.displayGuiScreen((GuiScreen) null);
+//			this.mc.displayGuiScreen(new GUIFillTool(this.player));
+//		}
 		else if (button.id == replace.id){
 			this.mc.displayGuiScreen((GuiScreen) null);
 			this.mc.displayGuiScreen(new GUIReplaceTool(this.player));

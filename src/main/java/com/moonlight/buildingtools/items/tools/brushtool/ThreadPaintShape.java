@@ -101,7 +101,6 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 			NBTTagCompound replaceBlocks = nbtData.getCompoundTag("replaceblocks");
 			for(String key : replaceBlocks.getKeySet()){
 				ItemStack item = new ItemStack(replaceBlocks.getCompoundTag(key));
-				item.deserializeNBT(replaceBlocks.getCompoundTag("blockstate"));
 				this.replaceBlockStates.add(Block.getBlockFromItem(item.getItem()).getStateFromMeta(item.getMetadata()));
 				System.out.println(this.replaceBlockStates);
 			}

@@ -37,9 +37,6 @@ public class PlayerWrapper {
 	private final WeakReference<EntityPlayer> reference;
 	
 	public List<BlockInfoContainer> tempUndoList = new LinkedList<BlockInfoContainer>();
-	
-	public Set<SecondPass> rejectedSecondPass = Sets.newConcurrentHashSet();
-	
 	public Deque<List<BlockInfoContainer>> undolist = new LinkedList<List<BlockInfoContainer>>();
 	public boolean UndoIsSaved = false;
 	

@@ -8,7 +8,6 @@ import com.google.common.collect.Lists;
 import com.moonlight.buildingtools.items.tools.GUIBlockSelection;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendAdvancedFillPacketToItemMessage;
-import com.moonlight.buildingtools.network.packethandleing.SendSimpleFillPacketToItemMessage;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;

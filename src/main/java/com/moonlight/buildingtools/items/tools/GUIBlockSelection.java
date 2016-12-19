@@ -4,6 +4,12 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
+import com.google.common.collect.Lists;
+import com.moonlight.buildingtools.utils.RGBA;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
@@ -19,7 +25,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
@@ -29,18 +34,6 @@ import net.minecraftforge.fml.client.config.GuiCheckBox;
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
-import com.google.common.collect.Lists;
-import com.moonlight.buildingtools.items.tools.ContainerBlockSelMenu.CustomSlot;
-import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
-import com.moonlight.buildingtools.network.packethandleing.SendAdvancedFillPacketToItemMessage;
-import com.moonlight.buildingtools.network.packethandleing.SendAdvancedReplacePacketToItemMessage;
-import com.moonlight.buildingtools.network.packethandleing.SendSimpleFillPacketToItemMessage;
-import com.moonlight.buildingtools.network.packethandleing.SendSimpleReplacePacketToItemMessage;
-import com.moonlight.buildingtools.utils.RGBA;
 
 @SideOnly(Side.CLIENT)
 public class GUIBlockSelection extends GuiContainer{
@@ -57,6 +50,7 @@ public class GUIBlockSelection extends GuiContainer{
     protected boolean keyOrButtonClicked;
     private GuiCheckBox showMetaData = new GuiCheckBox(0, 0, 0, "Meta Data?", false);
     
+    protected EntityPlayer player;
     protected GuiButton modeSwitch = new GuiButton(1, 0, 0, "Simple Replace");
     
     public static List<ItemStack> blockList = Lists.<ItemStack>newArrayList();
@@ -70,6 +64,7 @@ public class GUIBlockSelection extends GuiContainer{
 
     public GUIBlockSelection(EntityPlayer player){
         super(new ContainerBlockSelMenu());
+        this.player = player;
         player.openContainer = this.inventorySlots;
         this.allowUserInput = true;
         this.ySize = 136;

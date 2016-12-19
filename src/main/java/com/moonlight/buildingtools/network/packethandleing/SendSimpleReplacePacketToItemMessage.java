@@ -20,12 +20,6 @@ public class SendSimpleReplacePacketToItemMessage implements IMessage {
 		
 	}
 	
-	/*public SendGuiButtonPressedToItemMessage(byte buttonID){
-		this.buttonID = buttonID;
-		this.mouseButton = 0;
-		this.ctrlDown
-	}*/
-	
 	public SendSimpleReplacePacketToItemMessage(int ID, int META, int ID2, int META2){
 		System.out.println("Creating Message");
 		this.fillBlockID = ID;
