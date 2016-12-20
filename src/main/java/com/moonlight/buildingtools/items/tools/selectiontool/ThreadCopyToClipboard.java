@@ -4,13 +4,17 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.minecraft.block.BlockDoor;
+import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.helpers.shapes.GeometryUtils;
+import com.moonlight.buildingtools.helpers.shapes.IShapeable;
+import com.moonlight.buildingtools.items.tools.BlockChangeBase;
+import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
+import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
+import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityHanging;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityItemFrame;
-import net.minecraft.entity.item.EntityPainting;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -19,14 +23,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
-
-import com.moonlight.buildingtools.BuildingTools;
-import com.moonlight.buildingtools.helpers.shapes.GeometryUtils;
-import com.moonlight.buildingtools.helpers.shapes.IShapeable;
-import com.moonlight.buildingtools.items.tools.BlockChangeBase;
-import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
-import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
-import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
 public class ThreadCopyToClipboard implements BlockChangeBase, IShapeable{
 	

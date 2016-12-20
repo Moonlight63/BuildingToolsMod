@@ -1,38 +1,26 @@
 package com.moonlight.buildingtools.items.tools.erosionTool;
 
-import java.util.HashSet;
 import java.util.Set;
 
-import net.minecraft.entity.Entity;
+import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.helpers.RenderHelper;
+import com.moonlight.buildingtools.items.tools.ToolBase;
+import com.moonlight.buildingtools.network.GuiHandler;
+import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
+import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
+import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
+import com.moonlight.buildingtools.utils.Key;
+import com.moonlight.buildingtools.utils.RGBA;
+
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
-
-import com.moonlight.buildingtools.BuildingTools;
-import com.moonlight.buildingtools.helpers.RayTracing;
-import com.moonlight.buildingtools.helpers.RenderHelper;
-import com.moonlight.buildingtools.helpers.Shapes;
-import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
-import com.moonlight.buildingtools.items.tools.ToolBase;
-import com.moonlight.buildingtools.items.tools.brushtool.GUIToolBrush;
-import com.moonlight.buildingtools.network.GuiHandler;
-import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
-import com.moonlight.buildingtools.network.packethandleing.SendRaytraceResult;
-import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
-import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
-import com.moonlight.buildingtools.utils.IKeyHandler;
-import com.moonlight.buildingtools.utils.IOutlineDrawer;
-import com.moonlight.buildingtools.utils.Key;
-import com.moonlight.buildingtools.utils.RGBA;
 
 public class ToolErosion extends ToolBase{
 	
@@ -68,7 +56,7 @@ public class ToolErosion extends ToolBase{
 				//player.addPending(new ErosionThread(worldIn, pos, 3, 3, 3, side, playerIn, getNBT(stack).getInteger("preset")));
 			}
 		}
-        return new ActionResult(EnumActionResult.PASS, itemStackIn);
+        return new ActionResult<ItemStack>(EnumActionResult.PASS, itemStackIn);
         
     }
 	    
@@ -118,8 +106,7 @@ public class ToolErosion extends ToolBase{
         System.out.print(getNBT(itemStack).getInteger("radius"));
     }
 	
-	@Override
-	public void GetGuiButtonPressed(byte buttonID, int mouseButton, boolean isCtrlDown, boolean isAltDown, boolean isShiftDown, ItemStack stack) {
+	public void GuiButtonPressed(int buttonID, int mouseButton, boolean isCtrlDown, boolean isAltDown, boolean isShiftDown) {
 		
 		int multiplier = 0;
 		if(isShiftDown)
@@ -137,28 +124,28 @@ public class ToolErosion extends ToolBase{
 		
 		if (buttonID == 1) {
 			if(mouseButton == 0){
-				if(getNBT(stack).getInteger("preset") < ErosionVisuallizer.Preset.values().length - 1)
-					getNBT(stack).setInteger("preset", getNBT(stack).getInteger("preset") + 1);
+				if(getNBT(thisStack).getInteger("preset") < ErosionVisuallizer.Preset.values().length - 1)
+					getNBT(thisStack).setInteger("preset", getNBT(thisStack).getInteger("preset") + 1);
 				else
-					getNBT(stack).setInteger("preset", 0);
+					getNBT(thisStack).setInteger("preset", 0);
 			}
 			else if(mouseButton == 1){
-				if(getNBT(stack).getInteger("preset") > 0)
-					getNBT(stack).setInteger("preset", getNBT(stack).getInteger("preset") - 1);
+				if(getNBT(thisStack).getInteger("preset") > 0)
+					getNBT(thisStack).setInteger("preset", getNBT(thisStack).getInteger("preset") - 1);
 				else
-					getNBT(stack).setInteger("preset", ErosionVisuallizer.Preset.values().length - 1);
+					getNBT(thisStack).setInteger("preset", ErosionVisuallizer.Preset.values().length - 1);
 			}
 		}
 		else if(buttonID == 2){
-			int radius = getNBT(stack).getInteger("radius");
+			int radius = getNBT(thisStack).getInteger("radius");
 			radius+=amount;
 			if (radius < 1){radius = 1;}
-			getNBT(stack).setInteger("radius", radius);
+			getNBT(thisStack).setInteger("radius", radius);
 		}
 		else{
 		}
 		
-		PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(stack)));
+		PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(thisStack)));
 	}
 
 	@Override
@@ -186,6 +173,26 @@ public class ToolErosion extends ToolBase{
 		}
 		
 		return true;
+	}
+	
+	@Override
+	public void ReadNBTCommand(NBTTagCompound nbtcommand){
+		System.out.println(nbtcommand);
+		Set<String> commandset = nbtcommand.getCompoundTag("Commands").getKeySet();
+//		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
+//		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
+		
+		for (String key : commandset) {
+			String command = nbtcommand.getCompoundTag("Commands").getString(key);
+			
+			switch (command) {
+			case "GetButton":
+				GuiButtonPressed(nbtcommand.getInteger("ButtonID"), nbtcommand.getInteger("Mouse"), nbtcommand.getBoolean("CTRL"), nbtcommand.getBoolean("ALT"), nbtcommand.getBoolean("SHIFT"));
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
 }

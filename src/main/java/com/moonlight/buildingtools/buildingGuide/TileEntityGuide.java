@@ -8,8 +8,6 @@ import com.moonlight.buildingtools.helpers.Shapes;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockSign;
-import net.minecraft.block.BlockStone;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -18,7 +16,6 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -351,6 +348,7 @@ public class TileEntityGuide extends TileEntity implements IShapeable, IActivate
 		return false;
 	}
 
+	@SuppressWarnings("deprecation")
 	protected void replaceBlocks(ItemStack heldStack, final Item heldItem) {
 		if (shape == null) recreateShape();
 

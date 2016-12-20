@@ -39,7 +39,7 @@ public class ToolPlaceTempBlock extends ToolBase{
 				worldIn.setBlockState(playerIn.getPosition(), BlockLoader.tempBlock.getDefaultState());
 		}
 		
-		return new ActionResult(EnumActionResult.PASS, itemStackIn);
+		return new ActionResult<ItemStack>(EnumActionResult.PASS, itemStackIn);
     }
 
 	@Override

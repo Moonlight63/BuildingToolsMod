@@ -6,10 +6,18 @@ import java.io.FileWriter;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.Reference;
+import com.moonlight.buildingtools.items.tools.BlockChangeBase;
+import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
+import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,18 +29,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.text.TextComponentString;
-
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.moonlight.buildingtools.BuildingTools;
-import com.moonlight.buildingtools.Reference;
-import com.moonlight.buildingtools.items.tools.BlockChangeBase;
-import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
-import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
-import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
 public class ThreadSaveClipboard implements BlockChangeBase{
 	

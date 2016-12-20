@@ -1,10 +1,10 @@
 package com.moonlight.buildingtools.helpers.shapes;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 
 public class MathUtils {
 	public static final double lengthSq(double x, double y, double z) {

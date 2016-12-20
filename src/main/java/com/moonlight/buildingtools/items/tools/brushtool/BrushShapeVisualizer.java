@@ -37,6 +37,7 @@ public class BrushShapeVisualizer implements IShapeable{
 		
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void RegenShape(IShapeGenerator generator, int x, int y, int z, int replace, NBTTagCompound replaceBlocksNBT){
 		
 		//System.out.println("Starting Regen");

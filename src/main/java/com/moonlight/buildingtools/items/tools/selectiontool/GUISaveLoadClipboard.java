@@ -14,8 +14,7 @@ import org.lwjgl.opengl.GL11;
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.Reference;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
-import com.moonlight.buildingtools.network.packethandleing.SelectionToolSaveSelectionPacket;
-import com.moonlight.buildingtools.network.packethandleing.SendFileSelection;
+import com.moonlight.buildingtools.network.packethandleing.SendNBTCommandPacket;
 import com.moonlight.buildingtools.utils.IScrollButtonListener;
 import com.moonlight.buildingtools.utils.ScrollPane;
 
@@ -23,6 +22,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.config.GuiSlider;
@@ -209,13 +209,29 @@ public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonList
 	
 	//@Override
 	protected void actionPerformed(GuiButton button, int mouseButton){
-		PacketDispatcher.sendToServer(new SelectionToolSaveSelectionPacket(saveName.getText(), mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));
+		NBTTagCompound commandPacket = new NBTTagCompound();
+    	
+    	commandPacket.setTag("Commands", new NBTTagCompound());
+    	commandPacket.getCompoundTag("Commands").setString("1", "SaveFile");
+    	commandPacket.setString("File", saveName.getText());
+    	
+    	PacketDispatcher.sendToServer(new SendNBTCommandPacket(commandPacket));
+		//PacketDispatcher.sendToServer(new SelectionToolSaveSelectionPacket(saveName.getText(), mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));
 		this.mc.thePlayer.closeScreen();
 	}
 
 	@Override
 	public void ScrollButtonPressed(GuiButton button) {
-		PacketDispatcher.sendToServer(new SendFileSelection(button.displayString));
+		
+		NBTTagCompound commandPacket = new NBTTagCompound();
+    	
+    	commandPacket.setTag("Commands", new NBTTagCompound());
+    	commandPacket.getCompoundTag("Commands").setString("1", "LoadFile");
+    	commandPacket.setString("File", button.displayString);
+    	
+    	PacketDispatcher.sendToServer(new SendNBTCommandPacket(commandPacket));
+		
+		//PacketDispatcher.sendToServer(new SendFileSelection(button.displayString));
 		this.mc.thePlayer.closeScreen();
 	}
 

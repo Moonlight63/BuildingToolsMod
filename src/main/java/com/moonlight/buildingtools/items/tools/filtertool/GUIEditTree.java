@@ -1,31 +1,22 @@
 package com.moonlight.buildingtools.items.tools.filtertool;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import com.moonlight.buildingtools.helpers.Shapes;
-import com.moonlight.buildingtools.items.tools.brushtool.GUISetPaintBlock;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendTreeDataToItem;
 import com.moonlight.buildingtools.utils.IScrollButtonListener;
 import com.moonlight.buildingtools.utils.ScrollPane;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiControls;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.GuiScrollingList;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiSlider;
 
@@ -88,13 +79,6 @@ public class GUIEditTree extends GuiScreen implements IScrollButtonListener{
 		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		
-//		if(player.getHeldItem().getItem() instanceof ToolFilter){
-//			this.data = ((ToolFilter)(player.getHeldItem().getItem())).treeData;
-//		}
-		
-		//initGui();
-		
-		//if(page == 1)
 		if(scrollpane1 != null && page == 1)
 			scrollpane1.draw(mouseX, mouseY);
 		if(scrollpane2 != null && page == 2)
@@ -108,7 +92,6 @@ public class GUIEditTree extends GuiScreen implements IScrollButtonListener{
 		return false;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui(){
 		//System.out.println("GUIEditTree.initGui()");
@@ -284,7 +267,6 @@ public class GUIEditTree extends GuiScreen implements IScrollButtonListener{
 	
 	
 	protected void actionPerformed(GuiButton button, int mouseButton){
-		
 		data.SetTreeHeight(treeheight.getValueInt());
 		data.SetTrunkBottom(trunkRadBot.getValueInt());
 		data.SetTrunkMiddle(trunkRadMid.getValueInt());
@@ -348,13 +330,12 @@ public class GUIEditTree extends GuiScreen implements IScrollButtonListener{
 				page = 1;
 				//initGui();
 			}
-			else if(page == 0){
+			else if(page == 0){				
 				PacketDispatcher.sendToServer(new SendTreeDataToItem(data));
 				this.mc.thePlayer.closeScreen();
 			}
 		}
 		initGui();
-		//PacketDispatcher.sendToServer(new SendGuiButtonPressedToItemMessage((byte) button.id, mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));
 	}
 	
 	@Override

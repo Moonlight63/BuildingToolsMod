@@ -1,5 +1,7 @@
 package com.moonlight.buildingtools.network.playerWrapper;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,7 +13,6 @@ import com.google.common.collect.MapMaker;
 import com.moonlight.buildingtools.utils.Pair;
 
 import net.minecraft.entity.player.EntityPlayer;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class PlayerRegistry {
 	

@@ -7,11 +7,11 @@ public class BlockChangeTask implements Runnable{
 
 	@Override
 	public void run() {		
-		int n = 0;
-        for (PlayerWrapper p : BuildingTools.getPlayerRegistry().getPlayers()){
-        	n++;
-        }
-        if (n != 0){
+//		int n = 0;
+//        for (PlayerWrapper p : BuildingTools.getPlayerRegistry().getPlayers()){
+//        	n++;
+//        }
+//        if (n != 0){
         	for (PlayerWrapper p : BuildingTools.getPlayerRegistry().getPlayers()){
                 if(!p.pendingChangeQueue.isEmpty()){
                 	//System.out.println(p.pendingChangeQueue);
@@ -20,7 +20,7 @@ public class BlockChangeTask implements Runnable{
                 	}
                 }
             }
-        }
+//        }
 	}
 	
 }

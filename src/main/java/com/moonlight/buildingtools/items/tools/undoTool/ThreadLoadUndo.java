@@ -1,27 +1,25 @@
 package com.moonlight.buildingtools.items.tools.undoTool;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import scala.Char;
+import com.google.common.collect.Lists;
+import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.items.tools.BlockChangeBase;
+import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
+import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagDouble;
-import net.minecraft.nbt.NBTTagEnd;
 import net.minecraft.nbt.NBTTagFloat;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagIntArray;
@@ -29,21 +27,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.moonlight.buildingtools.BuildingTools;
-import com.moonlight.buildingtools.items.tools.BlockChangeBase;
-import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
-import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
-import com.moonlight.buildingtools.network.playerWrapper.PlayerRegistry;
-import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
 public class ThreadLoadUndo implements BlockChangeBase{
 	
@@ -58,6 +43,7 @@ public class ThreadLoadUndo implements BlockChangeBase{
 	}
 	
 	//protected int count = 0;
+	@SuppressWarnings("deprecation")
 	public void perform(){
 		if(!currentlyCalculating){
 			try{

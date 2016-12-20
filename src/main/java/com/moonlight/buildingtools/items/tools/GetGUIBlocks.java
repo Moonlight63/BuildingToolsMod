@@ -16,6 +16,7 @@ public class GetGUIBlocks {
 		
 	}
 	
+	@SuppressWarnings("deprecation")
 	@SideOnly(Side.CLIENT)
 	public void GetBlocksForGUI(List<ItemStack> items) {
 		for(Block b : GameData.getBlockRegistry()){
@@ -24,6 +25,7 @@ public class GetGUIBlocks {
     	}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@SideOnly(Side.CLIENT)
 	public void GetBlocksForGUIMeta(NonNullList<ItemStack> items) {
 		for(Block b : GameData.getBlockRegistry()){

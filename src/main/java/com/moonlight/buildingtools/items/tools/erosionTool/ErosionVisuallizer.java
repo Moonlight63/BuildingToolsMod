@@ -6,14 +6,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.moonlight.buildingtools.helpers.Shapes;
+import com.moonlight.buildingtools.helpers.shapes.IShapeGenerator;
+import com.moonlight.buildingtools.helpers.shapes.IShapeable;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import com.moonlight.buildingtools.helpers.Shapes;
-import com.moonlight.buildingtools.helpers.shapes.IShapeGenerator;
-import com.moonlight.buildingtools.helpers.shapes.IShapeable;
 
 public class ErosionVisuallizer implements IShapeable{
 	

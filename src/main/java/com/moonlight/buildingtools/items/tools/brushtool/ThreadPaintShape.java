@@ -7,7 +7,6 @@ import java.util.Random;
 import java.util.Set;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.helpers.Shapes;
 import com.moonlight.buildingtools.helpers.loaders.BlockLoader;
@@ -59,6 +58,7 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 	protected List<Integer> fillBlockChance = Lists.<Integer>newArrayList();
 	protected List<IBlockState> replaceBlockStates = Lists.<IBlockState>newArrayList();
 	
+	@SuppressWarnings("deprecation")
 	public ThreadPaintShape(World world, BlockPos origin, EnumFacing side, EntityPlayer entity, NBTTagCompound nbtData){
 		
 		this.world = world;

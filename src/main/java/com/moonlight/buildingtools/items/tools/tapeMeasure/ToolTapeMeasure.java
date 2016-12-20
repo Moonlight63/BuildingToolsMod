@@ -50,7 +50,7 @@ public class ToolTapeMeasure extends ToolBase{
 				firstPos = targetBlock;
 			}
 		}
-		return new ActionResult(EnumActionResult.PASS, itemStackIn);
+		return new ActionResult<ItemStack>(EnumActionResult.PASS, itemStackIn);
     }
 	
 	@Override

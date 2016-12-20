@@ -4,21 +4,18 @@ import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.lwjgl.opengl.GL11;
+
+import com.moonlight.buildingtools.helpers.Shapes;
+import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
+import com.moonlight.buildingtools.network.packethandleing.SendNBTCommandPacket;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.common.MinecraftForge;
-
-import org.lwjgl.opengl.GL11;
-
-import com.moonlight.buildingtools.Reference;
-import com.moonlight.buildingtools.helpers.Shapes;
-import com.moonlight.buildingtools.items.tools.selectiontool.ToolSelection;
-import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
-import com.moonlight.buildingtools.network.packethandleing.SendGuiButtonPressedToItemMessage;
 
 public class GUIToolFilter extends GuiScreen{
 	
@@ -64,7 +61,6 @@ public class GUIToolFilter extends GuiScreen{
 		return false;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui(){
 		
@@ -173,7 +169,6 @@ public class GUIToolFilter extends GuiScreen{
                 ActionPerformedEvent.Pre event = new ActionPerformedEvent.Pre(this, guibutton, this.buttonList);
                 if (MinecraftForge.EVENT_BUS.post(event))
                     break;
-                //this.selectedButton = event.button;
                 event.getButton().playPressSound(this.mc.getSoundHandler());
                 this.actionPerformed(event.getButton(), mouseButton);
                 if (this.equals(this.mc.currentScreen))
@@ -188,8 +183,19 @@ public class GUIToolFilter extends GuiScreen{
 			this.mc.displayGuiScreen((GuiScreen) null);
 			this.mc.displayGuiScreen(new GUIEditTree(this.player, ((ToolFilter)(player.getHeldItemMainhand().getItem())).treeData));
 		}
-		else
-			PacketDispatcher.sendToServer(new SendGuiButtonPressedToItemMessage((byte) button.id, mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));
+		else{
+			NBTTagCompound commandPacket = new NBTTagCompound();
+	    	
+	    	commandPacket.setTag("Commands", new NBTTagCompound());
+	    	commandPacket.getCompoundTag("Commands").setString("1", "GetButton");
+	    	commandPacket.setInteger("ButtonID", button.id);
+	    	commandPacket.setInteger("Mouse", mouseButton);
+	    	commandPacket.setBoolean("CTRL", isCtrlKeyDown());
+	    	commandPacket.setBoolean("ALT", isAltKeyDown());
+	    	commandPacket.setBoolean("SHIFT", isShiftKeyDown());
+	    	
+	    	PacketDispatcher.sendToServer(new SendNBTCommandPacket(commandPacket));
+		}
 	}
 	
 }

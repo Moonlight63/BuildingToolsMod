@@ -2,7 +2,6 @@ package com.moonlight.buildingtools.items.tools.filtertool;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -170,9 +169,9 @@ public class ProceduralTreeData {
 		return new int[]{Block.getIdFromBlock(logMat.getBlock()), logMat.getBlock().getMetaFromState(logMat), Block.getIdFromBlock(leafMat.getBlock()), leafMat.getBlock().getMetaFromState(leafMat)};
 	}
 	
-	public void SetMatValues(int id1, int meat1, int id2, int meta2){
-    	this.logMat = Block.getBlockById(id1).getStateFromMeta(meat1);
-    	this.leafMat = Block.getBlockById(id2).getStateFromMeta(meta2);
+	public void SetMatValues(IBlockState log, IBlockState leaf){
+    	this.logMat = log;
+    	this.leafMat = leaf;
     }
 	
 }

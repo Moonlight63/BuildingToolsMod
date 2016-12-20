@@ -4,14 +4,13 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
-
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.items.tools.BlockChangeBase;
 import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
 import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
-import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
 
 @Deprecated
 public class ThreadUndo implements BlockChangeBase {
@@ -27,11 +26,6 @@ public class ThreadUndo implements BlockChangeBase {
 	public ThreadUndo(World world, EntityPlayer entity){
 		this.world = world;
 		this.entity = entity;
-		
-		PlayerWrapper playerwrap = BuildingTools.getPlayerRegistry().getPlayer(entity).get();
-		//if(!playerwrap.undolist.isEmpty())
-			//undoSet.addAll(playerwrap.undolist.pollLast());
-		
 		System.out.println(undoSet.size());
 	}
 	
@@ -67,11 +61,6 @@ public class ThreadUndo implements BlockChangeBase {
 		}
 	}
 	
-	/**
-     * The world that this queue is change
-     * 
-     * @return the world
-     */
     public World getWorld()
     {
         return this.world;

@@ -7,7 +7,7 @@ import java.util.Set;
 import org.lwjgl.opengl.GL11;
 
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
-import com.moonlight.buildingtools.network.packethandleing.SendGuiButtonPressedToItemMessage;
+import com.moonlight.buildingtools.network.packethandleing.SendNBTCommandPacket;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -102,7 +102,21 @@ public class GUIErosionTool extends GuiScreen{
 	
 	//@Override
 	protected void actionPerformed(GuiButton button, int mouseButton){
-		PacketDispatcher.sendToServer(new SendGuiButtonPressedToItemMessage((byte) button.id, mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));
+		
+		NBTTagCompound commandPacket = new NBTTagCompound();
+    	
+    	commandPacket.setTag("Commands", new NBTTagCompound());
+    	commandPacket.getCompoundTag("Commands").setString("1", "GetButton");
+    	commandPacket.setInteger("ButtonID", button.id);
+    	commandPacket.setInteger("Mouse", mouseButton);
+    	commandPacket.setBoolean("CTRL", isCtrlKeyDown());
+    	commandPacket.setBoolean("ALT", isAltKeyDown());
+    	commandPacket.setBoolean("SHIFT", isShiftKeyDown());
+    	
+    	PacketDispatcher.sendToServer(new SendNBTCommandPacket(commandPacket));
+		
+		
+		//PacketDispatcher.sendToServer(new SendGuiButtonPressedToItemMessage((byte) button.id, mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));
 	}
 	
 }

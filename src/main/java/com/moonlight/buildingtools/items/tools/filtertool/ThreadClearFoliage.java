@@ -1,18 +1,32 @@
 package com.moonlight.buildingtools.items.tools.filtertool;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.helpers.Shapes;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
-import com.moonlight.buildingtools.items.tools.*;
-import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
+import com.moonlight.buildingtools.items.tools.BlockChangeBase;
+import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
+import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
 import com.moonlight.buildingtools.utils.MiscUtils;
 
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArraySet;
-
-import net.minecraft.block.*;
+import net.minecraft.block.BlockBush;
+import net.minecraft.block.BlockCactus;
+import net.minecraft.block.BlockCrops;
+import net.minecraft.block.BlockDoublePlant;
+import net.minecraft.block.BlockFlower;
+import net.minecraft.block.BlockLeaves;
+import net.minecraft.block.BlockLilyPad;
+import net.minecraft.block.BlockReed;
+import net.minecraft.block.BlockSapling;
+import net.minecraft.block.BlockSign;
+import net.minecraft.block.BlockStem;
+import net.minecraft.block.BlockTallGrass;
+import net.minecraft.block.BlockVine;
+import net.minecraft.block.BlockWeb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;

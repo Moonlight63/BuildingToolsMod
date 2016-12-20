@@ -1,5 +1,12 @@
 package com.moonlight.buildingtools.items.tools;
 
+import org.lwjgl.opengl.GL11;
+
+import com.moonlight.buildingtools.helpers.FontHelper;
+import com.moonlight.buildingtools.items.tools.brushtool.ToolBrush;
+import com.moonlight.buildingtools.items.tools.buildingtool.ToolBuilding;
+import com.moonlight.buildingtools.items.tools.filtertool.ToolFilter;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.RenderItem;
@@ -7,13 +14,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
-import org.lwjgl.opengl.GL11;
-
-import com.moonlight.buildingtools.helpers.FontHelper;
-import com.moonlight.buildingtools.items.tools.brushtool.ToolBrush;
-import com.moonlight.buildingtools.items.tools.buildingtool.ToolBuilding;
-import com.moonlight.buildingtools.items.tools.filtertool.ToolFilter;
 
 public class BlockChangerGuiHelper extends Gui
 {
@@ -56,11 +56,7 @@ public class BlockChangerGuiHelper extends Gui
             net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
             String am = "";
 	        
-	        if(source != null){
-	        	am = source.getDisplayName();
-	        }else{
-	        	am = "no block";
-	        }
+	        am = source.getDisplayName();
 
 	        FontHelper.drawItemQuantity(mc.fontRendererObj, 5, 5, am);
 	        FontHelper.renderText(mc.fontRendererObj, 25, 8, 1.0, "Radius: " + ToolBrush.getNBT(currItem).getInteger("radiusX") + ",  " + ToolBrush.getNBT(currItem).getInteger("radiusY") + ",  " + ToolBrush.getNBT(currItem).getInteger("radiusZ"));

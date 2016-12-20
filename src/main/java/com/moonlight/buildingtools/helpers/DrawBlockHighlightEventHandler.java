@@ -15,7 +15,6 @@ public class DrawBlockHighlightEventHandler
 //        Block block = event.player.worldObj.getBlockState(event.target.getBlockPos()).getBlock();
 
         boolean cancelEvent = false;
-        boolean drewItem = false;
         
 
 		if (event.getPlayer().getHeldItemMainhand() != null)
@@ -23,7 +22,6 @@ public class DrawBlockHighlightEventHandler
 			Item item = event.getPlayer().getHeldItemMainhand().getItem();
 			if (item instanceof IOutlineDrawer){
 				cancelEvent = ((IOutlineDrawer) item).drawOutline(event);
-				drewItem = !cancelEvent;
 			}
 		}
 

@@ -1,15 +1,20 @@
 package com.moonlight.buildingtools.items.tools.undoTool;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+
+import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.items.tools.ToolBase;
+import com.moonlight.buildingtools.items.tools.selectiontool.ThreadPasteClipboard;
+import com.moonlight.buildingtools.network.GuiHandler;
+import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
+import com.moonlight.buildingtools.utils.KeyHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
@@ -18,16 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
-import com.moonlight.buildingtools.BuildingTools;
-import com.moonlight.buildingtools.items.tools.selectiontool.GUISaveLoadClipboard;
-import com.moonlight.buildingtools.items.tools.selectiontool.ThreadPasteClipboard;
-import com.moonlight.buildingtools.network.GuiHandler;
-import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
-import com.moonlight.buildingtools.utils.KeyHelper;
-
-public class ToolUndo extends Item{
-	
-	EntityPlayer playerIn;
+public class ToolUndo extends ToolBase{
 	
 	public ToolUndo(){
 		super();
@@ -38,33 +34,27 @@ public class ToolUndo extends Item{
 	}
 	
 	@Override
-	public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
-    {
-		this.playerIn = (EntityPlayer) entityIn;
-    }
-	
-	@SuppressWarnings("unchecked")
-	@Override
-    public void addInformation(ItemStack stack, EntityPlayer player, @SuppressWarnings("rawtypes") List list, boolean check)
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean check)
     {
         super.addInformation(stack, player, list, check);
 
         if (KeyHelper.isShiftDown())
         {
-            if (stack.getTagCompound() == null){
+            if (stack.getTagCompound() == null)
+            {
                 //setDefaultTag(stack, 0);
             }
-
-
+            
             //ItemStack pb = ItemStack.loadItemStackFromNBT(getNBT(stack).getCompoundTag("sourceblock"));
             //list.add(EnumChatFormatting.GREEN + /*LocalisationHelper.localiseString*/("info.exchanger.source " + pb.getDisplayName()) + EnumChatFormatting.RESET);
 
             //list.add(EnumChatFormatting.GREEN + /*LocalisationHelper.localiseString*/("info.exchanger.radius " + this.getTargetRadius(stack)));
 
             //list.add(EnumChatFormatting.AQUA + "" + EnumChatFormatting.ITALIC + /*LocalisationHelper.localiseString*/("info.exchanger.shift_to_select_source") + EnumChatFormatting.RESET);
-        }
-        else{
+        } else
+        {
             //list.add("Hold SHIFT for details");
+            
             //list.add(player.getDisplayNameString());
         }
     }
@@ -95,7 +85,7 @@ public class ToolUndo extends Item{
 				}
 			}
 		}
-		return new ActionResult(EnumActionResult.PASS, itemStackIn);
+		return new ActionResult<ItemStack>(EnumActionResult.PASS, itemStackIn);
     }
 		
 	public boolean onItemUse(ItemStack stack,
@@ -110,10 +100,28 @@ public class ToolUndo extends Item{
 		onItemRightClick(worldIn, playerIn, EnumHand.MAIN_HAND);
 		
 		return true;
+	}	
+	
+	@Override
+	public void ReadNBTCommand(NBTTagCompound nbtcommand){
+		
+		System.out.println(nbtcommand);
+		Set<String> commandset = nbtcommand.getCompoundTag("Commands").getKeySet();
+		//World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
+		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
+		
+		for (String key : commandset) {
+			String command = nbtcommand.getCompoundTag("Commands").getString(key);
+			
+			switch (command) {
+			case "LoadFile":
+				player.addPending(new ThreadLoadUndo(currPlayer, nbtcommand.getString("File")));
+				break;
+			default:
+				break;
+			}
+		}
 	}
 	
-	public void loadUndos(String file){
-		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
-		player.addPending(new ThreadLoadUndo(playerIn, file));
-	}
+	
 }

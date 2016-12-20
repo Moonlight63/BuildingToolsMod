@@ -4,17 +4,16 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.moonlight.buildingtools.helpers.shapes.GeometryUtils;
+import com.moonlight.buildingtools.helpers.shapes.IShapeable;
+import com.moonlight.buildingtools.items.tools.BlockChangeBase;
+import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
-
-import com.moonlight.buildingtools.BuildingTools;
-import com.moonlight.buildingtools.helpers.shapes.GeometryUtils;
-import com.moonlight.buildingtools.helpers.shapes.IShapeable;
-import com.moonlight.buildingtools.items.tools.BlockChangeBase;
-import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
 
 public class ThreadClearSelection implements BlockChangeBase, IShapeable{
 	

@@ -1,7 +1,9 @@
 package com.moonlight.buildingtools.helpers;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import org.lwjgl.opengl.GL11;
+
+import com.moonlight.buildingtools.utils.RGBA;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -14,12 +16,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
-
-import org.lwjgl.opengl.GL11;
-
-import com.moonlight.buildingtools.utils.RGBA;
 
 public class RenderHelper
 {

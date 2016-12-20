@@ -7,8 +7,7 @@ import org.lwjgl.input.Keyboard;
 import com.google.common.collect.Lists;
 import com.moonlight.buildingtools.items.tools.GUIBlockSelection;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
-import com.moonlight.buildingtools.network.packethandleing.SendAdvancedFillPacketToItemMessage;
-import com.moonlight.buildingtools.network.packethandleing.SendAdvancedReplacePacketToItemMessage;
+import com.moonlight.buildingtools.network.packethandleing.SendNBTCommandPacket;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,6 +16,7 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class GUISetReplaceBlocks extends GUIBlockSelection{
 
@@ -99,10 +99,6 @@ public class GUISetReplaceBlocks extends GUIBlockSelection{
         Keyboard.enableRepeatEvents(false);
         	
         	if(!blockReplaceList.isEmpty()){
-        	
-	        	List<Integer> ID = Lists.<Integer>newArrayList();
-	        	List<Integer> META = Lists.<Integer>newArrayList();
-	        	List<Integer> CHANCE = Lists.<Integer>newArrayList();
 	        	
 	        	List<Integer> ID2 = Lists.<Integer>newArrayList();
 	        	List<Integer> META2 = Lists.<Integer>newArrayList();
@@ -134,9 +130,23 @@ public class GUISetReplaceBlocks extends GUIBlockSelection{
 	        		
 	        	}
 	        	
-	        	System.out.println(ID2 + "   " + META2 + "   " + CHANCE);
+	        	System.out.println(ID2 + "   " + META2);
 	        	
-	        	PacketDispatcher.sendToServer(new SendAdvancedReplacePacketToItemMessage(ID2, META2));
+	        	NBTTagCompound commandPacket = new NBTTagCompound();
+	        	
+	        	commandPacket.setTag("Commands", new NBTTagCompound());
+	        	commandPacket.getCompoundTag("Commands").setString("1", "SetReplace");
+	        	
+	    		commandPacket.setTag("replaceblocks", new NBTTagCompound());
+	    		for (int i = 0; i < ID2.size(); i++) {			
+	    			ItemStack replace = new ItemStack(Block.getBlockById(ID2.get(i)));
+	    			replace.setItemDamage(META2.get(i));
+	    			commandPacket.getCompoundTag("replaceblocks").setTag(Integer.toString(i), replace.writeToNBT(new NBTTagCompound()));
+	    		}
+	    		
+	    		PacketDispatcher.sendToServer(new SendNBTCommandPacket(commandPacket));
+	        	
+	        	//PacketDispatcher.sendToServer(new SendAdvancedReplacePacketToItemMessage(ID2, META2));
 	        	
         	
         }

@@ -1,5 +1,11 @@
 package com.moonlight.buildingtools.utils;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import org.lwjgl.input.Keyboard;
+
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -7,12 +13,6 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
-
-import org.lwjgl.input.Keyboard;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 public class KeyBindsHandler
 {

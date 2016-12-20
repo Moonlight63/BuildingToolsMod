@@ -22,7 +22,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -91,7 +90,7 @@ public class ToolBuilding extends ToolBase{
 				}
 			}
 		}
-		return new ActionResult(EnumActionResult.PASS, itemStackIn);
+		return new ActionResult<ItemStack>(EnumActionResult.PASS, itemStackIn);
     }
     
 	@Override
@@ -200,10 +199,8 @@ public class ToolBuilding extends ToolBase{
     	
     }
 
-	@Override
-	public void GetGuiButtonPressed(byte buttonID, int mouseButton,
-			boolean isCtrlDown, boolean isAltDown, boolean isShiftDown,
-			ItemStack stack) {
+	public void GuiButtonPressed(int buttonID, int mouseButton,
+			boolean isCtrlDown, boolean isAltDown, boolean isShiftDown) {
 		
 		int multiplier = 0;
 		if(isShiftDown)
@@ -220,22 +217,42 @@ public class ToolBuilding extends ToolBase{
 			return;
 		
 		if (buttonID == 1) {
-			int radiusx = getNBT(stack).getInteger("radiusX");
+			int radiusx = getNBT(thisStack).getInteger("radiusX");
 			radiusx+=amount;
 			if (radiusx < 1){radiusx = 1;}
-			getNBT(stack).setInteger("radiusX", radiusx);
+			getNBT(thisStack).setInteger("radiusX", radiusx);
 		} else if (buttonID == 2) {
-			int radiusz = getNBT(stack).getInteger("radiusZ");
+			int radiusz = getNBT(thisStack).getInteger("radiusZ");
 			radiusz+=amount;
 			if (radiusz < 1){radiusz = 1;}
-			getNBT(stack).setInteger("radiusZ", radiusz);
+			getNBT(thisStack).setInteger("radiusZ", radiusz);
 		} else if (buttonID == 3) {
-			getNBT(stack).setBoolean("placeAll", !getNBT(stack).getBoolean("placeAll"));
+			getNBT(thisStack).setBoolean("placeAll", !getNBT(thisStack).getBoolean("placeAll"));
 		} else {
 		}
 		
-		PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(stack)));
+		PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(thisStack)));
 		
+	}
+	
+	@Override
+	public void ReadNBTCommand(NBTTagCompound nbtcommand){
+		System.out.println(nbtcommand);
+		Set<String> commandset = nbtcommand.getCompoundTag("Commands").getKeySet();
+//		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
+//		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
+		
+		for (String key : commandset) {
+			String command = nbtcommand.getCompoundTag("Commands").getString(key);
+			
+			switch (command) {
+			case "GetButton":
+				GuiButtonPressed(nbtcommand.getInteger("ButtonID"), nbtcommand.getInteger("Mouse"), nbtcommand.getBoolean("CTRL"), nbtcommand.getBoolean("ALT"), nbtcommand.getBoolean("SHIFT"));
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
 }

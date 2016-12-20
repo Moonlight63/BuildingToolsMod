@@ -12,10 +12,7 @@ import com.moonlight.buildingtools.items.tools.selectiontool.ToolSelection;
 import com.moonlight.buildingtools.items.tools.tapeMeasure.ToolTapeMeasure;
 import com.moonlight.buildingtools.items.tools.undoTool.ToolUndo;
 
-import net.minecraft.block.BlockGrass;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemDye;
 
 public class ItemLoader {
 	public static Item toolBrush;

@@ -1,16 +1,12 @@
 package com.moonlight.buildingtools.items.tools.filtertool;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 
-import com.google.common.collect.Lists;
 import com.moonlight.buildingtools.items.tools.GUIBlockSelection;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
-import com.moonlight.buildingtools.network.packethandleing.SendAdvancedFillPacketToItemMessage;
-import com.moonlight.buildingtools.network.packethandleing.SendAdvancedReplacePacketToItemMessage;
-import com.moonlight.buildingtools.network.packethandleing.SendSetTreeMaterialsPacketToItemMessage;
+import com.moonlight.buildingtools.network.packethandleing.SendNBTCommandPacket;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiButton;
@@ -21,6 +17,7 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class GUISetLogMat extends GUIBlockSelection{
 
@@ -32,19 +29,9 @@ public class GUISetLogMat extends GUIBlockSelection{
 		this.player = player;
 	}
 	
-	/**
-     * Called when the mouse is clicked over a slot or outside the gui.
-     * Click Type 1 = Shift Click
-     * Click Type 2 = Hotbar key
-     * Click Type 3 = Pick Block
-     * Click Type 4 = Drop Key, Click outside of GUI
-     * Click Type 5 =
-     */
 	@Override
 	protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, ClickType clickType){
-    //protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType){
 		this.keyOrButtonClicked = true;
-        //clickType = slotId == -999 && clickType == 0 ? 4 : clickType;
         
         if (mode == 0){
 	        if(clickedButton == 0){
@@ -56,9 +43,6 @@ public class GUISetLogMat extends GUIBlockSelection{
 	        		else
 	        			blockFillList.set(0, slotIn.getStack());
 	        	}
-//	        	else if(clickType == 1){
-//	        		
-//	        	}
 	        	System.out.println(blockReplaceList);
 	        }
 	        else if(clickedButton == 1){
@@ -68,24 +52,8 @@ public class GUISetLogMat extends GUIBlockSelection{
 	        		else
 	        			blockReplaceList.set(0, slotIn.getStack());
 	        	}
-//	        	else if(clickType == 1){
-//	        		
-//	        	}
 	        }
         }
-//        else{
-//        	if(clickedButton == 0){
-//	        	if(clickType == 0){
-//	        
-//	        	}
-//	        	else if(clickType == 1){
-//	        		
-//	        	}
-//	        }
-//	        else if(clickedButton == 1){
-//	        	
-//	        }
-//        }
 
     }
 	
@@ -165,7 +133,20 @@ public class GUISetLogMat extends GUIBlockSelection{
         			META2=(blockReplaceList.get(0).getMetadata());
         		}
             	
-            	PacketDispatcher.sendToServer(new SendSetTreeMaterialsPacketToItemMessage(ID, META, ID2, META2));
+            	NBTTagCompound commandPacket = new NBTTagCompound();
+            	
+            	commandPacket.setTag("Commands", new NBTTagCompound());
+            	commandPacket.getCompoundTag("Commands").setString("1", "SetTreeMaterial");
+            	
+    			ItemStack log = new ItemStack(Block.getBlockById(ID));
+    			log.setItemDamage(META);
+    			ItemStack leaf = new ItemStack(Block.getBlockById(ID2));
+    			leaf.setItemDamage(META2);
+    			
+    			commandPacket.setTag("log", log.writeToNBT(new NBTTagCompound()));
+        		commandPacket.setTag("leaf", leaf.writeToNBT(new NBTTagCompound()));
+        		
+        		PacketDispatcher.sendToServer(new SendNBTCommandPacket(commandPacket));
             	
             	this.mc.displayGuiScreen((GuiScreen) null);
     			this.mc.displayGuiScreen(new GUIEditTree(this.player, ((ToolFilter)(player.getHeldItemMainhand().getItem())).treeData));

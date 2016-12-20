@@ -1,10 +1,5 @@
 package com.moonlight.buildingtools.network;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.IGuiHandler;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.items.tools.brushtool.GUIToolBrush;
 import com.moonlight.buildingtools.items.tools.buildingtool.GUIBuildersTool;
@@ -13,6 +8,11 @@ import com.moonlight.buildingtools.items.tools.filtertool.GUIToolFilter;
 import com.moonlight.buildingtools.items.tools.selectiontool.GUISaveLoadClipboard;
 import com.moonlight.buildingtools.items.tools.selectiontool.GUISelectionTool;
 import com.moonlight.buildingtools.items.tools.undoTool.GUISaveLoadCurrentUndoList;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.IGuiHandler;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 
 public class GuiHandler implements IGuiHandler {

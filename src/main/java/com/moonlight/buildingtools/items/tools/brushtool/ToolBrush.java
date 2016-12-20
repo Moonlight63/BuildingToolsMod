@@ -1,6 +1,5 @@
 package com.moonlight.buildingtools.items.tools.brushtool;
 
-import java.util.ArrayList;
 import java.util.List;
 //import java.util.Optional;
 import java.util.Set;
@@ -69,7 +68,7 @@ public class ToolBrush extends ToolBase{
 	}
 	
 	@Override
-    public void addInformation(ItemStack stack, EntityPlayer player, @SuppressWarnings("rawtypes") List list, boolean check)
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean check)
     {
         super.addInformation(stack, player, list, check);
 
@@ -105,7 +104,7 @@ public class ToolBrush extends ToolBase{
 			
 			if(playerIn.isSneaking()){
 				playerIn.openGui(BuildingTools.instance, GuiHandler.GUIBrushTool, worldIn, 0, 0, 0);
-				return new ActionResult(EnumActionResult.PASS, itemStackIn);
+				return new ActionResult<ItemStack>(EnumActionResult.PASS, itemStackIn);
 			}
 			
 			
@@ -116,7 +115,7 @@ public class ToolBrush extends ToolBase{
 			
 		}
 		
-		return new ActionResult(EnumActionResult.PASS, itemStackIn);
+		return new ActionResult<ItemStack>(EnumActionResult.PASS, itemStackIn);
 		
     }
     
@@ -261,10 +260,8 @@ public class ToolBrush extends ToolBase{
     	
     }
 
-	@Override
-	public void GetGuiButtonPressed(byte buttonID, int mouseButton,
-			boolean isCtrlDown, boolean isAltDown, boolean isShiftDown,
-			ItemStack stack) {
+	public void GuiButtonPressed(int buttonID, int mouseButton,
+			boolean isCtrlDown, boolean isAltDown, boolean isShiftDown) {
 		
 		int multiplier = 0;
 		if(isShiftDown)
@@ -283,97 +280,154 @@ public class ToolBrush extends ToolBase{
 		
 		if (buttonID == 1) {
 			if(mouseButton == 0){
-				if(getNBT(stack).getInteger("generator") < Shapes.VALUES.length - 1)
-					getNBT(stack).setInteger("generator", getNBT(stack).getInteger("generator") + 1);
+				if(getNBT(thisStack).getInteger("generator") < Shapes.VALUES.length - 1)
+					getNBT(thisStack).setInteger("generator", getNBT(thisStack).getInteger("generator") + 1);
 				else
-					getNBT(stack).setInteger("generator", 0);
+					getNBT(thisStack).setInteger("generator", 0);
 			}
 			else if(mouseButton == 1){
-				if(getNBT(stack).getInteger("generator") > 0)
-					getNBT(stack).setInteger("generator", getNBT(stack).getInteger("generator") - 1);
+				if(getNBT(thisStack).getInteger("generator") > 0)
+					getNBT(thisStack).setInteger("generator", getNBT(thisStack).getInteger("generator") - 1);
 				else
-					getNBT(stack).setInteger("generator", Shapes.VALUES.length - 1);
+					getNBT(thisStack).setInteger("generator", Shapes.VALUES.length - 1);
 			}
 		} else if (buttonID == 2) {
-			int radiusx = getNBT(stack).getInteger("radiusX");
+			int radiusx = getNBT(thisStack).getInteger("radiusX");
 	        radiusx+=amount;
 			if (radiusx < 0){radiusx = 0;}
-			getNBT(stack).setInteger("radiusX", radiusx);
+			getNBT(thisStack).setInteger("radiusX", radiusx);
 		} else if (buttonID == 3) {
-			int radiusy = getNBT(stack).getInteger("radiusY");
+			int radiusy = getNBT(thisStack).getInteger("radiusY");
 	        radiusy+=amount;
 			if (radiusy < 0){radiusy = 0;}
-			getNBT(stack).setInteger("radiusY", radiusy);
+			getNBT(thisStack).setInteger("radiusY", radiusy);
 		} else if (buttonID == 4) {
-			int radiusz = getNBT(stack).getInteger("radiusZ");
+			int radiusz = getNBT(thisStack).getInteger("radiusZ");
 			radiusz+=amount;
 			if (radiusz < 0){radiusz = 0;}
-			getNBT(stack).setInteger("radiusZ", radiusz);
+			getNBT(thisStack).setInteger("radiusZ", radiusz);
 		} else if (buttonID == 5) {
 			System.out.println(world);
 			System.out.println(targetBlock);
-			System.out.println(stack);
+			System.out.println(thisStack);
 			System.out.println(world.getBlockState(targetBlock));
 			System.out.println(Block.getIdFromBlock(world.getBlockState(targetBlock).getBlock()));
 			System.out.println(world.getBlockState(targetBlock).getBlock().getMetaFromState(world.getBlockState(targetBlock)));
 			
 			int id = Block.getIdFromBlock(world.getBlockState(targetBlock).getBlock());
 			int meta = world.getBlockState(targetBlock).getBlock().getMetaFromState(world.getBlockState(targetBlock));
-			setFillBlocks(new ArrayList<Integer>(){{add(id);}}, new ArrayList<Integer>(){{add(meta);}}, new ArrayList<Integer>(){{add(1);}});
+			ItemStack fill = new ItemStack(Block.getBlockById(id));
+			fill.setItemDamage(meta);
+			
+			NBTTagCompound commandPacket = new NBTTagCompound();
+        	
+        	commandPacket.setTag("Commands", new NBTTagCompound());
+        	commandPacket.getCompoundTag("Commands").setString("1", "SetFill");
+        	commandPacket.setTag("fillblocks", new NBTTagCompound());
+			commandPacket.getCompoundTag("fillblocks").setTag("0", new NBTTagCompound());
+			commandPacket.getCompoundTag("fillblocks").getCompoundTag("0").setInteger("chance", 1);
+			commandPacket.getCompoundTag("fillblocks").getCompoundTag("0").setTag("blockstate", fill.writeToNBT(new NBTTagCompound()));
+    		
+			ReadNBTCommand(commandPacket);
 			
 		} else if (buttonID == 6) {
 			int id = Block.getIdFromBlock(Blocks.AIR);
 			int meta = Blocks.AIR.getMetaFromState(Blocks.AIR.getDefaultState());
-			setFillBlocks(new ArrayList<Integer>(){{add(id);}}, new ArrayList<Integer>(){{add(meta);}}, new ArrayList<Integer>(){{add(1);}});
+			
+			ItemStack fill = new ItemStack(Block.getBlockById(id));
+			fill.setItemDamage(meta);
+			
+			NBTTagCompound commandPacket = new NBTTagCompound();
+        	
+        	commandPacket.setTag("Commands", new NBTTagCompound());
+        	commandPacket.getCompoundTag("Commands").setString("1", "SetFill");
+        	commandPacket.setTag("fillblocks", new NBTTagCompound());
+			commandPacket.getCompoundTag("fillblocks").setTag("0", new NBTTagCompound());
+			commandPacket.getCompoundTag("fillblocks").getCompoundTag("0").setInteger("chance", 1);
+			commandPacket.getCompoundTag("fillblocks").getCompoundTag("0").setTag("blockstate", fill.writeToNBT(new NBTTagCompound()));
+			
+			ReadNBTCommand(commandPacket);
 		
 		} else if (buttonID == 7) {
-			getNBT(stack).setBoolean("fillmode", !getNBT(stack).getBoolean("fillmode"));
+			getNBT(thisStack).setBoolean("fillmode", !getNBT(thisStack).getBoolean("fillmode"));
 		} else if (buttonID == 8) {
-			getNBT(stack).setBoolean("forcefall", !getNBT(stack).getBoolean("forcefall"));
+			getNBT(thisStack).setBoolean("forcefall", !getNBT(thisStack).getBoolean("forcefall"));
 		} else if (buttonID == 9) {
-			if(getNBT(stack).getInteger("replacemode") == 1){
-				getNBT(stack).setInteger("replacemode", 2);
+			if(getNBT(thisStack).getInteger("replacemode") == 1){
+				getNBT(thisStack).setInteger("replacemode", 2);
 			}
-			else if(getNBT(stack).getInteger("replacemode") == 2){
-				getNBT(stack).setInteger("replacemode", 3);
+			else if(getNBT(thisStack).getInteger("replacemode") == 2){
+				getNBT(thisStack).setInteger("replacemode", 3);
 			}
-			else if(getNBT(stack).getInteger("replacemode") == 3){
-				getNBT(stack).setInteger("replacemode", 4);
+			else if(getNBT(thisStack).getInteger("replacemode") == 3){
+				getNBT(thisStack).setInteger("replacemode", 4);
 			}
-			else if(getNBT(stack).getInteger("replacemode") == 4){
-				getNBT(stack).setInteger("replacemode", 1);
+			else if(getNBT(thisStack).getInteger("replacemode") == 4){
+				getNBT(thisStack).setInteger("replacemode", 1);
 			}
 		}  else {
 		}
 		
-		PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(stack)));
+		PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(thisStack)));
 		
 	}
 	
-	public void setFillBlocks(List<Integer> ID, List<Integer> DATA, List<Integer> COUNT){
-		System.out.println("Recieved Message!");
-		System.out.println(ID + "   " + DATA + "   " + COUNT);
-		thisStack.getTagCompound().setTag("fillblocks", new NBTTagCompound());
-		for (int i = 0; i < ID.size(); i++) {
-			ItemStack fill = new ItemStack(Block.getBlockById(ID.get(i)));
-			fill.setItemDamage(DATA.get(i));
-			thisStack.getTagCompound().getCompoundTag("fillblocks").setTag(Integer.toString(i), new NBTTagCompound());
-			thisStack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag(Integer.toString(i)).setInteger("chance", COUNT.get(i));
-			thisStack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag(Integer.toString(i)).setTag("blockstate", fill.writeToNBT(new NBTTagCompound()));
-		}
-        
-	}
+//	public void setFillBlocks(List<Integer> ID, List<Integer> DATA, List<Integer> COUNT){
+//		System.out.println("Recieved Message!");
+//		System.out.println(ID + "   " + DATA + "   " + COUNT);
+//		thisStack.getTagCompound().setTag("fillblocks", new NBTTagCompound());
+//		for (int i = 0; i < ID.size(); i++) {
+//			ItemStack fill = new ItemStack(Block.getBlockById(ID.get(i)));
+//			fill.setItemDamage(DATA.get(i));
+//			thisStack.getTagCompound().getCompoundTag("fillblocks").setTag(Integer.toString(i), new NBTTagCompound());
+//			thisStack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag(Integer.toString(i)).setInteger("chance", COUNT.get(i));
+//			thisStack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag(Integer.toString(i)).setTag("blockstate", fill.writeToNBT(new NBTTagCompound()));
+//		}
+//        
+//	}
+//	
+//	public void setReplaceBlocks(List<Integer> ID, List<Integer> DATA){
+//		System.out.println("Recieved Message!");
+//		System.out.println(ID + "   " + DATA);
+//		thisStack.getTagCompound().setTag("replaceblocks", new NBTTagCompound());
+//		for (int i = 0; i < ID.size(); i++) {			
+//			ItemStack replace = new ItemStack(Block.getBlockById(ID.get(i)));
+//			replace.setItemDamage(DATA.get(i));
+//			thisStack.getTagCompound().getCompoundTag("replaceblocks").setTag(Integer.toString(i), replace.writeToNBT(new NBTTagCompound()));
+//		}
+//        
+//	}
 	
-	public void setReplaceBlocks(List<Integer> ID, List<Integer> DATA){
-		System.out.println("Recieved Message!");
-		System.out.println(ID + "   " + DATA);
-		thisStack.getTagCompound().setTag("replaceblocks", new NBTTagCompound());
-		for (int i = 0; i < ID.size(); i++) {			
-			ItemStack replace = new ItemStack(Block.getBlockById(ID.get(i)));
-			replace.setItemDamage(DATA.get(i));
-			thisStack.getTagCompound().getCompoundTag("replaceblocks").setTag(Integer.toString(i), replace.writeToNBT(new NBTTagCompound()));
+	@Override
+	public void ReadNBTCommand(NBTTagCompound nbtcommand){
+		System.out.println(nbtcommand);
+		Set<String> commandset = nbtcommand.getCompoundTag("Commands").getKeySet();
+//		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
+//		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
+		
+		for (String key : commandset) {
+			String command = nbtcommand.getCompoundTag("Commands").getString(key);
+			
+			switch (command) {
+			case "SetFill":
+				System.out.println("Recieved Message!");
+				System.out.println(nbtcommand.getCompoundTag("fillblocks"));
+				thisStack.getTagCompound().setTag("fillblocks", nbtcommand.getCompoundTag("fillblocks"));
+				System.out.println(thisStack.getTagCompound().getCompoundTag("fillblocks"));
+				break;
+			case "SetReplace":
+				System.out.println("Recieved Message!");
+				System.out.println(nbtcommand.getCompoundTag("replaceblocks"));
+				thisStack.getTagCompound().setTag("replaceblocks", nbtcommand.getCompoundTag("replaceblocks"));
+				System.out.println(thisStack.getTagCompound().getCompoundTag("replaceblocks"));
+				break;
+			case "GetButton":
+				GuiButtonPressed(nbtcommand.getInteger("ButtonID"), nbtcommand.getInteger("Mouse"), nbtcommand.getBoolean("CTRL"), nbtcommand.getBoolean("ALT"), nbtcommand.getBoolean("SHIFT"));
+				break;
+			default:
+				break;
+			}
 		}
-        
 	}
 	
 }

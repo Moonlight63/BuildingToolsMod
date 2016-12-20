@@ -11,16 +11,13 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 
+import com.moonlight.buildingtools.items.tools.BlockChangeBase;
+import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
+import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
-
-import com.google.common.collect.Sets;
-import com.moonlight.buildingtools.items.tools.BlockChangeBase;
-import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
-import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
-import com.moonlight.buildingtools.items.tools.selectiontool.ThreadPasteClipboard.SecondPass;
-import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
 
 public class PlayerWrapper {
 	

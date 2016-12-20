@@ -6,8 +6,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.items.tools.BlockChangeBase;
 import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
@@ -37,7 +35,6 @@ import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 public class ThreadPasteClipboard implements BlockChangeBase{

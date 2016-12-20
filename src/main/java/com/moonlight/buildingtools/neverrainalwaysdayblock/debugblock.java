@@ -3,7 +3,6 @@ package com.moonlight.buildingtools.neverrainalwaysdayblock;
 import com.moonlight.buildingtools.BuildingTools;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockFurnace;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;

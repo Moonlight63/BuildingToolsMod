@@ -3,7 +3,6 @@ package com.moonlight.buildingtools.network.packethandleing;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
 import com.moonlight.buildingtools.items.tools.filtertool.ProceduralTreeData;
 import com.moonlight.buildingtools.items.tools.filtertool.ToolFilter;
 
@@ -50,7 +49,7 @@ public class SendTreeDataToItem implements IMessage {
 		data.SetLeafDensity(buf.readDouble());
 		data.SetBranchDensity(buf.readDouble());
 		data.SetScaleWidth(buf.readDouble());
-		data.SetMatValues(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt());
+//		data.SetMatValues(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt());
 		data.SetHollowTrunk(buf.readBoolean());
 	}
 
@@ -77,10 +76,10 @@ public class SendTreeDataToItem implements IMessage {
 		buf.writeDouble(data.GetLeafDensity());
 		buf.writeDouble(data.GetBranchDensity());
 		buf.writeDouble(data.GetScaleWidth());
-		buf.writeInt(data.GetMatValues()[0]);
-		buf.writeInt(data.GetMatValues()[1]);
-		buf.writeInt(data.GetMatValues()[2]);
-		buf.writeInt(data.GetMatValues()[3]);
+//		buf.writeInt(data.GetMatValues()[0]);
+//		buf.writeInt(data.GetMatValues()[1]);
+//		buf.writeInt(data.GetMatValues()[2]);
+//		buf.writeInt(data.GetMatValues()[3]);
 		buf.writeBoolean(data.GetHollowTrunk());
 	}
 	

@@ -1,4 +1,6 @@
 package com.moonlight.buildingtools.network.packethandleing;
+import com.moonlight.buildingtools.Reference;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -6,8 +8,6 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
-
-import com.moonlight.buildingtools.Reference;
 
  /**
  * 
@@ -51,16 +51,15 @@ public class PacketDispatcher
 	 
 		 PacketDispatcher.dispatcher.registerMessage(SyncNBTDataMessage.Handler.class, SyncNBTDataMessage.class, packetId++, Side.SERVER);
 		 //PacketDispatcher.dispatcher.registerMessage(PlayerReachMessage.Handler.class, PlayerReachMessage.class, packetId++, Side.SERVER);
-		 PacketDispatcher.dispatcher.registerMessage(SendGuiButtonPressedToItemMessage.Handler.class, SendGuiButtonPressedToItemMessage.class, packetId++, Side.SERVER);
-		 PacketDispatcher.dispatcher.registerMessage(SelectionToolSaveSelectionPacket.Handler.class, SelectionToolSaveSelectionPacket.class, packetId++, Side.SERVER);
-		 PacketDispatcher.dispatcher.registerMessage(SendFileSelection.Handler.class, SendFileSelection.class, packetId++, Side.SERVER);
-		 PacketDispatcher.dispatcher.registerMessage(SendFillAndReplacePacketToItemMessage.Handler.class, SendFillAndReplacePacketToItemMessage.class, packetId++, Side.SERVER);
-		 PacketDispatcher.dispatcher.registerMessage(SendAdvancedFillPacketToItemMessage.Handler.class, SendAdvancedFillPacketToItemMessage.class, packetId++, Side.SERVER);
-//		 PacketDispatcher.dispatcher.registerMessage(SendSimpleReplacePacketToItemMessage.Handler.class, SendSimpleReplacePacketToItemMessage.class, packetId++, Side.SERVER);
-		 PacketDispatcher.dispatcher.registerMessage(SendAdvancedReplacePacketToItemMessage.Handler.class, SendAdvancedReplacePacketToItemMessage.class, packetId++, Side.SERVER);
+//		 PacketDispatcher.dispatcher.registerMessage(SendGuiButtonPressedToItemMessage.Handler.class, SendGuiButtonPressedToItemMessage.class, packetId++, Side.SERVER);
+//		 PacketDispatcher.dispatcher.registerMessage(SelectionToolSaveSelectionPacket.Handler.class, SelectionToolSaveSelectionPacket.class, packetId++, Side.SERVER);
+//		 PacketDispatcher.dispatcher.registerMessage(SendFileSelection.Handler.class, SendFileSelection.class, packetId++, Side.SERVER);
+//		 PacketDispatcher.dispatcher.registerMessage(SendFillAndReplacePacketToItemMessage.Handler.class, SendFillAndReplacePacketToItemMessage.class, packetId++, Side.SERVER);
+//		 PacketDispatcher.dispatcher.registerMessage(SendAdvancedFillPacketToItemMessage.Handler.class, SendAdvancedFillPacketToItemMessage.class, packetId++, Side.SERVER);
+		 PacketDispatcher.dispatcher.registerMessage(SendNBTCommandPacket.Handler.class, SendNBTCommandPacket.class, packetId++, Side.SERVER);
+//		 PacketDispatcher.dispatcher.registerMessage(SendAdvancedReplacePacketToItemMessage.Handler.class, SendAdvancedReplacePacketToItemMessage.class, packetId++, Side.SERVER);
 		 PacketDispatcher.dispatcher.registerMessage(SendRaytraceResult.Handler.class, SendRaytraceResult.class, packetId++, Side.SERVER);
 		 PacketDispatcher.dispatcher.registerMessage(SendTreeDataToItem.Handler.class, SendTreeDataToItem.class, packetId++, Side.SERVER);
-		 PacketDispatcher.dispatcher.registerMessage(SendCustomMessageCommand.Handler.class, SendCustomMessageCommand.class, packetId++, Side.SERVER);
 		 
 	 // If you don't want to make a 'registerMessage' method, you can do it directly:
 	 //PacketDispatcher.dispatcher.registerMessage(OpenGuiMessage.OpenGuiMessageHandler.class, OpenGuiMessage.class, packetId++, Side.SERVER);
@@ -71,9 +70,9 @@ public class PacketDispatcher
 	 * Registers a message and message handler
 	 */
 	 
-	 private static final void registerMessage(Class handlerClass, Class messageClass, Side side) {
-		 PacketDispatcher.dispatcher.registerMessage(handlerClass, messageClass, packetId++, side);
-	 }
+//	 private static final void registerMessage(Class handlerClass, Class messageClass, Side side) {
+//		 PacketDispatcher.dispatcher.registerMessage(handlerClass, messageClass, packetId++, side);
+//	 }
 	
 	 //========================================================//
 	 // The following methods are the 'wrapper' methods; again,

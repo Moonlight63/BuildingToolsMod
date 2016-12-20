@@ -6,9 +6,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import com.google.common.base.Optional;
+import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.UpdateHandler;
+import com.moonlight.buildingtools.items.tools.undoTool.ThreadSaveUndoList;
+import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
@@ -17,13 +22,6 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.google.common.base.Optional;
-import com.moonlight.buildingtools.BuildingTools;
-import com.moonlight.buildingtools.UpdateHandler;
-import com.moonlight.buildingtools.items.tools.undoTool.ThreadLoadUndo;
-import com.moonlight.buildingtools.items.tools.undoTool.ThreadSaveUndoList;
-import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
 public class WorldEventHandler{
 	
@@ -106,7 +104,6 @@ public class WorldEventHandler{
         
     }
 	
-	private boolean checkflag = true;
 	@SubscribeEvent
 	public void onPlayerTick(TickEvent.PlayerTickEvent event){
 

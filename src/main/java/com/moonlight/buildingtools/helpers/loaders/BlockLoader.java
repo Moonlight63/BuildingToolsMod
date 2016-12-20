@@ -2,9 +2,10 @@ package com.moonlight.buildingtools.helpers.loaders;
 
 import java.util.Set;
 
-import net.minecraft.block.Block;
 import com.google.common.collect.Sets;
 import com.moonlight.buildingtools.items.tools.placetempblock.BlockTemporary;
+
+import net.minecraft.block.Block;
 
 public final class BlockLoader {
 

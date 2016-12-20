@@ -1,18 +1,8 @@
 package com.moonlight.buildingtools.items.tools.buildingtool;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.helpers.Shapes;
 import com.moonlight.buildingtools.helpers.shapes.IShapeable;
@@ -20,6 +10,12 @@ import com.moonlight.buildingtools.items.tools.BlockChangeBase;
 import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
 import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
 import com.moonlight.buildingtools.utils.MiscUtils;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class ThreadBuildersTool implements IShapeable, BlockChangeBase {
 	

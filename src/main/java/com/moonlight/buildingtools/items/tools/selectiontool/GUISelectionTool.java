@@ -4,19 +4,19 @@ import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.lwjgl.opengl.GL11;
+
+import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
+import com.moonlight.buildingtools.network.packethandleing.SendNBTCommandPacket;
+import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.common.MinecraftForge;
-
-import org.lwjgl.opengl.GL11;
-
-import com.moonlight.buildingtools.BuildingTools;
-import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
-import com.moonlight.buildingtools.network.packethandleing.SendGuiButtonPressedToItemMessage;
-import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 
 public class GUISelectionTool extends GuiScreen{
 	
@@ -70,7 +70,6 @@ public class GUISelectionTool extends GuiScreen{
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui(){
 		
@@ -118,7 +117,6 @@ public class GUISelectionTool extends GuiScreen{
 		moveY.displayString = "Y Movment: " + heldnbt.getInteger("repeatMovmentY");
 		moveZ.displayString = "Z Movment: " + heldnbt.getInteger("repeatMovmentZ");
 		
-//		fill.enabled = true;
 		replace.enabled = true;
 		
 		buttonsRight.add(clearselction);
@@ -163,17 +161,25 @@ public class GUISelectionTool extends GuiScreen{
 	
 	//@Override
 	protected void actionPerformed(GuiButton button, int mouseButton){
-		PacketDispatcher.sendToServer(new SendGuiButtonPressedToItemMessage((byte) button.id, mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));
+		
+		NBTTagCompound commandPacket = new NBTTagCompound();
+    	
+    	commandPacket.setTag("Commands", new NBTTagCompound());
+    	commandPacket.getCompoundTag("Commands").setString("1", "GetButton");
+    	commandPacket.setInteger("ButtonID", button.id);
+    	commandPacket.setInteger("Mouse", mouseButton);
+    	commandPacket.setBoolean("CTRL", isCtrlKeyDown());
+    	commandPacket.setBoolean("ALT", isAltKeyDown());
+    	commandPacket.setBoolean("SHIFT", isShiftKeyDown());
+    	
+    	PacketDispatcher.sendToServer(new SendNBTCommandPacket(commandPacket));
+		
 		if(button.id == copytoclipboard.id || button.id == pasteclipboard.id || button.id == selectpaste.id || button.id == clearselction.id)
 			this.mc.thePlayer.closeScreen();
 		else if (button.id == file.id){
 			this.mc.displayGuiScreen((GuiScreen) null);
 			this.mc.displayGuiScreen(new GUISaveLoadClipboard(this.player));
 		}
-//		else if (button.id == fill.id){
-//			this.mc.displayGuiScreen((GuiScreen) null);
-//			this.mc.displayGuiScreen(new GUIFillTool(this.player));
-//		}
 		else if (button.id == replace.id){
 			this.mc.displayGuiScreen((GuiScreen) null);
 			this.mc.displayGuiScreen(new GUIReplaceTool(this.player));

@@ -2,8 +2,14 @@ package com.moonlight.buildingtools.items.tools.undoTool;
 
 import java.io.Serializable;
 
+import com.google.common.collect.ImmutableMap;
+import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
+import net.minecraft.block.BlockBanner.BlockBannerHanging;
+import net.minecraft.block.BlockBasePressurePlate;
+import net.minecraft.block.BlockButton;
 import net.minecraft.block.BlockCarpet;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockFlowerPot;
@@ -12,39 +18,19 @@ import net.minecraft.block.BlockLadder;
 import net.minecraft.block.BlockLever;
 import net.minecraft.block.BlockLog;
 import net.minecraft.block.BlockQuartz;
+import net.minecraft.block.BlockRailBase;
+import net.minecraft.block.BlockRedstoneDiode;
+import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.BlockSkull;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.BlockStairs;
-import net.minecraft.block.BlockStandingSign;
-import net.minecraft.block.BlockStoneSlab;
 import net.minecraft.block.BlockTorch;
 import net.minecraft.block.BlockTrapDoor;
 import net.minecraft.block.BlockTripWireHook;
 import net.minecraft.block.BlockWallSign;
-import net.minecraft.block.BlockBanner.BlockBannerHanging;
-import net.minecraft.block.BlockBasePressurePlate;
-import net.minecraft.block.BlockButton;
-import net.minecraft.block.BlockLog.EnumAxis;
-import net.minecraft.block.BlockQuartz.EnumType;
-import net.minecraft.block.BlockRailBase;
-import net.minecraft.block.BlockRedstoneComparator;
-import net.minecraft.block.BlockRedstoneDiode;
-import net.minecraft.block.BlockRedstoneRepeater;
-import net.minecraft.block.BlockRedstoneTorch;
-import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
-
-import com.google.common.collect.ImmutableMap;
-import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
 
 public class BlockInfoContainer implements Serializable{
 	

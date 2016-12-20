@@ -11,6 +11,15 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.helpers.loaders.BlockLoader;
+import com.moonlight.buildingtools.items.tools.BlockChangeBase;
+import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
+import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
+import com.moonlight.buildingtools.utils.MiscUtils;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.BlockLeaves;
@@ -23,15 +32,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.moonlight.buildingtools.BuildingTools;
-import com.moonlight.buildingtools.helpers.loaders.BlockLoader;
-import com.moonlight.buildingtools.items.tools.BlockChangeBase;
-import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
-import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
-import com.moonlight.buildingtools.utils.MiscUtils;
 
 public class ThreadMakeTree implements BlockChangeBase{
 	

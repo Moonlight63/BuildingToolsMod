@@ -1,9 +1,5 @@
 package com.moonlight.buildingtools.network;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-
 import com.google.common.base.Optional;
 import com.moonlight.buildingtools.helpers.loaders.BlockRenderRegister;
 import com.moonlight.buildingtools.helpers.loaders.ItemRenderRegister;
@@ -12,6 +8,10 @@ import com.moonlight.buildingtools.network.playerWrapper.PlayerRegistryProvider;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.Pair;
 //import com.moonlight.buildingtools.buildingGuide.TileEntityGuideRenderer;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class ClientProxy extends CommonProxy {
 

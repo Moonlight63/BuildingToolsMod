@@ -4,19 +4,18 @@ import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.lwjgl.opengl.GL11;
+
+import com.moonlight.buildingtools.helpers.Shapes;
+import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
+import com.moonlight.buildingtools.network.packethandleing.SendNBTCommandPacket;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.common.MinecraftForge;
-
-import org.lwjgl.opengl.GL11;
-
-import com.moonlight.buildingtools.helpers.Shapes;
-import com.moonlight.buildingtools.items.tools.selectiontool.ToolSelection;
-import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
-import com.moonlight.buildingtools.network.packethandleing.SendGuiButtonPressedToItemMessage;
 
 public class GUIToolBrush extends GuiScreen{
 	
@@ -66,7 +65,6 @@ public class GUIToolBrush extends GuiScreen{
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui(){
 		
@@ -148,7 +146,18 @@ public class GUIToolBrush extends GuiScreen{
 	
 	//@Override
 	protected void actionPerformed(GuiButton button, int mouseButton){
-		PacketDispatcher.sendToServer(new SendGuiButtonPressedToItemMessage((byte) button.id, mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));
+		NBTTagCompound commandPacket = new NBTTagCompound();
+    	
+    	commandPacket.setTag("Commands", new NBTTagCompound());
+    	commandPacket.getCompoundTag("Commands").setString("1", "GetButton");
+    	commandPacket.setInteger("ButtonID", button.id);
+    	commandPacket.setInteger("Mouse", mouseButton);
+    	commandPacket.setBoolean("CTRL", isCtrlKeyDown());
+    	commandPacket.setBoolean("ALT", isAltKeyDown());
+    	commandPacket.setBoolean("SHIFT", isShiftKeyDown());
+    	
+    	PacketDispatcher.sendToServer(new SendNBTCommandPacket(commandPacket));
+		//PacketDispatcher.sendToServer(new SendGuiButtonPressedToItemMessage((byte) button.id, mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));
 		if(button.id == setblock.id || button.id == setair.id)
 			this.mc.thePlayer.closeScreen();
 		if(button.id == showBlockSel.id)

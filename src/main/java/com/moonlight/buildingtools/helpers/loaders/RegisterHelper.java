@@ -3,11 +3,8 @@ package com.moonlight.buildingtools.helpers.loaders;
 import com.moonlight.buildingtools.Reference;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class RegisterHelper 

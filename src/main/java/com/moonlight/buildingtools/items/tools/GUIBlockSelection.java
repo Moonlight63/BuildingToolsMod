@@ -98,7 +98,8 @@ public class GUIBlockSelection extends GuiContainer{
      * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
      * window resizes, the buttonList is cleared beforehand.
      */
-    public void initGui(){
+    @SuppressWarnings("deprecation")
+	public void initGui(){
         super.initGui();
         this.buttonList.clear();
         Keyboard.enableRepeatEvents(true);

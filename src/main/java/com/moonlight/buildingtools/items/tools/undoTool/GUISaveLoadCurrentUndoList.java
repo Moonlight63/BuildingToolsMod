@@ -10,16 +10,15 @@ import org.lwjgl.opengl.GL11;
 
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
-import com.moonlight.buildingtools.network.packethandleing.SelectionToolSaveSelectionPacket;
-import com.moonlight.buildingtools.network.packethandleing.SendFileSelection;
+import com.moonlight.buildingtools.network.packethandleing.SendNBTCommandPacket;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.IScrollButtonListener;
 import com.moonlight.buildingtools.utils.ScrollPane;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.config.GuiSlider;
@@ -129,6 +128,15 @@ public class GUISaveLoadCurrentUndoList extends GuiScreen implements IScrollButt
 	}
 	
 	protected void actionPerformed(GuiButton button, int mouseButton){
+		
+//		NBTTagCompound commandPacket = new NBTTagCompound();
+//    	
+//    	commandPacket.setTag("Commands", new NBTTagCompound());
+//    	commandPacket.getCompoundTag("Commands").setString("1", "SaveFile");
+//    	commandPacket.setString("File", this.mc.thePlayer.getName() + "." + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()));
+//    	
+//    	PacketDispatcher.sendToServer(new SendNBTCommandPacket(commandPacket));
+		
 		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(this.mc.thePlayer).get();
 		player.addPending(new ThreadSaveUndoList(this.mc.thePlayer, this.mc.thePlayer.getName() + "." + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date())));
 		//PacketDispatcher.sendToServer(new SelectionToolSaveSelectionPacket(saveName.getText(), mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));
@@ -137,7 +145,15 @@ public class GUISaveLoadCurrentUndoList extends GuiScreen implements IScrollButt
 
 	@Override
 	public void ScrollButtonPressed(GuiButton button) {
-		PacketDispatcher.sendToServer(new SendFileSelection(filelist[button.id].getName()));
+		NBTTagCompound commandPacket = new NBTTagCompound();
+    	
+    	commandPacket.setTag("Commands", new NBTTagCompound());
+    	commandPacket.getCompoundTag("Commands").setString("1", "LoadFile");
+    	commandPacket.setString("File", button.displayString);
+    	
+    	PacketDispatcher.sendToServer(new SendNBTCommandPacket(commandPacket));
+    	
+		//PacketDispatcher.sendToServer(new SendFileSelection(filelist[button.id].getName()));
 		this.mc.thePlayer.closeScreen();
 	}
 

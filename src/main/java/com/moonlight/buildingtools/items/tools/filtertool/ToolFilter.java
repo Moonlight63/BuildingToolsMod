@@ -1,50 +1,39 @@
 package com.moonlight.buildingtools.items.tools.filtertool;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.helpers.RenderHelper;
+import com.moonlight.buildingtools.helpers.Shapes;
+import com.moonlight.buildingtools.items.tools.ToolBase;
+import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
+import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
+import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
+import com.moonlight.buildingtools.utils.Key.KeyCode;
+import com.moonlight.buildingtools.utils.KeyHelper;
+import com.moonlight.buildingtools.utils.RGBA;
+
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockBush;
-import net.minecraft.block.BlockCactus;
-import net.minecraft.block.BlockCrops;
-import net.minecraft.block.BlockDoublePlant;
-import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockLeaves;
-import net.minecraft.block.BlockLilyPad;
 import net.minecraft.block.BlockOldLeaf;
 import net.minecraft.block.BlockOldLog;
 import net.minecraft.block.BlockPlanks;
-import net.minecraft.block.BlockReed;
-import net.minecraft.block.BlockSapling;
-import net.minecraft.block.BlockSign;
-import net.minecraft.block.BlockStem;
-import net.minecraft.block.BlockTallGrass;
-import net.minecraft.block.BlockVine;
-import net.minecraft.block.BlockWeb;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenBigMushroom;
 import net.minecraft.world.gen.feature.WorldGenBigTree;
 import net.minecraft.world.gen.feature.WorldGenCanopyTree;
-import net.minecraft.world.gen.feature.WorldGenEndIsland;
-import net.minecraft.world.gen.feature.WorldGenEndPodium;
-import net.minecraft.world.gen.feature.WorldGenHellLava;
 import net.minecraft.world.gen.feature.WorldGenIceSpike;
-import net.minecraft.world.gen.feature.WorldGenLakes;
 import net.minecraft.world.gen.feature.WorldGenMegaJungle;
 import net.minecraft.world.gen.feature.WorldGenMegaPineTree;
 import net.minecraft.world.gen.feature.WorldGenSavannaTree;
@@ -54,27 +43,6 @@ import net.minecraft.world.gen.feature.WorldGenTaiga1;
 import net.minecraft.world.gen.feature.WorldGenTaiga2;
 import net.minecraft.world.gen.feature.WorldGenTrees;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
-
-import com.google.common.collect.Sets;
-import com.moonlight.buildingtools.BuildingTools;
-import com.moonlight.buildingtools.helpers.RayTracing;
-import com.moonlight.buildingtools.helpers.RenderHelper;
-import com.moonlight.buildingtools.helpers.Shapes;
-import com.moonlight.buildingtools.helpers.shapes.IShapeable;
-import com.moonlight.buildingtools.items.tools.IGetGuiButtonPressed;
-import com.moonlight.buildingtools.items.tools.ToolBase;
-import com.moonlight.buildingtools.items.tools.buildingtool.BuildingShapeVisualizer;
-import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
-import com.moonlight.buildingtools.network.packethandleing.SendRaytraceResult;
-import com.moonlight.buildingtools.network.packethandleing.SyncNBTDataMessage;
-import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
-import com.moonlight.buildingtools.utils.IItemBlockAffector;
-import com.moonlight.buildingtools.utils.IKeyHandler;
-import com.moonlight.buildingtools.utils.IOutlineDrawer;
-import com.moonlight.buildingtools.utils.Key;
-import com.moonlight.buildingtools.utils.Key.KeyCode;
-import com.moonlight.buildingtools.utils.KeyHelper;
-import com.moonlight.buildingtools.utils.RGBA;
 
 public class ToolFilter extends ToolBase{
     
@@ -106,7 +74,7 @@ public class ToolFilter extends ToolBase{
         return stack.getTagCompound();
     }
 
-    public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean check)
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean check)
     {
         super.addInformation(stack, player, list, check);
         if(KeyHelper.isShiftDown())
@@ -192,7 +160,7 @@ public class ToolFilter extends ToolBase{
 	        }
     	}
     	
-    	return new ActionResult(EnumActionResult.PASS, itemStackIn);
+    	return new ActionResult<ItemStack>(EnumActionResult.PASS, itemStackIn);
     }
 
     public void handleKey(EntityPlayer player, ItemStack itemStack, KeyCode key)
@@ -306,7 +274,7 @@ public class ToolFilter extends ToolBase{
     	
     }
 
-    public void GetGuiButtonPressed(byte buttonID, int mouseButton, boolean isCtrlDown, boolean isAltDown, boolean isShiftDown, ItemStack stack)
+    public void GuiButtonPressed(int buttonID, int mouseButton, boolean isCtrlDown, boolean isAltDown, boolean isShiftDown)
     {
         int multiplier = 0;
         if(isShiftDown)
@@ -323,7 +291,7 @@ public class ToolFilter extends ToolBase{
             return;
         if(buttonID == 1)
         {
-            int filter = getNBT(stack).getInteger("filter");
+            int filter = getNBT(thisStack).getInteger("filter");
             if(mouseButton == 0)
                 filter++;
             else
@@ -334,43 +302,43 @@ public class ToolFilter extends ToolBase{
             if(filter > 5)
                 filter = 1;
             //getNBT(stack).setInteger("fillorclear", 2);
-            getNBT(stack).setInteger("filter", filter);
+            getNBT(thisStack).setInteger("filter", filter);
         } else
         if(buttonID == 2)
         {
-            int radiusx = getNBT(stack).getInteger("radiusX");
+            int radiusx = getNBT(thisStack).getInteger("radiusX");
             radiusx += amount;
             if(radiusx < 1)
                 radiusx = 1;
-            getNBT(stack).setInteger("radiusX", radiusx);
+            getNBT(thisStack).setInteger("radiusX", radiusx);
         } else
         if(buttonID == 3)
         {
-            int radiusy = getNBT(stack).getInteger("radiusY");
+            int radiusy = getNBT(thisStack).getInteger("radiusY");
             radiusy += amount;
             if(radiusy < 1)
                 radiusy = 1;
-            getNBT(stack).setInteger("radiusY", radiusy);
+            getNBT(thisStack).setInteger("radiusY", radiusy);
         } else
         if(buttonID == 4)
         {
-            int radiusz = getNBT(stack).getInteger("radiusZ");
+            int radiusz = getNBT(thisStack).getInteger("radiusZ");
             radiusz += amount;
             if(radiusz < 1)
                 radiusz = 1;
-            getNBT(stack).setInteger("radiusZ", radiusz);
+            getNBT(thisStack).setInteger("radiusZ", radiusz);
         } else
         if(buttonID == 5)
         {
-            int depth = getNBT(stack).getInteger("topsoildepth");
+            int depth = getNBT(thisStack).getInteger("topsoildepth");
             depth += amount;
             if(depth < 1)
                 depth = 1;
-            getNBT(stack).setInteger("topsoildepth", depth);
+            getNBT(thisStack).setInteger("topsoildepth", depth);
         } else
         if(buttonID == 6)
         {
-            int fillorclear = getNBT(stack).getInteger("fillorclear");
+            int fillorclear = getNBT(thisStack).getInteger("fillorclear");
             if(mouseButton == 0)
                 fillorclear++;
             else
@@ -380,12 +348,12 @@ public class ToolFilter extends ToolBase{
                 fillorclear = 2;
             if(fillorclear > 2)
                 fillorclear = 1;
-            getNBT(stack).setInteger("fillorclear", fillorclear);
+            getNBT(thisStack).setInteger("fillorclear", fillorclear);
         }
         
         if(buttonID == 7)
         {
-            int treetype = getNBT(stack).getInteger("treetype");
+            int treetype = getNBT(thisStack).getInteger("treetype");
             if(mouseButton == 0)
             	treetype++;
             else
@@ -395,22 +363,55 @@ public class ToolFilter extends ToolBase{
             	treetype = ETreeTypes.values().length-1;
             if(treetype > ETreeTypes.values().length-1)
             	treetype = 0;
-            getNBT(stack).setInteger("treetype", treetype);
+            getNBT(thisStack).setInteger("treetype", treetype);
         }
-        PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(stack)));
+        PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(thisStack)));
         updateVisualizer = true;
     }
     
     public void SetTreeData(ProceduralTreeData data){
-    	this.treeData = data;
-    	for(List list : this.treeData.foliage_shape){
-    		System.out.println(list.toString());
-    	}
+    	this.treeData.SetTreeHeight(data.GetTreeHeight());
+    	this.treeData.SetTrunkBottom(data.GetTrunkBottom());
+    	this.treeData.SetTrunkMiddle(data.GetTrunkMiddle());
+    	this.treeData.SetTrunkTop(data.GetTrunkTop());
+    	this.treeData.SetTrunkHeight(data.GetTrunkHeight());
+    	this.treeData.SetTrunkMidPoint(data.GetTrunkMidPoint());
+    	this.treeData.SetBranchStart(data.GetBranchStart());
+    	this.treeData.SetFoliageStart(data.GetFoliageStart());
+    	this.treeData.SetBranchSlope(data.GetBranchSlope());
+    	this.treeData.SetLeafDensity(data.GetLeafDensity());
+    	this.treeData.SetBranchDensity(data.GetBranchDensity());
+    	this.treeData.SetFoliageShapes(data.GetFoliageShapes());
+    	this.treeData.SetScaleWidth(data.GetScaleWidth());
+    	this.treeData.SetTrunkWallThickness(data.GetTrunkWallThickness());
+    	this.treeData.SetHollowTrunk(data.GetHollowTrunk());
     }
     
-    public void SetTreeMaterials(int id1, int meat1, int id2, int meta2){
-    	System.out.println(meat1);
-    	this.treeData.SetMatValues(id1, meat1, id2, meta2);
-    }
+    @SuppressWarnings("deprecation")
+	@Override
+	public void ReadNBTCommand(NBTTagCompound nbtcommand){
+		System.out.println(nbtcommand);
+		Set<String> commandset = nbtcommand.getCompoundTag("Commands").getKeySet();
+//		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
+//		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
+		
+		for (String key : commandset) {
+			String command = nbtcommand.getCompoundTag("Commands").getString(key);
+			
+			switch (command) {
+			case "GetButton":
+				GuiButtonPressed(nbtcommand.getInteger("ButtonID"), nbtcommand.getInteger("Mouse"), nbtcommand.getBoolean("CTRL"), nbtcommand.getBoolean("ALT"), nbtcommand.getBoolean("SHIFT"));
+				break;
+			case "SetTreeMaterial":
+				ItemStack logItem = new ItemStack(nbtcommand.getCompoundTag("log"));
+				ItemStack leafItem = new ItemStack(nbtcommand.getCompoundTag("leaf"));
+				this.treeData.SetMatValues(Block.getBlockFromItem(logItem.getItem()).getStateFromMeta(logItem.getMetadata()), Block.getBlockFromItem(leafItem.getItem()).getStateFromMeta(leafItem.getMetadata()));
+				break;
+				
+			default:
+				break;
+			}
+		}
+	}
 
 }

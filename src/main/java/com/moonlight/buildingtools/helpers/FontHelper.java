@@ -1,10 +1,9 @@
 package com.moonlight.buildingtools.helpers;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.translation.LanguageMap;
-
-import org.lwjgl.opengl.GL11;
 
 public class FontHelper
 {

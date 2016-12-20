@@ -1,12 +1,17 @@
 package com.moonlight.buildingtools.items.tools.filtertool;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+
+import com.moonlight.buildingtools.BuildingTools;
+import com.moonlight.buildingtools.helpers.Shapes;
+import com.moonlight.buildingtools.helpers.shapes.IShapeable;
+import com.moonlight.buildingtools.items.tools.BlockChangeBase;
+import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
+import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
+import com.moonlight.buildingtools.utils.MiscUtils;
 
 import net.minecraft.block.BlockFlower;
-import net.minecraft.block.BlockGrass;
 import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,17 +20,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.moonlight.buildingtools.BuildingTools;
-import com.moonlight.buildingtools.helpers.Shapes;
-import com.moonlight.buildingtools.helpers.shapes.IShapeable;
-import com.moonlight.buildingtools.items.tools.BlockChangeBase;
-import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
-import com.moonlight.buildingtools.items.tools.ChangeBlockToThis;
-import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
-import com.moonlight.buildingtools.utils.MiscUtils;
 
 public class ThreadBonemeal implements IShapeable, BlockChangeBase{
 	
