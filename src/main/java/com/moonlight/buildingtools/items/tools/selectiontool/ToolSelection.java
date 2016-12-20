@@ -13,6 +13,7 @@ import com.moonlight.buildingtools.utils.RGBA;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
@@ -55,8 +56,15 @@ public class ToolSelection extends ToolBase{
 	        stack.getTagCompound().setInteger("repeatMovmentY", 0);
 	        stack.getTagCompound().setInteger("repeatMovmentZ", 0);
 	        
+	        //ItemStack defaultFill = new ItemStack(Blocks.AIR);
 	        stack.getTagCompound().setTag("fillblocks", new NBTTagCompound());
+	        //stack.getTagCompound().getCompoundTag("fillblocks").setTag("0", new NBTTagCompound());
+	        //stack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag("0").setInteger("chance", 1);
+	        //stack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag("0").setTag("blockstate", defaultFill.writeToNBT(new NBTTagCompound()));
+	        
+	        //ItemStack defaultReplace = new ItemStack(Blocks.AIR);
 	        stack.getTagCompound().setTag("replaceblocks", new NBTTagCompound());
+	        //stack.getTagCompound().getCompoundTag("replaceblocks").setTag("0", defaultReplace.writeToNBT(new NBTTagCompound()));
 	        
 	        stack.getTagCompound().setTag("bpos1", new NBTTagCompound());
 	        stack.getTagCompound().getCompoundTag("bpos1").setInteger("x", 0);
@@ -217,6 +225,7 @@ public class ToolSelection extends ToolBase{
 			player.addPending(new ThreadCopyToClipboard(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer));
 			
 		} else if (buttonID == GUISelectionTool.pasteclipboard.id) {
+			//PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(thisStack)));
 			player.addPending(new ThreadPasteClipboard(
 					world, currPlayer, targetBlock,
 					getNBT(thisStack).getInteger("Rotation"),
@@ -268,7 +277,7 @@ public class ToolSelection extends ToolBase{
 		} else if (buttonID == GUISelectionTool.moveZ.id) {
 			getNBT(thisStack).setInteger("repeatMovmentZ", getNBT(thisStack).getInteger("repeatMovmentZ") + (amount * multiplier));
 		}
-		
+		PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(thisStack)));
 	}
 	
 	public BlockPos getAdjustedBlockPos(BlockPos originalPos){
@@ -318,18 +327,37 @@ public class ToolSelection extends ToolBase{
 			
 			switch (command) {
 			case "SetFill":
-				System.out.println("Recieved Message!");
+				System.out.println("Recieved Message Fill!");
 				System.out.println(nbtcommand.getCompoundTag("fillblocks"));
 				thisStack.getTagCompound().setTag("fillblocks", nbtcommand.getCompoundTag("fillblocks"));
-				System.out.println(thisStack.getTagCompound().getCompoundTag("fillblocks"));
+//				while(!getNBT(thisStack).getCompoundTag("fillblocks").equals(nbtcommand.getCompoundTag("fillblocks"))){
+//					thisStack.getTagCompound().setTag("fillblocks", nbtcommand.getCompoundTag("fillblocks"));
+//					PacketDispatcher.sendToServer(new SyncNBTDataMessage(thisStack.getTagCompound()));
+//					System.out.println("error set fill");
+//				}
+				System.out.println(getNBT(thisStack).getCompoundTag("fillblocks"));
+				System.out.println(getNBT(thisStack).getCompoundTag("replaceblocks"));
 				break;
 			case "SetReplace":
-				System.out.println("Recieved Message!");
+				System.out.println("Recieved Message Replace!");
 				System.out.println(nbtcommand.getCompoundTag("replaceblocks"));
 				thisStack.getTagCompound().setTag("replaceblocks", nbtcommand.getCompoundTag("replaceblocks"));
-				System.out.println(thisStack.getTagCompound().getCompoundTag("replaceblocks"));
+//				while(!getNBT(thisStack).getCompoundTag("replaceblocks").equals(nbtcommand.getCompoundTag("replaceblocks"))){
+//					thisStack.getTagCompound().setTag("replaceblocks", nbtcommand.getCompoundTag("replaceblocks"));
+//					PacketDispatcher.sendToServer(new SyncNBTDataMessage(thisStack.getTagCompound()));
+//					System.out.println("error set replace");
+//				}
 				break;
 			case "RunFillReplace":
+				System.out.println(thisStack.getTagCompound().getCompoundTag("fillblocks"));
+				System.out.println(thisStack.getTagCompound().getCompoundTag("replaceblocks"));
+				PacketDispatcher.sendToServer(new SyncNBTDataMessage(thisStack.getTagCompound()));
+				while (getNBT(thisStack).getCompoundTag("fillblocks").equals(nbtcommand.getCompoundTag("fillblocks"))) {
+					System.out.println("error fill");
+				}
+				while (getNBT(thisStack).getCompoundTag("replaceblocks") != nbtcommand.getCompoundTag("replaceblocks")) {
+					System.out.println("error replace");
+				}
 				player.addPending(new ThreadAdvancedFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, thisStack.getTagCompound()));
 				break;
 			case "SaveFile":

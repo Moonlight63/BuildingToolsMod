@@ -36,7 +36,8 @@ public final class ContainerBlockSelMenu extends Container{
         ContainerBlockSelMenu.scrollTo(0.0F);
     }
 
-    public boolean canInteractWith(EntityPlayer playerIn){
+    @Override
+	public boolean canInteractWith(EntityPlayer playerIn){
         return true;
     }
 
@@ -45,7 +46,7 @@ public final class ContainerBlockSelMenu extends Container{
      */
     public static void scrollTo(float p_148329_1_){
         int i = (ContainerBlockSelMenu.itemList.size() + 9 - 1) / 9 - 5;
-        int j = (int)((double)(p_148329_1_ * (float)i) + 0.5D);
+        int j = (int)(p_148329_1_ * i + 0.5D);
 
         if (j < 0){
             j = 0;
@@ -56,10 +57,10 @@ public final class ContainerBlockSelMenu extends Container{
                 int i1 = l + (k + j) * 9;
 
                 if (i1 >= 0 && i1 < ContainerBlockSelMenu.itemList.size()){
-                    blocksINV.setInventorySlotContents(l + k * 9, (ItemStack)ContainerBlockSelMenu.itemList.get(i1));
+                    blocksINV.setInventorySlotContents(l + k * 9, ContainerBlockSelMenu.itemList.get(i1));
                 }
                 else{
-                    blocksINV.setInventorySlotContents(l + k * 9, (ItemStack)new ItemStack((Item)null));
+                    blocksINV.setInventorySlotContents(l + k * 9, new ItemStack((Item)null));
                 }
             }
         }
@@ -125,7 +126,7 @@ public final class ContainerBlockSelMenu extends Container{
 	        GlStateManager.enableBlend();
 	        GlStateManager.disableTexture2D();
 	        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-	        GlStateManager.color((float)bgColor.red / 255f, (float)bgColor.green / 255f, (float)bgColor.blue / 255f, (float)bgColor.alpha / 255f);
+	        GlStateManager.color(bgColor.red / 255f, bgColor.green / 255f, bgColor.blue / 255f, bgColor.alpha / 255f);
 	        worldrenderer.begin(7, DefaultVertexFormats.POSITION);
 	        worldrenderer.pos((double)this.xDisplayPosition + guiLeft, (double)this.yDisplayPosition + guiTop + 16, 0.0D).endVertex();
 	        worldrenderer.pos((double)this.xDisplayPosition + guiLeft + 16, (double)this.yDisplayPosition + guiTop + 16, 0.0D).endVertex();

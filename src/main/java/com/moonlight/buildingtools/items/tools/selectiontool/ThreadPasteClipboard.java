@@ -15,6 +15,7 @@ import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.MiscUtils;
 
 import net.minecraft.block.BlockButton;
+import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.BlockLever;
@@ -224,7 +225,7 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 		case Torch:
 			System.out.println("TORCHES");			
 			if(flipY){
-				EnumFacing facing = (EnumFacing)blockState.getValue(BlockTorch.FACING);
+				EnumFacing facing = blockState.getValue(BlockTorch.FACING);
 				if(facing != EnumFacing.UP && facing != EnumFacing.DOWN){
 					return blockState;
 				}
@@ -331,7 +332,7 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 		case RedStone:
 			return EnumFacing.DOWN;
 		case Buttons:
-			return state.getValue(BlockButton.FACING).getOpposite();
+			return state.getValue(BlockDirectional.FACING).getOpposite();
 		case TripWire:
 			break;
 		case TrapDoor:
@@ -473,6 +474,7 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 		
 	}
 	
+	@Override
 	public void perform(){
 		
 		if(!currentlyCalculating){
@@ -492,6 +494,7 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 		
 	}
 	
+	@Override
 	public boolean isFinished(){
 		return isFinished;
 	}

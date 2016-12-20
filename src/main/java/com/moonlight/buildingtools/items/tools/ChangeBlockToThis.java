@@ -19,7 +19,7 @@ public class ChangeBlockToThis implements Serializable {
 	public ChangeBlockToThis(BlockPos pos, IBlockState state){
 		this.thisPos = pos;
 		this.changeToThis = state;		
-		this.nbttag = (NBTTagCompound)null;
+		this.nbttag = null;
 	}
 	
 	public ChangeBlockToThis(BlockPos pos, IBlockState state, NBTTagCompound compound){

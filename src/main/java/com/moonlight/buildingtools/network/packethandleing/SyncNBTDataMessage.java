@@ -35,7 +35,7 @@ public class SyncNBTDataMessage implements IMessage {
 			//System.out.print("Returning from onMessege \n");
 			if(player.getHeldItemMainhand() != null && message.nbtTagComopound != null){
 				player.getHeldItemMainhand().setTagCompound(message.nbtTagComopound);
-				player.getHeldItemMainhand().getItem().getMetadata(0);
+				//player.getHeldItemMainhand().getItem().getMetadata(0);
 			}
 			
 			return null;

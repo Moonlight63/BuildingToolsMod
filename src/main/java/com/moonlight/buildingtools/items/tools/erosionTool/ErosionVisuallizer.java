@@ -111,7 +111,7 @@ public class ErosionVisuallizer implements IShapeable{
 	            		  tempCount++;
 	            		  IBlockState typeBlock = relativeBlock;
 	            		  if (blockCount.containsKey(typeBlock)) {
-	            			  blockCount.put(typeBlock, Integer.valueOf(((Integer)blockCount.get(typeBlock)).intValue() + 1));
+	            			  blockCount.put(typeBlock, Integer.valueOf(blockCount.get(typeBlock).intValue() + 1));
 	            		  } else {
 	            			  blockCount.put(typeBlock, Integer.valueOf(1));
 	            		  }
@@ -122,7 +122,7 @@ public class ErosionVisuallizer implements IShapeable{
 	              int amount = 0;
 	              for (IBlockState state : blockCount.keySet())
 	              {
-	                Integer currentCount = (Integer)blockCount.get(state);
+	                Integer currentCount = blockCount.get(state);
 	                if (amount <= currentCount.intValue())
 	                {
 	                  currentMaterial = state;
@@ -224,9 +224,9 @@ public class ErosionVisuallizer implements IShapeable{
 	    {
 	      IBlockState changedBlock = null;
 	      for (int i = iteration - 1; i >= 0; i--) {
-	        if ((this.changes.containsKey(Integer.valueOf(i))) && (((Map<BlockPos, IBlockState>)this.changes.get(Integer.valueOf(i))).containsKey(position)))
+	        if ((this.changes.containsKey(Integer.valueOf(i))) && (this.changes.get(Integer.valueOf(i)).containsKey(position)))
 	        {
-	          changedBlock = (IBlockState)((Map<BlockPos, IBlockState>)this.changes.get(Integer.valueOf(i))).get(position);
+	          changedBlock = this.changes.get(Integer.valueOf(i)).get(position);
 	          return changedBlock;
 	        }
 	      }
@@ -254,7 +254,7 @@ public class ErosionVisuallizer implements IShapeable{
 	      if (!this.changes.containsKey(Integer.valueOf(iteration))) {
 	        this.changes.put(Integer.valueOf(iteration), new HashMap<BlockPos, IBlockState>());
 	      }
-	      ((Map<BlockPos, IBlockState>)this.changes.get(Integer.valueOf(iteration))).put(position, changedBlock);
+	      this.changes.get(Integer.valueOf(iteration)).put(position, changedBlock);
 	      this.flatChanges.put(position, changedBlock);
 	    }
 	}

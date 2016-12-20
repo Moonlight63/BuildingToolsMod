@@ -44,7 +44,7 @@ public class BlockChangeQueue {
 					if(bpos.getBlockState().getBlock() instanceof BlockDoor){
 						System.out.println(bpos.getBlockPos());
 						System.out.println(bpos.getBlockState());
-						ItemDoor.placeDoor(world, bpos.getBlockPos(), (EnumFacing) bpos.getBlockState().getValue(BlockDoor.FACING), bpos.getBlockState().getBlock(), false);
+						ItemDoor.placeDoor(world, bpos.getBlockPos(), bpos.getBlockState().getValue(BlockDoor.FACING), bpos.getBlockState().getBlock(), false);
 					}
 					else{
 						world.setBlockState(bpos.getBlockPos(), bpos.getBlockState());
@@ -53,7 +53,7 @@ public class BlockChangeQueue {
 				if(!replaceAll)
 					if(world.getBlockState(bpos.getBlockPos()) == blockStateToReplace){
 						if(bpos.getBlockState().getBlock() instanceof BlockDoor){
-							ItemDoor.placeDoor(world, bpos.getBlockPos(), (EnumFacing) bpos.getBlockState().getValue(BlockDoor.FACING), bpos.getBlockState().getBlock(), false);
+							ItemDoor.placeDoor(world, bpos.getBlockPos(), bpos.getBlockState().getValue(BlockDoor.FACING), bpos.getBlockState().getBlock(), false);
 						}
 						else{
 							world.setBlockState(bpos.getBlockPos(), bpos.getBlockState());

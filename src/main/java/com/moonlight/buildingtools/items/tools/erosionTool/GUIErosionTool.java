@@ -83,7 +83,7 @@ public class GUIErosionTool extends GuiScreen{
         //{
             for (int l = 0; l < this.buttonList.size(); ++l)
             {
-                GuiButton guibutton = (GuiButton)this.buttonList.get(l);
+                GuiButton guibutton = this.buttonList.get(l);
 
                 if (guibutton.mousePressed(this.mc, mouseX, mouseY))
                 {

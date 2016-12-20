@@ -51,6 +51,7 @@ public class ThreadClearSelection implements BlockChangeBase, IShapeable{
 	}
 	
 	//protected int count = 0;
+	@Override
 	public void perform(){
 		if(!currentlyCalculating){
 			if(!selectionCalculated){
@@ -71,6 +72,7 @@ public class ThreadClearSelection implements BlockChangeBase, IShapeable{
 		}
 	}
 	
+	@Override
 	public boolean isFinished(){
 		return isFinished;
 	}

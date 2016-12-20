@@ -65,7 +65,8 @@ public class ThreadClearFoliage implements IShapeable, BlockChangeBase{
         this.alsofill = nbtdata.getInteger("fillorclear") != 1;
     }
 
-    public void setBlock(BlockPos tempPos)
+    @Override
+	public void setBlock(BlockPos tempPos)
     {
         BlockPos bpos = tempPos;
         if(bpos.add(origin).getY() > 0 && bpos.add(origin).getY() < 256 && ((world.getBlockState(bpos.add(origin)).getBlock() instanceof BlockDoublePlant) || (world.getBlockState(bpos.add(origin)).getBlock() instanceof BlockLeaves) || (world.getBlockState(bpos.add(origin)).getBlock() instanceof BlockBush) || (world.getBlockState(bpos.add(origin)).getBlock() instanceof BlockTallGrass) || (world.getBlockState(bpos.add(origin)).getBlock() instanceof BlockCrops) || (world.getBlockState(bpos.add(origin)).getBlock() instanceof BlockFlower) || (world.getBlockState(bpos.add(origin)).getBlock() instanceof BlockVine) || (world.getBlockState(bpos.add(origin)).getBlock() instanceof BlockReed) || (world.getBlockState(bpos.add(origin)).getBlock() instanceof BlockSapling) || (world.getBlockState(bpos.add(origin)).getBlock() instanceof BlockWeb) || (world.getBlockState(bpos.add(origin)).getBlock() instanceof BlockCactus) || (world.getBlockState(bpos.add(origin)).getBlock() instanceof BlockLilyPad) || (world.getBlockState(bpos.add(origin)).getBlock() instanceof BlockSign) || (world.getBlockState(bpos.add(origin)).getBlock() instanceof BlockStem)))
@@ -94,7 +95,7 @@ public class ThreadClearFoliage implements IShapeable, BlockChangeBase{
         shapeFinished = false;
         for(Iterator<ChangeBlockToThis> iterator = filledList.iterator(); iterator.hasNext();)
         {
-            ChangeBlockToThis block = (ChangeBlockToThis)iterator.next();
+            ChangeBlockToThis block = iterator.next();
             tempList.add(block);
             count++;
             if(count > 4096){
@@ -106,7 +107,8 @@ public class ThreadClearFoliage implements IShapeable, BlockChangeBase{
 
     }
 
-    public void perform()
+    @Override
+	public void perform()
     {
         if(!currentlyCalculating){
             this.tempList.clear();
@@ -125,7 +127,8 @@ public class ThreadClearFoliage implements IShapeable, BlockChangeBase{
         return world;
     }
 
-    public boolean isFinished(){
+    @Override
+	public boolean isFinished(){
         return isFinished;
     }
 	

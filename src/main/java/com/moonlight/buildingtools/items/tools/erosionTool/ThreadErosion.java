@@ -47,6 +47,7 @@ public class ThreadErosion implements BlockChangeBase {
 	
 	
 	int tempCount = 0;
+	@Override
 	public void perform(){
 		if(!currentlyCalculating){
 			tempCount++;
@@ -86,6 +87,7 @@ public class ThreadErosion implements BlockChangeBase {
         return this.world;
     }
 
+	@Override
 	public boolean isFinished(){
 		return isFinished;
 	}

@@ -74,7 +74,8 @@ public class GUIBlockSelection extends GuiContainer{
     /**
      * Called from the main game loop to update the screen.
      */
-    public void updateScreen(){
+    @Override
+	public void updateScreen(){
         //this.mc.displayGuiScreen(new GuiInventory(this.mc.thePlayer));
     }
 
@@ -98,7 +99,8 @@ public class GUIBlockSelection extends GuiContainer{
      * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
      * window resizes, the buttonList is cleared beforehand.
      */
-    @SuppressWarnings("deprecation")
+    @Override
+	@SuppressWarnings("deprecation")
 	public void initGui(){
         super.initGui();
         this.buttonList.clear();
@@ -151,7 +153,8 @@ public class GUIBlockSelection extends GuiContainer{
     /**
      * Called when the screen is unloaded. Used to disable keyboard repeat events
      */
-    public void onGuiClosed(){
+    @Override
+	public void onGuiClosed(){
         super.onGuiClosed();
     }
 
@@ -159,7 +162,8 @@ public class GUIBlockSelection extends GuiContainer{
      * Fired when a key is typed (except F11 which toggles full screen). This is the equivalent of
      * KeyListener.keyTyped(KeyEvent e). Args : character (character on the key), keyCode (lwjgl Keyboard key code)
      */
-    protected void keyTyped(char typedChar, int keyCode) throws IOException{
+    @Override
+	protected void keyTyped(char typedChar, int keyCode) throws IOException{
         if (!this.searchField.isFocused()){
             if (GameSettings.isKeyDown(this.mc.gameSettings.keyBindChat)){
                 this.searchField.setFocused(true);
@@ -199,7 +203,7 @@ public class GUIBlockSelection extends GuiContainer{
         String s1 = this.searchField.getText().toLowerCase();
 
         while (iterator2.hasNext()){
-            ItemStack itemstack = (ItemStack)iterator2.next();
+            ItemStack itemstack = iterator2.next();
             boolean flag = false;
 
             for (String s : itemstack.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips)){
@@ -235,7 +239,8 @@ public class GUIBlockSelection extends GuiContainer{
     /**
      * Called when the mouse is clicked. Args : mouseX, mouseY, clickedButton
      */
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException{
+    @Override
+	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException{
         if (mouseButton == 0){
 //            int i = mouseX - this.guiLeft;
 //            int j = mouseY - this.guiTop;
@@ -252,7 +257,8 @@ public class GUIBlockSelection extends GuiContainer{
     /**
      * Called when a mouse button is released.  Args : mouseX, mouseY, releaseButton
      */
-    protected void mouseReleased(int mouseX, int mouseY, int state){
+    @Override
+	protected void mouseReleased(int mouseX, int mouseY, int state){
         if (state == 0){
 //            int i = mouseX - this.guiLeft;
 //            int j = mouseY - this.guiTop;
@@ -263,7 +269,8 @@ public class GUIBlockSelection extends GuiContainer{
     /**
      * Handles mouse input.
      */
-    public void handleMouseInput() throws IOException{
+    @Override
+	public void handleMouseInput() throws IOException{
         super.handleMouseInput();
         int i = Mouse.getEventDWheel();
 
@@ -278,7 +285,7 @@ public class GUIBlockSelection extends GuiContainer{
                 i = -1;
             }
 
-            this.currentScroll = (float)((double)this.currentScroll - (double)i / (double)j);
+            this.currentScroll = (float)(this.currentScroll - (double)i / (double)j);
             this.currentScroll = MathHelper.clamp_float(this.currentScroll, 0.0F, 1.0F);
             ContainerBlockSelMenu.scrollTo(this.currentScroll);
         }
@@ -287,7 +294,8 @@ public class GUIBlockSelection extends GuiContainer{
     /**
      * Draws the screen and all the components in it. Args : mouseX, mouseY, renderPartialTicks
      */
-    public void drawScreen(int mouseX, int mouseY, float partialTicks){
+    @Override
+	public void drawScreen(int mouseX, int mouseY, float partialTicks){
     	
     	super.drawScreen(mouseX, mouseY, partialTicks);
     	
@@ -310,7 +318,7 @@ public class GUIBlockSelection extends GuiContainer{
         this.wasClicking = flag;
 
         if (this.isScrolling){
-            this.currentScroll = ((float)(mouseY - l) - 7.5F) / ((float)(j1 - l) - 15.0F);
+            this.currentScroll = (mouseY - l - 7.5F) / (j1 - l - 15.0F);
             this.currentScroll = MathHelper.clamp_float(this.currentScroll, 0.0F, 1.0F);
             ContainerBlockSelMenu.scrollTo(this.currentScroll);
         }
@@ -392,7 +400,8 @@ public class GUIBlockSelection extends GuiContainer{
         return this.isPointInRegion(slotIn.xDisplayPosition, slotIn.yDisplayPosition, 16, 16, mouseX, mouseY);
     }
 
-    protected void renderToolTip(ItemStack stack, int x, int y){
+    @Override
+	protected void renderToolTip(ItemStack stack, int x, int y){
             List<String> list = stack.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
             CreativeTabs creativetabs = stack.getItem().getCreativeTab();
 
@@ -402,10 +411,10 @@ public class GUIBlockSelection extends GuiContainer{
 
             for (int i = 0; i < list.size(); ++i){
                 if (i == 0){
-                    list.set(i, stack.getRarity().rarityColor + (String)list.get(i));
+                    list.set(i, stack.getRarity().rarityColor + list.get(i));
                 }
                 else{
-                    list.set(i, TextFormatting.GRAY + (String)list.get(i));
+                    list.set(i, TextFormatting.GRAY + list.get(i));
                 }
             }
 
@@ -418,7 +427,8 @@ public class GUIBlockSelection extends GuiContainer{
     /**
      * Args : renderPartialTicks, mouseX, mouseY
      */
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY){
+    @Override
+	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY){
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         RenderHelper.enableGUIStandardItemLighting();
 
@@ -430,13 +440,14 @@ public class GUIBlockSelection extends GuiContainer{
         int j = this.guiTop + 18;
         int k = j + 112;
         this.mc.getTextureManager().bindTexture(creativeInventoryTabs);
-        this.drawTexturedModalRect(i, j + (int)((float)(k - j - 17) * this.currentScroll), 232, 0, 12, 15);
+        this.drawTexturedModalRect(i, j + (int)((k - j - 17) * this.currentScroll), 232, 0, 12, 15);
     }
 
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) throws IOException{
+    @Override
+	protected void actionPerformed(GuiButton button) throws IOException{
         if (button == showMetaData){
         	this.updateCreativeSearch();
         	

@@ -43,9 +43,9 @@ public class RenderHelper
 		
         float f1 = 0.02F;
 
-        double d0 = entityPlayer.lastTickPosX + (entityPlayer.posX - entityPlayer.lastTickPosX) * (double) partialTicks;
-        double d1 = entityPlayer.lastTickPosY + (entityPlayer.posY - entityPlayer.lastTickPosY) * (double) partialTicks;
-        double d2 = entityPlayer.lastTickPosZ + (entityPlayer.posZ - entityPlayer.lastTickPosZ) * (double) partialTicks;
+        double d0 = entityPlayer.lastTickPosX + (entityPlayer.posX - entityPlayer.lastTickPosX) * partialTicks;
+        double d1 = entityPlayer.lastTickPosY + (entityPlayer.posY - entityPlayer.lastTickPosY) * partialTicks;
+        double d2 = entityPlayer.lastTickPosZ + (entityPlayer.posZ - entityPlayer.lastTickPosZ) * partialTicks;
         
         //AxisAlignedBB box = state.getCollisionBoundingBox(entityPlayer.worldObj, blockpos).expand(f1, f1, f1).offset(-d0, -d1, -d2);
         AxisAlignedBB box = aabb.expand(f1, f1, f1).offset(-d0, -d1, -d2).offset(blockpos);
@@ -210,10 +210,10 @@ public class RenderHelper
         //GL11.glDisable(GL11.GL_DEPTH_TEST);
         float f1 = 0.02F;
 
-        double d0 = entityPlayer.lastTickPosX + (entityPlayer.posX - entityPlayer.lastTickPosX) * (double) partialTicks;
-        double d1 = entityPlayer.lastTickPosY + (entityPlayer.posY - entityPlayer.lastTickPosY) * (double) partialTicks;
-        double d2 = entityPlayer.lastTickPosZ + (entityPlayer.posZ - entityPlayer.lastTickPosZ) * (double) partialTicks;
-        RenderGlobal.drawSelectionBoundingBox(aabb.expand((double) f1, (double) f1, (double) f1).offset(-d0, -d1, -d2), colour.red, colour.green, colour.blue, colour.alpha);
+        double d0 = entityPlayer.lastTickPosX + (entityPlayer.posX - entityPlayer.lastTickPosX) * partialTicks;
+        double d1 = entityPlayer.lastTickPosY + (entityPlayer.posY - entityPlayer.lastTickPosY) * partialTicks;
+        double d2 = entityPlayer.lastTickPosZ + (entityPlayer.posZ - entityPlayer.lastTickPosZ) * partialTicks;
+        RenderGlobal.drawSelectionBoundingBox(aabb.expand(f1, f1, f1).offset(-d0, -d1, -d2), colour.red, colour.green, colour.blue, colour.alpha);
 
         GL11.glDepthMask(true);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -221,9 +221,9 @@ public class RenderHelper
     }
     
     public static Vec3d translateToWorldCoords(Entity entity, float frame) {
-        double interpPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double) frame;
-        double interpPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double) frame;
-        double interpPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double) frame;
+        double interpPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * frame;
+        double interpPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * frame;
+        double interpPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * frame;
 
         //System.out.println(new Vec3(interpPosX, interpPosY, interpPosZ));
         return new Vec3d(-interpPosX, -interpPosY, -interpPosZ);

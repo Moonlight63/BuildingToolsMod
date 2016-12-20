@@ -29,6 +29,7 @@ public class BlockMarker extends Block {
     {
         return -1;
     }*/
+	@Override
 	@Nullable
     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
     {
@@ -84,7 +85,8 @@ public class BlockMarker extends Block {
         return 1.0f;
     }
     
-    @SideOnly(Side.CLIENT)
+    @Override
+	@SideOnly(Side.CLIENT)
     public BlockRenderLayer getBlockLayer()
     {
         return BlockRenderLayer.CUTOUT_MIPPED;

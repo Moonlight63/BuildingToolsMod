@@ -389,6 +389,7 @@ public class TileEntityGuide extends TileEntity implements IShapeable, IActivate
 	}
 	
 	//@Override
+	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound){
 		super.writeToNBT(compound);
 		compound.setInteger("width", this.getWidth());
@@ -399,6 +400,7 @@ public class TileEntityGuide extends TileEntity implements IShapeable, IActivate
 	}
 	
 	//@Override
+	@Override
 	public void readFromNBT(NBTTagCompound compound){
 		super.readFromNBT(compound);
 		if(compound.getInteger("width") > 0)

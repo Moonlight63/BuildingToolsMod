@@ -88,6 +88,7 @@ public class ToolUndo extends ToolBase{
 		return new ActionResult<ItemStack>(EnumActionResult.PASS, itemStackIn);
     }
 		
+	@Override
 	public boolean onItemUse(ItemStack stack,
             EntityPlayer playerIn,
             World worldIn,

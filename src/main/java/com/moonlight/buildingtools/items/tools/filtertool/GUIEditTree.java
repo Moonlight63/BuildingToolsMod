@@ -364,7 +364,7 @@ public class GUIEditTree extends GuiScreen implements IScrollButtonListener{
 	@Override
 	public void GetGuiSliderValue(GuiSlider slider){
 		if(page == 2){
-			float n = Math.round(((GuiSlider)(slider)).getValue()*100)/100.f;
+			float n = Math.round((slider).getValue()*100)/100.f;
 			System.out.println(n);
 			if(slider.id < this.foliageShapes.get(currentFloatArray).size())
 				this.foliageShapes.get(currentFloatArray).set((slider.id), n);
@@ -382,7 +382,7 @@ public class GUIEditTree extends GuiScreen implements IScrollButtonListener{
     {
         for (int l = 0; l < this.buttonList.size(); ++l)
         {
-            GuiButton guibutton = (GuiButton)this.buttonList.get(l);
+            GuiButton guibutton = this.buttonList.get(l);
 
             if (guibutton.mousePressed(this.mc, mouseX, mouseY))
             {
@@ -406,7 +406,8 @@ public class GUIEditTree extends GuiScreen implements IScrollButtonListener{
 	/**
      * Called when a mouse button is released.  Args : mouseX, mouseY, releaseButton
      */
-    protected void mouseReleased(int mouseX, int mouseY, int state)
+    @Override
+	protected void mouseReleased(int mouseX, int mouseY, int state)
     {
         if (this.selectedButton != null && state == 0)
         {

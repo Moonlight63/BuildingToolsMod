@@ -46,6 +46,7 @@ public class ThreadLoadClipboard implements BlockChangeBase{
 	}
 	
 	//protected int count = 0;
+	@Override
 	@SuppressWarnings("deprecation")
 	public void perform(){
 		if(!currentlyCalculating){
@@ -126,27 +127,27 @@ public class ThreadLoadClipboard implements BlockChangeBase{
             if(id == 0)
             	;
             else if(id == 1)
-            	tempCompound.setByte(nbt.name, (byte) nbt.data.byteData);
+            	tempCompound.setByte(nbt.name, nbt.data.byteData);
             else if(id == 2)
-            	tempCompound.setShort(nbt.name, (short) nbt.data.shortData);
+            	tempCompound.setShort(nbt.name, nbt.data.shortData);
             else if(id == 3)
             	tempCompound.setInteger(nbt.name, nbt.data.intData);
             else if(id == 4)
-            	tempCompound.setLong(nbt.name, (long) nbt.data.longData);
+            	tempCompound.setLong(nbt.name, nbt.data.longData);
             else if(id == 5)
-            	tempCompound.setFloat(nbt.name, (float) nbt.data.floatData);
+            	tempCompound.setFloat(nbt.name, nbt.data.floatData);
             else if(id == 6)
-            	tempCompound.setDouble(nbt.name, (double) nbt.data.doubleData);
+            	tempCompound.setDouble(nbt.name, nbt.data.doubleData);
             else if(id == 7)
-            	tempCompound.setByteArray(nbt.name, (byte[]) nbt.data.byteArrayData);
+            	tempCompound.setByteArray(nbt.name, nbt.data.byteArrayData);
             else if(id == 8)
-            	tempCompound.setString(nbt.name, (String) nbt.data.stringData);
+            	tempCompound.setString(nbt.name, nbt.data.stringData);
             else if(id == 9)
             	tempCompound.setTag(nbt.name, NBTTagListPhraser((ArrayList<NBTData>) nbt.data.listTagData));
             else if(id == 10)
-            	tempCompound.setTag(nbt.name, NBTCompoundPhraser((List<NBTData>) nbt.data.compoundTagData));
+            	tempCompound.setTag(nbt.name, NBTCompoundPhraser(nbt.data.compoundTagData));
             else if(id == 11)
-            	tempCompound.setIntArray(nbt.name, (int[]) nbt.data.intArrayData);
+            	tempCompound.setIntArray(nbt.name, nbt.data.intArrayData);
 					
     	}
 		
@@ -172,25 +173,25 @@ public class ThreadLoadClipboard implements BlockChangeBase{
         	else if(id == 1)
         		temp.appendTag(new NBTTagByte(nbt.data.byteData));
         	else if(id == 2)
-        		temp.appendTag(new NBTTagShort((short) nbt.data.shortData));
+        		temp.appendTag(new NBTTagShort(nbt.data.shortData));
         	else if(id == 3)
-        		temp.appendTag(new NBTTagInt((int) nbt.data.intData));
+        		temp.appendTag(new NBTTagInt(nbt.data.intData));
         	else if(id == 4)
-        		temp.appendTag(new NBTTagLong((long) nbt.data.longData));
+        		temp.appendTag(new NBTTagLong(nbt.data.longData));
         	else if(id == 5)
-        		temp.appendTag(new NBTTagFloat((float) nbt.data.floatData));
+        		temp.appendTag(new NBTTagFloat(nbt.data.floatData));
         	else if(id == 6)
-        		temp.appendTag(new NBTTagDouble((double) nbt.data.doubleData));
+        		temp.appendTag(new NBTTagDouble(nbt.data.doubleData));
         	else if(id == 7)
-        		temp.appendTag(new NBTTagByteArray((byte[]) nbt.data.byteArrayData));
+        		temp.appendTag(new NBTTagByteArray(nbt.data.byteArrayData));
         	else if(id == 8)
-        		temp.appendTag(new NBTTagString((String) nbt.data.stringData));
+        		temp.appendTag(new NBTTagString(nbt.data.stringData));
         	else if(id == 9)
         		temp.appendTag(NBTTagListPhraser((ArrayList<NBTData>) nbt.data.listTagData));
         	else if(id == 10)
-        		temp.appendTag(NBTCompoundPhraser((List<NBTData>) nbt.data.compoundTagData));
+        		temp.appendTag(NBTCompoundPhraser(nbt.data.compoundTagData));
         	else if(id == 11)
-        		temp.appendTag(new NBTTagIntArray((int[]) nbt.data.intArrayData));
+        		temp.appendTag(new NBTTagIntArray(nbt.data.intArrayData));
 					
     	}
 		
@@ -199,6 +200,7 @@ public class ThreadLoadClipboard implements BlockChangeBase{
 	}
 	
 	
+	@Override
 	public boolean isFinished(){
 		return isFinished;
 	}

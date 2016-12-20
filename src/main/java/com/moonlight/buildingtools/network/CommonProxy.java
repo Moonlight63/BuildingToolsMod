@@ -46,7 +46,8 @@ public class CommonProxy {
         /**
          * {@inheritDoc}
          */
-        public Optional<Pair<String, PlayerWrapper>> get(String name)
+        @Override
+		public Optional<Pair<String, PlayerWrapper>> get(String name)
         {
             EntityPlayer player = null;
             for (Object e : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerList())

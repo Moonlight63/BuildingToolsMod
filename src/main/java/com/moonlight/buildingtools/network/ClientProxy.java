@@ -25,6 +25,7 @@ public class ClientProxy extends CommonProxy {
 	 return (ctx.side.isClient() ? Minecraft.getMinecraft().thePlayer : super.getPlayerEntity(ctx));
 	}
 	
+	@Override
 	public PlayerRegistry getPlayerRegistry(){
 		return new PlayerRegistry(new PlayerRegistryProviderClient());
 	}
@@ -41,7 +42,8 @@ public class ClientProxy extends CommonProxy {
         /**
          * {@inheritDoc}
          */
-        public Optional<Pair<String, PlayerWrapper>> get(String name)
+        @Override
+		public Optional<Pair<String, PlayerWrapper>> get(String name)
         {
             EntityPlayer player = null;
             for (Object e : net.minecraft.client.Minecraft.getMinecraft().getIntegratedServer().getPlayerList().getPlayerList())

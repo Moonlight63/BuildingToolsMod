@@ -74,7 +74,8 @@ public class ToolFilter extends ToolBase{
         return stack.getTagCompound();
     }
 
-    public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean check)
+    @Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean check)
     {
         super.addInformation(stack, player, list, check);
         if(KeyHelper.isShiftDown())
@@ -94,7 +95,7 @@ public class ToolFilter extends ToolBase{
 	        if(!worldIn.isRemote)
 	        {
 	            world = worldIn;
-	            PlayerWrapper player = (PlayerWrapper)BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
+	            PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
 	            System.out.println("FilterToolUsed");
 	            if(getNBT(itemStackIn).getInteger("filter") == 1)
 	                player.addPending(new ThreadTopsoil(worldIn, targetBlock, targetFace, playerIn, getNBT(itemStackIn)));
@@ -163,7 +164,8 @@ public class ToolFilter extends ToolBase{
     	return new ActionResult<ItemStack>(EnumActionResult.PASS, itemStackIn);
     }
 
-    public void handleKey(EntityPlayer player, ItemStack itemStack, KeyCode key)
+    @Override
+	public void handleKey(EntityPlayer player, ItemStack itemStack, KeyCode key)
     {
         int radius = getNBT(itemStack).getInteger("radiusX");
         float yMult = 0.0F;
@@ -198,13 +200,13 @@ public class ToolFilter extends ToolBase{
             radius = 0;
         getNBT(itemStack).setInteger("radiusX", radius);
         if(getNBT(itemStack).getInteger("radiusX") > getNBT(itemStack).getInteger("radiusY"))
-            getNBT(itemStack).setInteger("radiusY", (int)yMult != 0 ? (int)((float)radius / yMult) : 1);
+            getNBT(itemStack).setInteger("radiusY", (int)yMult != 0 ? (int)(radius / yMult) : 1);
         else
-            getNBT(itemStack).setInteger("radiusY", (int)yMult != 0 ? (int)((float)radius * yMult) : 0);
+            getNBT(itemStack).setInteger("radiusY", (int)yMult != 0 ? (int)(radius * yMult) : 0);
         if(getNBT(itemStack).getInteger("radiusX") > getNBT(itemStack).getInteger("radiusZ"))
-            getNBT(itemStack).setInteger("radiusZ", (int)zMult != 0 ? (int)((float)radius / zMult) : 1);
+            getNBT(itemStack).setInteger("radiusZ", (int)zMult != 0 ? (int)(radius / zMult) : 1);
         else
-            getNBT(itemStack).setInteger("radiusZ", (int)zMult != 0 ? (int)((float)radius * zMult) : 0);
+            getNBT(itemStack).setInteger("radiusZ", (int)zMult != 0 ? (int)(radius * zMult) : 0);
         PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(itemStack)));
     }
     

@@ -37,6 +37,7 @@ public class ThreadSaveUndoList implements BlockChangeBase{
 		this.savename = "/" + savename + ".nbt";
 	}
 	
+	@Override
 	public void perform(){
 		if(!currentlyCalculating){
 			try{
@@ -161,7 +162,7 @@ public class ThreadSaveUndoList implements BlockChangeBase{
         	else if(id == 9)
             	tempData.data.listTagData = NBTTagListParser(((NBTTagList)tag.get(i)));
         	else if(id == 10)
-            	tempData.data.compoundTagData = NBTCompoundParser(((NBTTagCompound)tag.getCompoundTagAt(i)));
+            	tempData.data.compoundTagData = NBTCompoundParser((tag.getCompoundTagAt(i)));
         	else if(id == 11)
             	tempData.data.intArrayData = ((NBTTagIntArray)tag.get(i)).getIntArray();
 	        	
@@ -174,6 +175,7 @@ public class ThreadSaveUndoList implements BlockChangeBase{
 	}
 	
 	
+	@Override
 	public boolean isFinished(){
 		return isFinished;
 	}

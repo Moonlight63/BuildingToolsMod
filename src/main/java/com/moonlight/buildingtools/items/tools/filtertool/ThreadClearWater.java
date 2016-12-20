@@ -56,7 +56,8 @@ public class ThreadClearWater implements IShapeable, BlockChangeBase{
         this.alsofill = nbtdata.getInteger("fillorclear") != 1;
     }
 
-    public void setBlock(BlockPos tempPos)
+    @Override
+	public void setBlock(BlockPos tempPos)
     {
         BlockPos bpos = tempPos;
         if(bpos.add(origin).getY() > 0 && bpos.add(origin).getY() < 256 && !world.isAirBlock(bpos.add(origin)) && (
@@ -87,7 +88,7 @@ public class ThreadClearWater implements IShapeable, BlockChangeBase{
         shapeFinished = false;
         for(Iterator<ChangeBlockToThis> iterator = filledList.iterator(); iterator.hasNext();)
         {
-            ChangeBlockToThis block = (ChangeBlockToThis)iterator.next();
+            ChangeBlockToThis block = iterator.next();
             tempList.add(block);
             count++;
             if(count > 4096){
@@ -99,7 +100,8 @@ public class ThreadClearWater implements IShapeable, BlockChangeBase{
 
     }
 
-    public void perform()
+    @Override
+	public void perform()
     {
         if(!currentlyCalculating){
             this.tempList.clear();
@@ -119,7 +121,8 @@ public class ThreadClearWater implements IShapeable, BlockChangeBase{
         return world;
     }
 
-    public boolean isFinished(){
+    @Override
+	public boolean isFinished(){
         return isFinished;
     }
 

@@ -13,12 +13,14 @@ public class CreativeTabMain extends CreativeTabs {
 		super(id, unlocalizedName);
 	}
 	
+	@Override
 	@SideOnly(Side.CLIENT)
     public ItemStack getTabIconItem() {
         //return Item.getItemFromBlock(Blocks.chest);
         return new ItemStack(ItemLoader.toolBuilding);
     }
 	
+	@Override
 	public boolean hasSearchBar() {
         return false;
     }

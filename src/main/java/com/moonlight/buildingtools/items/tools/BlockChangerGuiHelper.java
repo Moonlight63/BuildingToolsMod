@@ -36,7 +36,7 @@ public class BlockChangerGuiHelper extends Gui
 
         if (!(mc.thePlayer instanceof EntityPlayer)) return;
 
-        EntityPlayer player = (EntityPlayer) mc.thePlayer;
+        EntityPlayer player = mc.thePlayer;
 
         if (player == null || !mc.inGameHasFocus || !Minecraft.isGuiEnabled() || mc.gameSettings.showDebugInfo) return;
 

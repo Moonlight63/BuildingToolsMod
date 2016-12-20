@@ -144,7 +144,8 @@ public class ThreadMakeTree implements BlockChangeBase{
         return block == Blocks.FIRE || material == Material.AIR || material == Material.WATER || material == Material.LAVA || block == BlockLoader.tempBlock;
     }
 
-    public void perform()
+    @Override
+	public void perform()
     {
     	if(!currentlyCalculating){
     		currentlyCalculating = true;
@@ -170,7 +171,8 @@ public class ThreadMakeTree implements BlockChangeBase{
         return world;
     }
 
-    public boolean isFinished(){
+    @Override
+	public boolean isFinished(){
         return isFinished;
     }
     
@@ -243,16 +245,16 @@ public class ThreadMakeTree implements BlockChangeBase{
             if (f >= 0.0F){
                 for (int l = 0; l < i; ++l){
                 	
-                    double d0 = this.scaleWidth * (double)f * ((double)this.rand.nextFloat() + 0.328D);
-                    double d1 = (double)(this.rand.nextFloat() * 2.0F) * Math.PI;
+                    double d0 = this.scaleWidth * f * (this.rand.nextFloat() + 0.328D);
+                    double d1 = this.rand.nextFloat() * 2.0F * Math.PI;
                     double d2 = d0 * Math.sin(d1) + 0.5D;
                     double d3 = d0 * Math.cos(d1) + 0.5D;
-                    BlockPos blockpos = new BlockPos(d2, (double)(count - 1), d3);
+                    BlockPos blockpos = new BlockPos(d2, count - 1, d3);
                     
                     int i1 = -blockpos.getX();
                     int j1 = -blockpos.getZ();
-                    double d4 = (double)blockpos.getY() - Math.sqrt((double)(i1 * i1 + j1 * j1)) * this.branchSlope;
-                    int k1 = d4 > (double)height ? height : (int)d4 < branchStart ? branchStart : (int)d4;
+                    double d4 = blockpos.getY() - Math.sqrt(i1 * i1 + j1 * j1) * this.branchSlope;
+                    int k1 = d4 > height ? height : (int)d4 < branchStart ? branchStart : (int)d4;
 
                     //if (this.checkBlockLine(blockpos2, blockpos) == -1)
                     this.foliageCoords.add(new FoliageCoordinates(blockpos.add(origin), k1));
@@ -299,14 +301,14 @@ public class ThreadMakeTree implements BlockChangeBase{
     	
     	if(clusterShape == 0){
     	
-	        if ((float)layer < (float)this.height * this.foliageStart)
+	        if (layer < this.height * this.foliageStart)
 	        {
 	            return -1.0F;
 	        }
 	        else
 	        {
-	            float rad = (float)this.height / 2.0F;
-	            float adj = rad - (float)layer;
+	            float rad = this.height / 2.0F;
+	            float adj = rad - layer;
 	            float dist = MathHelper.sqrt_float(rad * rad - adj * adj);
 	
 	            if (adj == 0.0F)
@@ -328,7 +330,7 @@ public class ThreadMakeTree implements BlockChangeBase{
         		return -1;
         	}
         	
-        	float rad = (float) ((this.height - layer) * this.foliageStart);
+        	float rad = (this.height - layer) * this.foliageStart;
         	if(rad < 0)
         		rad = 0;
         	
@@ -364,7 +366,7 @@ public class ThreadMakeTree implements BlockChangeBase{
         float f2 = (float)blockpos.getZ() / (float)i;
 
         for (int j = 0; j <= i; ++j){
-        	BlockPos blockpos1 = pos1.add((double)(0.5F + (float)j * f), (double)(0.5F + (float)j * f1), (double)(0.5F + (float)j * f2));
+        	BlockPos blockpos1 = pos1.add(0.5F + j * f, 0.5F + j * f1, 0.5F + j * f2);
         	if(this.logMat.getBlock().equals(Blocks.LOG) || this.logMat.getBlock().equals(Blocks.LOG2)){
 	            BlockLog.EnumAxis blocklog$enumaxis = this.getLogAxis(pos1, blockpos1);
 	            this.add(new ChangeBlockToThis(blockpos1, this.logMat.withProperty(BlockLog.LOG_AXIS, blocklog$enumaxis)));
@@ -446,7 +448,11 @@ public class ThreadMakeTree implements BlockChangeBase{
     }
     
     public Set<BlockPos> foliagecluster(BlockPos center){
+    	
     	Set<BlockPos> set = Sets.newHashSet();
+    	if(this.foliage_shape.isEmpty()){
+    		return set;
+    	}
     	
     	int y = center.getY();
     	for(float i : this.foliage_shape.get(new Random().nextInt(this.foliage_shape.size()))){
@@ -568,19 +574,23 @@ public class ThreadMakeTree implements BlockChangeBase{
     		if ( step <= 0 )
     			throw new IllegalArgumentException( "step > 0 isrequired!" );
     		return new Iterable<Integer>(){
-    			public Iterator<Integer> iterator(){
+    			@Override
+				public Iterator<Integer> iterator(){
     				return new Iterator<Integer>(){
     					private int counter = start;
-    					public boolean hasNext(){
+    					@Override
+						public boolean hasNext(){
     						return counter < stop;
     					}
-    					public Integer next(){
+    					@Override
+						public Integer next(){
     						try{
     							return counter;
     						}
     						finally { counter += step; }
     					}
-    					public void remove() { }
+    					@Override
+						public void remove() { }
     				};
     			}
     		};

@@ -49,7 +49,8 @@ public class ThreadTopsoil implements IShapeable, BlockChangeBase{
         this.entity = entity;
     }
 
-    public void setBlock(BlockPos tempPos)
+    @Override
+	public void setBlock(BlockPos tempPos)
     {
         BlockPos bpos = tempPos;
         if(bpos.add(origin).getY() > 0 && bpos.add(origin).getY() < 256 && !world.isAirBlock(bpos.add(origin)) && world.isAirBlock(bpos.add(origin).up())){
@@ -68,7 +69,8 @@ public class ThreadTopsoil implements IShapeable, BlockChangeBase{
         }
     }
 
-    public void perform(){
+    @Override
+	public void perform(){
     	
         if(!currentlyCalculating)
         {
@@ -87,7 +89,8 @@ public class ThreadTopsoil implements IShapeable, BlockChangeBase{
         return world;
     }
 
-    public boolean isFinished(){
+    @Override
+	public boolean isFinished(){
         return isFinished;
     }
 
