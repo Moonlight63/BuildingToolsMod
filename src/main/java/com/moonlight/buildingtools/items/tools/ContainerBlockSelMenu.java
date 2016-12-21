@@ -24,12 +24,20 @@ public final class ContainerBlockSelMenu extends Container{
 	
 	private static InventoryBasic blocksINV = new InventoryBasic("tmp", true, 45);
     public static List<ItemStack> itemList = Lists.<ItemStack>newArrayList();
+    
+    public static int gridX = 9;
+    public static int gridY = 5;
+    
+    public static int startX = 9;
+    public static int startY = 18;
+    
+    public static int space = 18;
 
     public ContainerBlockSelMenu(){
 
-        for (int i = 0; i < 5; ++i){
-            for (int j = 0; j < 9; ++j){
-                this.addSlotToContainer(new CustomSlot(blocksINV, i * 9 + j, 9 + j * 18, 18 + i * 18));
+        for (int i = 0; i < gridY; ++i){
+            for (int j = 0; j < gridX; ++j){
+                this.addSlotToContainer(new CustomSlot(blocksINV, i * gridX + j, startX + j * space, startY + i * space));
             }
         }
 
@@ -44,23 +52,24 @@ public final class ContainerBlockSelMenu extends Container{
     /**
      * Updates the gui slots ItemStack's based on scroll position.
      */
-    public static void scrollTo(float p_148329_1_){
-        int i = (ContainerBlockSelMenu.itemList.size() + 9 - 1) / 9 - 5;
-        int j = (int)(p_148329_1_ * i + 0.5D);
+    public static void scrollTo(float scroll){
+    	
+        int i = (ContainerBlockSelMenu.itemList.size() + gridX - 1) / gridX - gridY;
+        int j = (int)(scroll * i + 0.5D);
 
         if (j < 0){
             j = 0;
         }
 
-        for (int k = 0; k < 5; ++k){
-            for (int l = 0; l < 9; ++l){
-                int i1 = l + (k + j) * 9;
+        for (int k = 0; k < gridY; ++k){
+            for (int l = 0; l < gridX; ++l){
+                int i1 = l + (k + j) * gridX;
 
                 if (i1 >= 0 && i1 < ContainerBlockSelMenu.itemList.size()){
-                    blocksINV.setInventorySlotContents(l + k * 9, ContainerBlockSelMenu.itemList.get(i1));
+                    blocksINV.setInventorySlotContents(l + k * gridX, ContainerBlockSelMenu.itemList.get(i1));
                 }
                 else{
-                    blocksINV.setInventorySlotContents(l + k * 9, new ItemStack((Item)null));
+                    blocksINV.setInventorySlotContents(l + k * gridX, new ItemStack((Item)null));
                 }
             }
         }
@@ -77,16 +86,11 @@ public final class ContainerBlockSelMenu extends Container{
 			
             GlStateManager.disableLighting();
             GlStateManager.disableDepth();
-            //int j1 = this.xDisplayPosition;
-            //int k1 = this.yDisplayPosition;
             GlStateManager.colorMask(true, true, true, false);
-            //ContainerBlockSelMenu.drawRect(j1, k1, j1, k1, RGBA.Red.setAlpha(50));
-            //this.drawGradientRect(j1, k1, j1 + 16, k1 + 16, -2130706433, -2130706433);
             GlStateManager.colorMask(true, true, true, true);
             GlStateManager.enableLighting();
             GlStateManager.enableDepth();
 			
-			// TODO Auto-generated constructor stub
 		}
 		
 		public void setColor (RGBA color){
@@ -106,21 +110,7 @@ public final class ContainerBlockSelMenu extends Container{
 	     * Draws a solid color rectangle with the specified coordinates and color (ARGB format). Args: x1, y1, x2, y2, color
 	     */
 	    public void drawRect(int guiLeft, int guiTop)
-	    {
-//	        if (left < right)
-//	        {
-//	            int i = left;
-//	            left = right;
-//	            right = i;
-//	        }
-//	
-//	        if (top < bottom)
-//	        {
-//	            int j = top;
-//	            top = bottom;
-//	            bottom = j;
-//	        }
-	
+	    {	
 	        Tessellator tessellator = Tessellator.getInstance();
 	        VertexBuffer worldrenderer = tessellator.getBuffer();
 	        GlStateManager.enableBlend();

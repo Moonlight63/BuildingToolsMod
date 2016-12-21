@@ -37,47 +37,65 @@ public class GUIReplaceTool extends GUIBlockSelection{
 	protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, ClickType clickType){
 		this.keyOrButtonClicked = true;
 		
-		ItemStack stack = slotIn.getStack();
+		int amount = 1;
 		
-		if(clickType == ClickType.PICKUP){
-			if(clickedButton == 0){
-				if(!blockFillList.contains(stack)){
-					if(!blockReplaceList.contains(stack)){
-						blockFillList.add(stack);
+		if(clickType == ClickType.QUICK_MOVE){
+			amount = 10;
+		}
+		else{
+			amount = 1;
+		}
+		
+		ItemStack stack;
+		if(slotIn != null)
+			stack = slotIn.getStack();
+		else
+			return;
+		
+		if(clickedButton == 0){
+			if(!blockFillList.contains(stack)){
+				if(!blockReplaceList.contains(stack)){
+					if(clickType == ClickType.QUICK_MOVE){
+						stack.func_190920_e(stack.func_190916_E()+amount-1);
 					}
-					else{
-						blockReplaceList.remove(stack);
-					}
+					blockFillList.add(stack);
 				}
 				else{
-					blockFillList.remove(stack);
-	    			slotIn.getStack().func_190920_e(stack.func_190916_E()+1);
-	    			blockFillList.add(stack);
+					blockReplaceList.remove(stack);
 				}
 			}
-			
-			else if(clickedButton == 1){
-				if(!blockReplaceList.contains(stack)){
-					if(!blockFillList.contains(stack)){
-	        			blockReplaceList.add(stack);
-	        		}
-	        		else{
-	        			blockFillList.remove(stack);
-	        			if(stack.func_190916_E()>1){
-	        				stack.func_190920_e(stack.func_190916_E()-1);
-	        				blockFillList.add(stack);
-	        			}
-	        			else if (stack.func_190916_E() == 1){
-	        				blockFillList.remove(stack);
-	        			}
-	        		}
-				}
+			else{
+				blockFillList.remove(stack);
+				stack.func_190920_e(stack.func_190916_E()+amount);
+    			blockFillList.add(stack);
+			}
+		}
+		
+		else if(clickedButton == 1){
+			if(!blockReplaceList.contains(stack)){
+				if(!blockFillList.contains(stack)){
+        			blockReplaceList.add(stack);
+        		}
+        		else{
+        			blockFillList.remove(stack);
+        			if(stack.func_190916_E()>1){
+        				stack.func_190920_e(stack.func_190916_E()-amount);
+        				boolean flag = false;;
+        				if(stack.func_190916_E() < 1){
+        					stack.func_190920_e(1);
+        					flag = true;
+        				}
+        				if(!flag)
+        					blockFillList.add(stack);
+        			}
+        			else if (stack.func_190916_E() == 1){
+        				blockFillList.remove(stack);
+        			}
+        		}
 			}
 		}
 
     }
-	
-	
 	
 	/**
      * Called when the screen is unloaded. Used to disable keyboard repeat events

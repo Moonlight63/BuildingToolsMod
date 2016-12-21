@@ -26,18 +26,25 @@ public class GUISetReplaceBlocks extends GUIBlockSelection{
 	
 	@Override
 	protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, ClickType clickType){
+		
+		ItemStack stack;
+		if(slotIn != null)
+			stack = slotIn.getStack();
+		else
+			return;
+		
 		this.keyOrButtonClicked = true;
 		if(clickType == ClickType.PICKUP){
 	        if (mode == 0){
 		        if(clickedButton == 0){
-	        		if(slotIn.getStack() == null)
+	        		if(stack == null)
 	        			return;
-	        		if(blockReplaceList.contains(slotIn.getStack())){
-	        			blockReplaceList.remove(slotIn.getStack());
+	        		if(blockReplaceList.contains(stack)){
+	        			blockReplaceList.remove(stack);
 	        		}
 	        		else{
-	        			if(!blockFillList.contains(slotIn.getStack()))
-	        				blockReplaceList.add(slotIn.getStack());
+	        			if(!blockFillList.contains(stack))
+	        				blockReplaceList.add(stack);
 	        		}
 	        	}
 	        }

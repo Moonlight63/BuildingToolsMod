@@ -87,9 +87,11 @@ public class GUISelectionTool extends GuiScreen{
 		
 		if(heldnbt.getCompoundTag("bpos1").getBoolean("set") && heldnbt.getCompoundTag("bpos2").getBoolean("set")){
 			copytoclipboard.enabled = true;
+			fillReplace.enabled = true;
 		}
 		else{
 			copytoclipboard.enabled = false;
+			fillReplace.enabled = false;
 		}
 		
 		if(playerwrap.currentCopyClipboard.isEmpty())
@@ -116,8 +118,6 @@ public class GUISelectionTool extends GuiScreen{
 		moveX.displayString = "X Movment: " + heldnbt.getInteger("repeatMovmentX");
 		moveY.displayString = "Y Movment: " + heldnbt.getInteger("repeatMovmentY");
 		moveZ.displayString = "Z Movment: " + heldnbt.getInteger("repeatMovmentZ");
-		
-		fillReplace.enabled = true;
 		
 		buttonsRight.add(clearselction);
 		buttonsRight.add(selectpaste);

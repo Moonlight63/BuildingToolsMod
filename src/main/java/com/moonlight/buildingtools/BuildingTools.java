@@ -6,7 +6,7 @@ import com.moonlight.buildingtools.creativetab.CreativeTabMain;
 import com.moonlight.buildingtools.helpers.DrawBlockHighlightEventHandler;
 import com.moonlight.buildingtools.helpers.loaders.BlockLoader;
 import com.moonlight.buildingtools.helpers.loaders.ItemLoader;
-import com.moonlight.buildingtools.items.tools.BlockChangerGuiHelper;
+import com.moonlight.buildingtools.items.tools.ToolOverlayGuiHelper;
 import com.moonlight.buildingtools.items.tools.tasks.BlockChangeTask;
 import com.moonlight.buildingtools.items.tools.tasks.ChangeQueueTask;
 import com.moonlight.buildingtools.items.tools.tasks.ForgeSchedulerService;
@@ -92,7 +92,7 @@ public class BuildingTools
     @EventHandler
     public void postInit(FMLPostInitializationEvent event){
     	if(FMLCommonHandler.instance().getSide().isClient())
-    		MinecraftForge.EVENT_BUS.register(new BlockChangerGuiHelper(Minecraft.getMinecraft()));
+    		MinecraftForge.EVENT_BUS.register(new ToolOverlayGuiHelper(Minecraft.getMinecraft()));
     	
     	scheduler = new ForgeSchedulerService();
     	startThreads();

@@ -26,43 +26,68 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 	
 	@Override
 	protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, ClickType clickType){
-        this.keyOrButtonClicked = true;
-        if(clickType == ClickType.PICKUP){
-	        if (mode == 0){
-		        if(clickedButton == 0){
-	        		if(slotIn.getStack() == null)
-	        			return;
-	        		
-	        		blockFillList.add(slotIn.getStack());
-	        		this.mc.thePlayer.closeScreen();
-		        }
-	        }
-	        else{
-	        	if(clickedButton == 0){
-	        		if(slotIn.getStack() == null)
-	        			return;
-	        		if(!blockFillList.contains(slotIn.getStack())){
-	        			blockFillList.add(slotIn.getStack());
-	        		}
-	        		else{
-	        			blockFillList.remove(slotIn.getStack());
-	        			slotIn.getStack().func_190920_e(slotIn.getStack().func_190916_E()+1);
-	        			blockFillList.add(slotIn.getStack());
-	        		}
-		        }
-		        else if(clickedButton == 1){
-	        		if(slotIn.getStack() == null)
-	        			return;
-	        		if(blockFillList.contains(slotIn.getStack())){
-	        			blockFillList.remove(slotIn.getStack());
-	        			if(slotIn.getStack().func_190916_E()>1){
-	        				slotIn.getStack().func_190920_e(slotIn.getStack().func_190916_E()-1);
-	        				blockFillList.add(slotIn.getStack());
-	        			}	        			
-	        		}
-	        	}
+        
+		ItemStack stack;
+		if(slotIn != null)
+			stack = slotIn.getStack();
+		else
+			return;
+		
+		int amount = 1;
+		
+		if(clickType == ClickType.QUICK_MOVE){
+			amount = 10;
+		}
+		else{
+			amount = 1;
+		}
+		
+		this.keyOrButtonClicked = true;
+		
+        if (mode == 0){
+	        if(clickedButton == 0){
+        		if(stack == null)
+        			return;
+        		
+        		blockFillList.add(stack);
+        		this.mc.thePlayer.closeScreen();
 	        }
         }
+        else{
+        	if(clickedButton == 0){
+        		if(stack == null)
+        			return;
+        		if(!blockFillList.contains(stack)){
+        			if(clickType == ClickType.QUICK_MOVE){
+						stack.func_190920_e(stack.func_190916_E()+amount-1);
+					}
+        			blockFillList.add(stack);
+        		}
+        		else{
+        			blockFillList.remove(stack);
+        			stack.func_190920_e(stack.func_190916_E()+amount);
+        			blockFillList.add(stack);
+        		}
+	        }
+	        else if(clickedButton == 1){
+        		if(stack == null)
+        			return;
+        		if(blockFillList.contains(stack)){
+        			blockFillList.remove(stack);
+        			if(stack.func_190916_E()>1){
+        				stack.func_190920_e(stack.func_190916_E()-amount);
+        				boolean flag = false;;
+        				if(stack.func_190916_E() < 1){
+        					stack.func_190920_e(1);
+        					flag = true;
+        				}
+        				if(!flag)
+        					blockFillList.add(stack);
+        			}	        			
+        		}
+        	}
+        }
+        
     }
 	
 	/**
