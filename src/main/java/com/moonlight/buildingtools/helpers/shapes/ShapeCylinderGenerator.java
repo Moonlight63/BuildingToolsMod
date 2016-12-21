@@ -6,20 +6,6 @@ public class ShapeCylinderGenerator implements IShapeGenerator {
 
 	@Override
 	public void generateShape(int radX, int height, int radZ, IShapeable shapeable, boolean fillmode) {
-		
-		/*int radiusX = 0, radiusZ = 0;
-		
-		if(fillmode != 0){
-			for(int i = 0; i <= fillmode; i++){
-				radiusX = radX - i;
-				radiusZ = radZ - i;
-				gen(radiusX, radiusZ, height, false, shapeable);
-			}
-		}
-		else{
-			gen(radX, radZ, height, true, shapeable);
-		}*/
-		
 		gen(radX, radZ, height, fillmode, shapeable);
 		shapeable.shapeFinished();
 	}

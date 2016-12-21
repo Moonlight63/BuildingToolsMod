@@ -70,8 +70,6 @@ public class ThreadBuildersTool implements IShapeable, BlockChangeBase {
         	if(!replaceAll && world.getBlockState(bpos.add(origin)) != world.getBlockState(origin))
         		return;
         	
-        	
-        	
         	if(world.getTileEntity(bpos.add(origin)) != null){
         		NBTTagCompound compound = new NBTTagCompound();
         		world.getTileEntity(bpos.add(origin)).writeToNBT(compound);
@@ -93,7 +91,6 @@ public class ThreadBuildersTool implements IShapeable, BlockChangeBase {
 	
 	@Override
 	public void perform(){
-		
 		if(!currentlyCalculating && !shapeFinished){
 			tempList.clear();
 			Shapes.Cuboid.generator.generateShape(radiusX, 0, radiusZ, this, true);
@@ -104,7 +101,6 @@ public class ThreadBuildersTool implements IShapeable, BlockChangeBase {
 			MiscUtils.dumpUndoList(entity);
 			isFinished = true;
 		}
-
 	}
 	
     public World getWorld(){
@@ -118,7 +114,7 @@ public class ThreadBuildersTool implements IShapeable, BlockChangeBase {
 
 	public void checkAndAddQueue(){		
 		BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(tempList, world));
-		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(tempList, world, true));
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(tempList, world));
 		tempList.clear();
 		count = 0;
 	}
@@ -129,5 +125,4 @@ public class ThreadBuildersTool implements IShapeable, BlockChangeBase {
 		shapeFinished = true;
 	}
 	
-
 }

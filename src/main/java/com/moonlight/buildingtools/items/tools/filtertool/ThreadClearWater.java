@@ -128,7 +128,7 @@ public class ThreadClearWater implements IShapeable, BlockChangeBase{
 
     public void checkAndAddQueue(){		
 		BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(tempList, world));
-		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(tempList, world, true));
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(tempList, world));
 		tempList.clear();
 		count = 0;
 	}

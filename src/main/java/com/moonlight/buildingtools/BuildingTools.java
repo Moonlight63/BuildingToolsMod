@@ -59,7 +59,6 @@ public class BuildingTools
     		MinecraftForge.EVENT_BUS.register(new KeyBindsHandler());
     		MinecraftForge.EVENT_BUS.register(new DrawBlockHighlightEventHandler());
             KeyBindsHandler.init();
-            
         }
     	
     	System.out.println("Making directory");
@@ -88,23 +87,16 @@ public class BuildingTools
     @EventHandler
     public void init(FMLInitializationEvent event){    	
     	proxy.init(event);
-    	//proxy.registerRenderInformation();
     }
     
     @EventHandler
     public void postInit(FMLPostInitializationEvent event){
-    	
     	if(FMLCommonHandler.instance().getSide().isClient())
     		MinecraftForge.EVENT_BUS.register(new BlockChangerGuiHelper(Minecraft.getMinecraft()));
     	
     	scheduler = new ForgeSchedulerService();
-    	
     	startThreads();
-    	
-    	//playerregistry = proxy.getPlayerRegistry();
     	System.out.println("\n\n\n\n\n\n\n\n POST INIT \n\n\n\n\n\n\n\n");
-    	//playerregistry.init();
-    	
     }
     
     public static void startThreads(){
@@ -113,13 +105,11 @@ public class BuildingTools
     	scheduler.startSynchronousTask(new BlockChangeTask(), 0);
     }
     
-    
     public static PlayerRegistry getPlayerRegistry(){
     	if(playerregistry != null){
     		return playerregistry;
     	}else{
     		playerregistry = proxy.getPlayerRegistry();
-        	//playerregistry.init();
         	return playerregistry;
     	}
     }

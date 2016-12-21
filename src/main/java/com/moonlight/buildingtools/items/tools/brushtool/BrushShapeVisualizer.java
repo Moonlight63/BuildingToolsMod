@@ -20,9 +20,7 @@ import net.minecraft.world.World;
 public class BrushShapeVisualizer implements IShapeable{
 
 	public Set<BlockPos> blocks = new LinkedHashSet<BlockPos>();
-	
 	public boolean finishedGenerating = false;
-	
 	public IShapeGenerator currentGen;
 	
 	int replaceblock;
@@ -32,7 +30,6 @@ public class BrushShapeVisualizer implements IShapeable{
 	
 	public List<IBlockState> replaceBlocks = new LinkedList<IBlockState>();
 
-	
 	public BrushShapeVisualizer() {
 		
 	}
@@ -40,7 +37,6 @@ public class BrushShapeVisualizer implements IShapeable{
 	@SuppressWarnings("deprecation")
 	public void RegenShape(IShapeGenerator generator, int x, int y, int z, int replace, NBTTagCompound replaceBlocksNBT){
 		
-		//System.out.println("Starting Regen");
 		this.replaceblock = replace;
 		this.x = x;
 		this.y = y;
@@ -57,7 +53,7 @@ public class BrushShapeVisualizer implements IShapeable{
 			item.deserializeNBT(replaceBlocksNBT.getCompoundTag("blockstate"));
 			this.replaceBlocks.add(Block.getBlockFromItem(item.getItem()).getStateFromMeta(item.getMetadata()));
 		}
-		//this.replaceBlocks = replaceBlocks;
+		
 	}
 	
 	public Set<BlockPos> GetBlocks(){
@@ -71,7 +67,7 @@ public class BrushShapeVisualizer implements IShapeable{
 		if(!finishedGenerating){
 			return null;
 		}
-		//System.out.println("Block Set");
+		
 		return blocks;
 		
 	}
@@ -120,6 +116,4 @@ public class BrushShapeVisualizer implements IShapeable{
 		finishedGenerating = true;
 	}
 
-	
-	
 }

@@ -34,7 +34,6 @@ public class UpdateHandler {
 			URL url = new URL("https://docs.google.com/uc?authuser=0&id=0B8HOvFad2ncDNjloV0xnZFpSdnM&export=download");
 			Scanner s = new Scanner(url.openStream());
 			newestVersion = s.next();
-			//newestVersion = newestVersion + " " + s.next();
 			s.close();
 		}
 		catch(IOException ex){

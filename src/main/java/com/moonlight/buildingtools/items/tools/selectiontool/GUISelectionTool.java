@@ -31,7 +31,7 @@ public class GUISelectionTool extends GuiScreen{
 	public static final GuiButton flipx = 				new GuiButton(4, 0, 0, 160, 20, "Flip X: ");
 	public static final GuiButton flipy = 				new GuiButton(5, 0, 0, 160, 20, "Flip Y: ");
 	public static final GuiButton flipz = 				new GuiButton(6, 0, 0, 160, 20, "Flip Z: ");
-	public static final GuiButton replace = 			new GuiButton(7, 0, 0, 160, 20, "Replace Mode");
+	public static final GuiButton fillReplace = 		new GuiButton(7, 0, 0, 160, 20, "Fill / Replace Mode");
 	
 	public static final GuiButton clearselction = 		new GuiButton(8, 0, 0, 160, 20, "Clear Selection");
 	public static final GuiButton selectpaste = 		new GuiButton(9, 0, 0, 160, 20, "Select paste region");
@@ -103,7 +103,7 @@ public class GUISelectionTool extends GuiScreen{
 		buttonsLeft.add(flipx);
 		buttonsLeft.add(flipy);
 		buttonsLeft.add(flipz);
-		buttonsLeft.add(replace);
+		buttonsLeft.add(fillReplace);
 		
 		for (GuiButton btn : buttonsLeft){
 			btn.xPosition = this.width / 2 - (160 + 1);
@@ -117,7 +117,7 @@ public class GUISelectionTool extends GuiScreen{
 		moveY.displayString = "Y Movment: " + heldnbt.getInteger("repeatMovmentY");
 		moveZ.displayString = "Z Movment: " + heldnbt.getInteger("repeatMovmentZ");
 		
-		replace.enabled = true;
+		fillReplace.enabled = true;
 		
 		buttonsRight.add(clearselction);
 		buttonsRight.add(selectpaste);
@@ -180,7 +180,7 @@ public class GUISelectionTool extends GuiScreen{
 			this.mc.displayGuiScreen((GuiScreen) null);
 			this.mc.displayGuiScreen(new GUISaveLoadClipboard(this.player));
 		}
-		else if (button.id == replace.id){
+		else if (button.id == fillReplace.id){
 			this.mc.displayGuiScreen((GuiScreen) null);
 			this.mc.displayGuiScreen(new GUIReplaceTool(this.player));
 		}

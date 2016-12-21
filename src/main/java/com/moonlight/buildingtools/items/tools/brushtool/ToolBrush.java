@@ -372,38 +372,10 @@ public class ToolBrush extends ToolBase{
 		
 	}
 	
-//	public void setFillBlocks(List<Integer> ID, List<Integer> DATA, List<Integer> COUNT){
-//		System.out.println("Recieved Message!");
-//		System.out.println(ID + "   " + DATA + "   " + COUNT);
-//		thisStack.getTagCompound().setTag("fillblocks", new NBTTagCompound());
-//		for (int i = 0; i < ID.size(); i++) {
-//			ItemStack fill = new ItemStack(Block.getBlockById(ID.get(i)));
-//			fill.setItemDamage(DATA.get(i));
-//			thisStack.getTagCompound().getCompoundTag("fillblocks").setTag(Integer.toString(i), new NBTTagCompound());
-//			thisStack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag(Integer.toString(i)).setInteger("chance", COUNT.get(i));
-//			thisStack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag(Integer.toString(i)).setTag("blockstate", fill.writeToNBT(new NBTTagCompound()));
-//		}
-//        
-//	}
-//	
-//	public void setReplaceBlocks(List<Integer> ID, List<Integer> DATA){
-//		System.out.println("Recieved Message!");
-//		System.out.println(ID + "   " + DATA);
-//		thisStack.getTagCompound().setTag("replaceblocks", new NBTTagCompound());
-//		for (int i = 0; i < ID.size(); i++) {			
-//			ItemStack replace = new ItemStack(Block.getBlockById(ID.get(i)));
-//			replace.setItemDamage(DATA.get(i));
-//			thisStack.getTagCompound().getCompoundTag("replaceblocks").setTag(Integer.toString(i), replace.writeToNBT(new NBTTagCompound()));
-//		}
-//        
-//	}
-	
 	@Override
 	public void ReadNBTCommand(NBTTagCompound nbtcommand){
 		System.out.println(nbtcommand);
 		Set<String> commandset = nbtcommand.getCompoundTag("Commands").getKeySet();
-//		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
-//		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
 		
 		for (String key : commandset) {
 			String command = nbtcommand.getCompoundTag("Commands").getString(key);

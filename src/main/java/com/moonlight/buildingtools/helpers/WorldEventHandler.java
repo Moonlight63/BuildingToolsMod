@@ -23,10 +23,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class WorldEventHandler{
-	
-//	private Minecraft mc = Minecraft.getMinecraft();
-	
+public class WorldEventHandler{	
 	
 	@SubscribeEvent
 	public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event){
@@ -38,7 +35,7 @@ public class WorldEventHandler{
     {
 		Optional<PlayerWrapper> s = BuildingTools.getPlayerRegistry().getPlayer(event.player.getName());
 		if(s.isPresent()){
-			//System.out.println("\n\n\n\n"+s.get().getName()+"\n\n\n\n");
+			
 		}
     }
 	
@@ -48,9 +45,7 @@ public class WorldEventHandler{
 		Optional<PlayerWrapper> s = BuildingTools.getPlayerRegistry().getPlayer(event.player.getName());
 		if(s.isPresent()){
 			s.get().addPending(new ThreadSaveUndoList(event.player, event.player.getName() + "." + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date())));
-			//System.out.println("\n\n\n\n"+s.get().getName()+"\n\n\n\n");
 			BuildingTools.getPlayerRegistry().invalidate(s.get().getName());
-			//BuildingTools.getPlayerRegistry().invalidate(event.player);
 		}
     }
 	
@@ -58,26 +53,11 @@ public class WorldEventHandler{
 	@SubscribeEvent
     public void onWorldTick(TickEvent.WorldTickEvent event){
 		BuildingTools.scheduler.onTick();
-		//BlockFalling.fallInstantly = true;
-		
-		//BlockFalling.canFallInto(event.world, pos)
-		
-		//for(Object fallingBlock : event.world.loadedEntityList){
-		//	if(fallingBlock instanceof EntityFallingBlock){
-		//		((EntityFallingBlock) fallingBlock).setDead();
-		//	}
-		//}
-		
-		//event.world.setRainStrength(0);
-		//event.world.setThunderStrength(0);
-		//event.world.setWorldTime(1600);
-		
 	}
 	
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void onClientTick(TickEvent.ClientTickEvent event) {
-		
 		World world = Minecraft.getMinecraft().theWorld;
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer;			
 		if (world != null && player != null){
@@ -87,9 +67,7 @@ public class WorldEventHandler{
 			if (target != null && target.typeOfHit == RayTraceResult.Type.BLOCK){
 				
 			}
-			
 		}
-		
 	}
 	
 	@SubscribeEvent
@@ -100,8 +78,7 @@ public class WorldEventHandler{
 	@SubscribeEvent
     public void onTick(TickEvent.ServerTickEvent event)
     {
-		//System.out.println("WorldEventHandler.onTick()\n");
-        
+		
     }
 	
 	@SubscribeEvent

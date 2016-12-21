@@ -70,9 +70,7 @@ public class GUIToolFilter extends GuiScreen{
 		
 		NBTTagCompound heldnbt = ToolFilter.getNBT(player.getHeldItemMainhand());
 		Shapes gen = Shapes.VALUES[heldnbt.getInteger("generator")];
-		
-		//filter.displayString = heldnbt.getInteger("filter") == 1 ? "Topsoil" : heldnbt.getInteger("filter") == 2 ? "Clear Water" : "Clear Junk";
-		
+				
 		switch (heldnbt.getInteger("filter")) {
 		case 1:
 			filter.displayString = "Topsoil";

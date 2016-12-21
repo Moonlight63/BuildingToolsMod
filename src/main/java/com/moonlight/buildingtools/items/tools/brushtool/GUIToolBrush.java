@@ -57,10 +57,8 @@ public class GUIToolBrush extends GuiScreen{
 	}
 	
 	@Override
-	protected void keyTyped(char par1, int par2)
-	{
-		if (par2 == 1 || par2 == this.mc.gameSettings.keyBindInventory.getKeyCode())
-		{
+	protected void keyTyped(char par1, int par2){
+		if (par2 == 1 || par2 == this.mc.gameSettings.keyBindInventory.getKeyCode()){
 			this.mc.thePlayer.closeScreen();
 		}
 	}
@@ -115,7 +113,6 @@ public class GUIToolBrush extends GuiScreen{
 		
 		buttonList.add(showBlockSel);
 		
-		
 		showBlockRep.yPosition = ((this.height / 2) - 121) + (22 * 9);
 		showBlockRep.xPosition = this.width / 2 + (160 / 2) + 2;
 		
@@ -157,7 +154,6 @@ public class GUIToolBrush extends GuiScreen{
     	commandPacket.setBoolean("SHIFT", isShiftKeyDown());
     	
     	PacketDispatcher.sendToServer(new SendNBTCommandPacket(commandPacket));
-		//PacketDispatcher.sendToServer(new SendGuiButtonPressedToItemMessage((byte) button.id, mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));
 		if(button.id == setblock.id || button.id == setair.id)
 			this.mc.thePlayer.closeScreen();
 		if(button.id == showBlockSel.id)

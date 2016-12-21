@@ -27,21 +27,18 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 	@Override
 	protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, ClickType clickType){
         this.keyOrButtonClicked = true;
-        
-        if (mode == 0){
-	        if(clickedButton == 0){
-	        	if(clickType == ClickType.PICKUP){
+        if(clickType == ClickType.PICKUP){
+	        if (mode == 0){
+		        if(clickedButton == 0){
 	        		if(slotIn.getStack() == null)
 	        			return;
 	        		
 	        		blockFillList.add(slotIn.getStack());
 	        		this.mc.thePlayer.closeScreen();
-	        	}
+		        }
 	        }
-        }
-        else{
-        	if(clickedButton == 0){
-	        	if(clickType == ClickType.PICKUP){
+	        else{
+	        	if(clickedButton == 0){
 	        		if(slotIn.getStack() == null)
 	        			return;
 	        		if(!blockFillList.contains(slotIn.getStack())){
@@ -52,11 +49,8 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 	        			slotIn.getStack().func_190920_e(slotIn.getStack().func_190916_E()+1);
 	        			blockFillList.add(slotIn.getStack());
 	        		}
-	        		System.out.println(blockFillList);
-	        	}
-	        }
-	        else if(clickedButton == 1){
-	        	if(clickType == ClickType.PICKUP){
+		        }
+		        else if(clickedButton == 1){
 	        		if(slotIn.getStack() == null)
 	        			return;
 	        		if(blockFillList.contains(slotIn.getStack())){
@@ -66,14 +60,10 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 	        				blockFillList.add(slotIn.getStack());
 	        			}	        			
 	        		}
-	        		System.out.println(blockFillList);
 	        	}
 	        }
         }
-
     }
-	
-	
 	
 	/**
      * Called when the screen is unloaded. Used to disable keyboard repeat events
@@ -112,12 +102,10 @@ public class GUISetPaintBlock extends GUIBlockSelection{
         	
         	System.out.println(ID + "   " + META + "   " + CHANCE);
         	
-        	
         	NBTTagCompound commandPacket = new NBTTagCompound();
         	
         	commandPacket.setTag("Commands", new NBTTagCompound());
         	commandPacket.getCompoundTag("Commands").setString("1", "SetFill");
-        	
         	
         	commandPacket.setTag("fillblocks", new NBTTagCompound());
     		for (int i = 0; i < ID.size(); i++) {

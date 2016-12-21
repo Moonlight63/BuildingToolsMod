@@ -41,7 +41,6 @@ public class ThreadErosion implements BlockChangeBase {
 		this.world = world;
 		this.origin = origin;
 		this.entity = entity;
-		
 		this.erosiondata = new ErosionVisuallizer(radius, world, origin, preset);
 	}
 	
@@ -50,6 +49,7 @@ public class ThreadErosion implements BlockChangeBase {
 	@Override
 	public void perform(){
 		if(!currentlyCalculating){
+			currentlyCalculating = true;
 			tempCount++;
 			System.out.println(tempCount);
 			
@@ -59,21 +59,13 @@ public class ThreadErosion implements BlockChangeBase {
 				tempList.add(new ChangeBlockToThis(pos, erosiondata.tracker.getMap().get(pos)));
 			
 			if(!tempList.isEmpty() && tempList != null){
-				
 				BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(tempList, world));
-				BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(tempList, world, true));
+				BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(tempList, world));
 			}
-				
-			//if(count < 4096){
-				isFinished = true;
-				MiscUtils.dumpUndoList(entity);
-				//BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.clear();
-				//System.out.println("Added all blocks to undo list: " + BuildingTools.getPlayerRegistry().getPlayer(entity).get().undolist);
-			//}
 			
+			MiscUtils.dumpUndoList(entity);	
+			isFinished = true;
 			count = 0;
-			currentlyCalculating = false;
-			
 		}
 	}
 	
@@ -82,8 +74,7 @@ public class ThreadErosion implements BlockChangeBase {
      * 
      * @return the world
      */
-    public World getWorld()
-    {
+    public World getWorld(){
         return this.world;
     }
 
@@ -91,7 +82,5 @@ public class ThreadErosion implements BlockChangeBase {
 	public boolean isFinished(){
 		return isFinished;
 	}
-	
-
 	
 }

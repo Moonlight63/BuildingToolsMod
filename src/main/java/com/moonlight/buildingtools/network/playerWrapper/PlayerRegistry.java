@@ -41,7 +41,6 @@ public class PlayerRegistry {
 	
 	public Optional<PlayerWrapper> getPlayer(EntityPlayer player)
     {
-		//System.out.println("GettingPlayer:  " + player);
         return this.get(player.getName());
     }
 	

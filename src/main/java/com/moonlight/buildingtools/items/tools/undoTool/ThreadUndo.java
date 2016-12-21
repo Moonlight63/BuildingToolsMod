@@ -52,7 +52,7 @@ public class ThreadUndo implements BlockChangeBase {
 			
 			if(!undoSet.isEmpty()){
 				//System.out.println("Starting Undo");
-				BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(RunUndoPass(), world, true));
+				BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(RunUndoPass(), world));
 				currentlyCalculating = false;
 			}
 			else{

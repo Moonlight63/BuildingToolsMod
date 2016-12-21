@@ -29,13 +29,11 @@ public final class BlockLoader {
 			blocksToRegister.add(tempBlock);
 			//blocksToRegister.add(alwaysdaynorain);
 			
-			
 			//RegisterHelper.registerBlock(guideBlock);
 			//RegisterHelper.registerTileEntity(TileEntityGuide.class, guideBlock);
 			
 			//RegisterHelper.registerBlock(markerBlock);
 			RegisterHelper.registerBlock(tempBlock);
 			//RegisterHelper.registerBlock(alwaysdaynorain);
-			
 		}	
 }

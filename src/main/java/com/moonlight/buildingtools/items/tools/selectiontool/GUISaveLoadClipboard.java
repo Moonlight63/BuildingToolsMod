@@ -31,6 +31,8 @@ public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonList
 	
 	private ScrollPane scrollpane;
 	
+	private EntityPlayer player;
+	
 	public static GuiTextField saveName;
 	public static final GuiButton save = new GuiButton(1, 0, 0, 80, 20, "Save");
 	public static File[] filelist;
@@ -40,6 +42,7 @@ public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonList
 	
 	
 	public GUISaveLoadClipboard(EntityPlayer player){
+		this.player = player;
 	}
 	
 	@Override
@@ -58,8 +61,6 @@ public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonList
 		this.drawDefaultBackground();
 		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		//this.buttonList.clear();
-        //this.initGui();
         scrollpane.draw(mouseX, mouseY);
         
         saveName.drawTextBox();
@@ -103,7 +104,6 @@ public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonList
         File savedirectory = BuildingTools.clipboardSaveDir;
         filelist = savedirectory.listFiles();
         
-//        List<File> versionList = new ArrayList<File>();
         List<File> selectList = new ArrayList<File>();
         
         for(int i = 0; i < filelist.length; i++){
@@ -113,9 +113,6 @@ public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonList
         		if(fileName.endsWith(".json")){
         			selectList.add(filelist[i]);
         		}
-//        		else if (fileName.contains(".version.")) {
-//        			versionList.add(filelist[i]);
-//				}
         	}
         }
         
@@ -160,6 +157,14 @@ public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonList
         }
         
         scrollpane.setContentHeight(scrollpane.GetButtons().size() * 21);
+        
+        NBTTagCompound heldnbt = ToolSelection.getNBT(player.getHeldItemMainhand());
+        if(heldnbt.getCompoundTag("bpos1").getBoolean("set") && heldnbt.getCompoundTag("bpos2").getBoolean("set")){
+        	save.enabled = true;
+		}
+		else{
+			save.enabled = false;
+		}
         
         saveName = new GuiTextField(0, fontRendererObj, this.width/2 - 85, this.height/2 + 46, 170, 16);
         save.xPosition = this.width/2 - 85;

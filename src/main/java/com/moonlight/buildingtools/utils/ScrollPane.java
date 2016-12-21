@@ -1,6 +1,5 @@
 package com.moonlight.buildingtools.utils;
 
-//import static de.take_weiland.mods.commons.client.Guis.isPointInRegion;
 import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
 import static org.lwjgl.opengl.GL11.glColor3f;
 import static org.lwjgl.opengl.GL11.glDisable;
@@ -14,7 +13,6 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-//import de.take_weiland.mods.commons.util.SCReflector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
@@ -83,11 +81,8 @@ public class ScrollPane extends Gui {
 		}
 
 		glPushMatrix();
-
 		glTranslatef(x, yTranslate, 0);
-
 		drawInternal(mouseX, mouseY);
-
 		glPopMatrix();
 
 		if (clip) {
@@ -105,7 +100,6 @@ public class ScrollPane extends Gui {
 	}
 
 	private void drawInternal(int mouseX, int mouseY) {
-		//drawImpl(mouseX, mouseY);
 		int n = buttons.size();
 		for (int i = 0; i < n; ++i) {
 			buttons.get(i).drawButton(mc, mouseX, mouseY);
@@ -125,7 +119,6 @@ public class ScrollPane extends Gui {
 		}
 
 		mouseX -= x;
-		//mouseY -= computeYTranslate();
 		if (isPointInRegion(0, 0, width, height, mouseX, mouseY-y)) {
 			System.out.println("Clicked Button");
 			for (GuiButton button : buttons) {
@@ -218,13 +211,6 @@ public class ScrollPane extends Gui {
 		drawRect(x, y, x2, y + 1, 0xff444444);
 		drawRect(x, y2 - 1, x2, y2, 0xff444444);
 	}
-
-//	protected void drawImpl(int mouseX, int mouseY) {
-//		drawImpl();
-//	}
-
-//	protected void drawImpl() {
-//	}
 
 	protected void handleMouseClick(int relX, int relY, int btn) {
 	}

@@ -9,26 +9,15 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class DrawBlockHighlightEventHandler
 {
     @SubscribeEvent
-    public void onDrawBlockHighlightEvent(DrawBlockHighlightEvent event)
-    {
-//        if (event.target.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) return;
-//        Block block = event.player.worldObj.getBlockState(event.target.getBlockPos()).getBlock();
-
+    public void onDrawBlockHighlightEvent(DrawBlockHighlightEvent event){
         boolean cancelEvent = false;
         
-
-		if (event.getPlayer().getHeldItemMainhand() != null)
-		{
+		if (event.getPlayer().getHeldItemMainhand() != null){
 			Item item = event.getPlayer().getHeldItemMainhand().getItem();
 			if (item instanceof IOutlineDrawer){
 				cancelEvent = ((IOutlineDrawer) item).drawOutline(event);
 			}
 		}
-
-//        if (!drewItem && block instanceof IOutlineDrawer)
-//        {
-//            cancelEvent = ((IOutlineDrawer) block).drawOutline(event);
-//        }
 
         event.setCanceled(cancelEvent);
     }

@@ -42,8 +42,7 @@ public class ToolErosion extends ToolBase{
 	}
 	
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
-    {
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand){
 		
 		ItemStack itemStackIn = playerIn.getHeldItemMainhand();
 		
@@ -53,7 +52,6 @@ public class ToolErosion extends ToolBase{
 			if(!worldIn.isRemote && targetBlock != null && !worldIn.isAirBlock(targetBlock)){
 				PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(playerIn).get();
 				player.addPending(new ThreadErosion(worldIn, targetBlock, getTargetRadius(itemStackIn), playerIn, getNBT(itemStackIn).getInteger("preset")));
-				//player.addPending(new ErosionThread(worldIn, pos, 3, 3, 3, side, playerIn, getNBT(stack).getInteger("preset")));
 			}
 		}
         return new ActionResult<ItemStack>(EnumActionResult.PASS, itemStackIn);
@@ -104,6 +102,7 @@ public class ToolErosion extends ToolBase{
         getNBT(itemStack).setInteger("radius", radius);
         PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(itemStack)));
         System.out.print(getNBT(itemStack).getInteger("radius"));
+        
     }
 	
 	public void GuiButtonPressed(int buttonID, int mouseButton, boolean isCtrlDown, boolean isAltDown, boolean isShiftDown) {
@@ -161,12 +160,10 @@ public class ToolErosion extends ToolBase{
 			
 			for(BlockPos pos : visuallizer.getErosionData()){
 				renderer.addOutlineToBuffer(event.getPlayer(), pos, RGBA.Red.setAlpha(1500), event.getPartialTicks());
-				//RenderHelper.renderBlockOutline(event.context, event.player, pos, RGBA.Red.setAlpha(150), 2.0f, event.partialTicks);
 			}
 			
 			for(BlockPos pos : visuallizer.getFillData()){
 				renderer.addOutlineToBuffer(event.getPlayer(), pos, RGBA.Green.setAlpha(1500), event.getPartialTicks());
-				//RenderHelper.renderBlockOutline(event.context, event.player, pos, RGBA.Green.setAlpha(150), 2.0f, event.partialTicks);
 			}
 			
 			renderer.finalizeDraw();
@@ -179,9 +176,6 @@ public class ToolErosion extends ToolBase{
 	public void ReadNBTCommand(NBTTagCompound nbtcommand){
 		System.out.println(nbtcommand);
 		Set<String> commandset = nbtcommand.getCompoundTag("Commands").getKeySet();
-//		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
-//		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
-		
 		for (String key : commandset) {
 			String command = nbtcommand.getCompoundTag("Commands").getString(key);
 			

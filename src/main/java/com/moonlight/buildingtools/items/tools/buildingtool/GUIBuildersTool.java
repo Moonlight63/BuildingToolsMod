@@ -31,12 +31,9 @@ public class GUIBuildersTool extends GuiScreen{
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks){
 		this.drawDefaultBackground();
-		
 		this.buttonList.clear();
         this.initGui();
-		
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		
 	}
 	
 	@Override
@@ -109,9 +106,7 @@ public class GUIBuildersTool extends GuiScreen{
     	commandPacket.setBoolean("SHIFT", isShiftKeyDown());
     	
     	PacketDispatcher.sendToServer(new SendNBTCommandPacket(commandPacket));
-		
-		//PacketDispatcher.sendToServer(new SendGuiButtonPressedToItemMessage((byte) button.id, mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));
-		
+				
 	}
 	
 }

@@ -29,7 +29,6 @@ public class BuildingShapeVisualizer implements IShapeable{
 	
 	public void RegenShape(IShapeGenerator generator, int x, int z, boolean replace){
 		
-		//System.out.println("Starting Regen");
 		this.replaceblock = replace;
 		this.x = x;
 		this.z = z;
@@ -51,7 +50,7 @@ public class BuildingShapeVisualizer implements IShapeable{
 		if(!finishedGenerating){
 			return null;
 		}
-		//System.out.println("Block Set");
+
 		return blocks;
 		
 	}
@@ -59,7 +58,6 @@ public class BuildingShapeVisualizer implements IShapeable{
 	
 	@Override
 	public void setBlock(BlockPos bpos) {
-		
 		blocks.add(bpos);
 	}
 	

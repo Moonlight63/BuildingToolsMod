@@ -15,7 +15,6 @@ import com.moonlight.buildingtools.items.tools.BlockChangeBase;
 import com.moonlight.buildingtools.items.tools.BlockChangeQueue;
 import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 
@@ -26,9 +25,6 @@ public class PlayerWrapper {
 	public Queue<BlockChangeQueue> pendingChangeQueue = new LinkedList<BlockChangeQueue>();
 	
 	public Set<BlockInfoContainer> currentCopyClipboard = new LinkedHashSet<BlockInfoContainer>();
-	
-	public Set<Entity> currentClipboardEntities = new LinkedHashSet<Entity>();
-	
 	public BlockPos clipboardMaxPos;
 	
 	private final WeakReference<EntityPlayer> reference;

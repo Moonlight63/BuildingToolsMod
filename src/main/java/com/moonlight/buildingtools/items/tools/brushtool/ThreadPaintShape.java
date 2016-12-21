@@ -184,8 +184,7 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 	}
 	
 	
-	public boolean canFallInto(World worldIn, BlockPos pos)
-    {
+	public boolean canFallInto(World worldIn, BlockPos pos){
 		if(checkedPos.contains(pos)){
         	return false;
         }
@@ -198,7 +197,6 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 	
 	@Override
 	public void perform(){
-		
 		if(!currentlyCalculating && !shapeFinished){
 			tempList.clear();
 			generator.generateShape(radiusX, radiusY, radiusZ, this, fillmode);
@@ -209,7 +207,6 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 			MiscUtils.dumpUndoList(entity);
 			isFinished = true;
 		}
-
 	}
 	
     public World getWorld(){
@@ -223,7 +220,7 @@ public class ThreadPaintShape implements IShapeable, BlockChangeBase {
 	
 	public void checkAndAddQueue(){		
 		BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(tempList, world));
-		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(tempList, world, true));
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(tempList, world));
 		tempList.clear();
 		count = 0;
 	}

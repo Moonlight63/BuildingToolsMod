@@ -23,24 +23,8 @@ public class ShapeEquilateral2dGenerator implements IShapeGenerator {
 				int x = 0;
 				int z = 0;
 				
-				//if(!(fillmode == 0)){
-					
-					
-					
-				//	for(int x2 = xSize-fillmode-1;x2 <= xSize;x2++){
-				//		x = (int)Math.round(Math.cos(d) * x2);
-				//		z = (int)Math.round(Math.sin(d) * x2);
-				//	}
-					
-					x = (int)Math.round(Math.cos(d) * xSize);
-					z = (int)Math.round(Math.sin(d) * xSize);
-				//}else{
-				//	for(int x2 = 0;x2 <= xSize;x2++){
-				//		x = (int)Math.round(Math.cos(d) * x2);
-				//		z = (int)Math.round(Math.sin(d) * x2);
-				//	}
-				//}
-				
+				x = (int)Math.round(Math.cos(d) * xSize);
+				z = (int)Math.round(Math.sin(d) * xSize);
 				
 				if (i == 0) {
 					firstX = previousX = x;
@@ -53,7 +37,6 @@ public class ShapeEquilateral2dGenerator implements IShapeGenerator {
 			}
 			GeometryUtils.line2D(y0, previousX, previousZ, firstX, firstZ, shapeable, fillmode);
 		}
-		
 		shapeable.shapeFinished();
 	}
 

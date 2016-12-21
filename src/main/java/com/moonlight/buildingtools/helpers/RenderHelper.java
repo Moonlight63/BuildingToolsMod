@@ -37,9 +37,6 @@ public class RenderHelper
 		World world = entityPlayer.worldObj;
 		if(world == null)
         	return;
-		//IBlockState state = world.getBlockState(blockpos);
-    	//state.getCollisionBoundingBox(world, blockpos);
-        //block.setBlockBoundsBasedOnState(entityPlayer.worldObj, blockpos);
 		
         float f1 = 0.02F;
 
@@ -47,18 +44,13 @@ public class RenderHelper
         double d1 = entityPlayer.lastTickPosY + (entityPlayer.posY - entityPlayer.lastTickPosY) * partialTicks;
         double d2 = entityPlayer.lastTickPosZ + (entityPlayer.posZ - entityPlayer.lastTickPosZ) * partialTicks;
         
-        //AxisAlignedBB box = state.getCollisionBoundingBox(entityPlayer.worldObj, blockpos).expand(f1, f1, f1).offset(-d0, -d1, -d2);
         AxisAlignedBB box = aabb.expand(f1, f1, f1).offset(-d0, -d1, -d2).offset(blockpos);
-        
         
         int h = worldrenderer.getVertexCount() * worldrenderer.getVertexFormat().getNextOffset();
         
         if(h > worldrenderer.getByteBuffer().capacity() - 1000){
         	return;
         }
-//        worldrenderer.checkAndGrow();
-//        if(worldrenderer.getByteBuffer().remaining()!=8388596)
-//        	System.out.println(i);
         
         worldrenderer.pos(box.minX, box.minY, box.minZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
         worldrenderer.pos(box.minX, box.maxY, box.minZ).color(colour.red, colour.green, colour.blue, colour.alpha).endVertex();
@@ -105,18 +97,6 @@ public class RenderHelper
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_BLEND);
 	}
-	
-	
-    // Similar to vanilla's "drawSelectionBox" with some customizability and without block checks
-    public static void renderBlockOutline(RenderGlobal context, EntityPlayer entityPlayer, BlockPos blockpos, RGBA colour, float lineWidth, float partialTicks){
-    	World world = entityPlayer.worldObj;
-		if(world == null)
-        	return;
-		//IBlockState state = world.getBlockState(blockpos);
-    	//state.getCollisionBoundingBox(world, blockpos);
-        
-        renderAABBOutline(context, entityPlayer, FULL_BLOCK_AABB.offset(blockpos), colour, lineWidth, partialTicks);
-    }
 
     public void renderSelectionOutline(EntityPlayer entityPlayer, BlockPos blockpos, BlockPos blockpos2, RGBA colour, float partialTicks){
     	int p1x = (blockpos.getX() <= blockpos2.getX()) ? blockpos.getX() : blockpos.getX() + 1;
@@ -136,9 +116,7 @@ public class RenderHelper
         int p2x = (blockpos2.getX() < blockpos.getX()) ? blockpos2.getX() : blockpos2.getX() + 1;
         int p2y = (blockpos2.getY() < blockpos.getY()) ? blockpos2.getY() : blockpos2.getY() + 1;
         int p2z = (blockpos2.getZ() < blockpos.getZ()) ? blockpos2.getZ() : blockpos2.getZ() + 1;
-        
-        //renderAABBOutline(context, entityPlayer, new AxisAlignedBB(new BlockPos(p1x, p1y, p1z), new BlockPos(p2x, p2y, p2z)), colour, lineWidth, partialTicks);
-        
+                
         Entity entity = Minecraft.getMinecraft().getRenderViewEntity();
         
         GlStateManager.pushMatrix();
@@ -198,28 +176,7 @@ public class RenderHelper
         GlStateManager.enableTexture2D();
         GlStateManager.popMatrix();
     }
-    
-    public static void renderAABBOutline(RenderGlobal context, EntityPlayer entityPlayer, AxisAlignedBB aabb, RGBA colour, float lineWidth, float partialTicks)
-    {
-        GL11.glEnable(GL11.GL_BLEND);
-        OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-        GL11.glColor4f(colour.red, colour.green, colour.blue, colour.alpha);
-        GL11.glLineWidth(lineWidth);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glDepthMask(true);
-        //GL11.glDisable(GL11.GL_DEPTH_TEST);
-        float f1 = 0.02F;
 
-        double d0 = entityPlayer.lastTickPosX + (entityPlayer.posX - entityPlayer.lastTickPosX) * partialTicks;
-        double d1 = entityPlayer.lastTickPosY + (entityPlayer.posY - entityPlayer.lastTickPosY) * partialTicks;
-        double d2 = entityPlayer.lastTickPosZ + (entityPlayer.posZ - entityPlayer.lastTickPosZ) * partialTicks;
-        RenderGlobal.drawSelectionBoundingBox(aabb.expand(f1, f1, f1).offset(-d0, -d1, -d2), colour.red, colour.green, colour.blue, colour.alpha);
-
-        GL11.glDepthMask(true);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_BLEND);
-    }
-    
     public static Vec3d translateToWorldCoords(Entity entity, float frame) {
         double interpPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * frame;
         double interpPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * frame;
@@ -227,7 +184,6 @@ public class RenderHelper
 
         //System.out.println(new Vec3(interpPosX, interpPosY, interpPosZ));
         return new Vec3d(-interpPosX, -interpPosY, -interpPosZ);
-        
         //GlStateManager.translate(-interpPosX, -interpPosY, -interpPosZ);
     }
     

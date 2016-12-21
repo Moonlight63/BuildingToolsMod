@@ -27,7 +27,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 
-public class ThreadAdvancedFill implements BlockChangeBase, IShapeable{
+public class ThreadFillReplace implements BlockChangeBase, IShapeable{
 	
 	protected StructureBoundingBox structureBoundingBox;
 	protected AxisAlignedBB entityDetectionBox;
@@ -52,7 +52,7 @@ public class ThreadAdvancedFill implements BlockChangeBase, IShapeable{
 	
 	
 	@SuppressWarnings("deprecation")
-	public ThreadAdvancedFill(BlockPos blockpos1, BlockPos blockpos2, World world, EntityPlayer player, NBTTagCompound nbtData){
+	public ThreadFillReplace(BlockPos blockpos1, BlockPos blockpos2, World world, EntityPlayer player, NBTTagCompound nbtData){
 		System.out.println("Thread Started");
 		if(blockpos1 != null && blockpos2 != null)
 			this.structureBoundingBox = new StructureBoundingBox(blockpos1, blockpos2);
@@ -148,7 +148,7 @@ public class ThreadAdvancedFill implements BlockChangeBase, IShapeable{
 	
 	public void checkAndAddQueue(){
 		BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(tempList, world));
-		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(tempList, world, true));
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(tempList, world));
 		tempList.clear();
 		count = 0;
 	}

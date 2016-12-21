@@ -189,14 +189,12 @@ public class ToolBuilding extends ToolBase{
     }
     
     public boolean checkVisualizer(BuildingShapeVisualizer vis, ItemStack stack){
-    	
     	return (
     			(visualizer.replaceblock != getNBT(stack).getBoolean("placeAll")) ||
     			(visualizer.x != getNBT(stack).getInteger("radiusX")) ||
     			(visualizer.z != getNBT(stack).getInteger("radiusZ")) ||
     			updateVisualizer
     			);
-    	
     }
 
 	public void GuiButtonPressed(int buttonID, int mouseButton,
@@ -239,8 +237,6 @@ public class ToolBuilding extends ToolBase{
 	public void ReadNBTCommand(NBTTagCompound nbtcommand){
 		System.out.println(nbtcommand);
 		Set<String> commandset = nbtcommand.getCompoundTag("Commands").getKeySet();
-//		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
-//		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
 		
 		for (String key : commandset) {
 			String command = nbtcommand.getCompoundTag("Commands").getString(key);

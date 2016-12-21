@@ -38,7 +38,6 @@ public class GUIErosionTool extends GuiScreen{
         this.initGui();
 		
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		
 	}
 	
 	@Override
@@ -79,25 +78,22 @@ public class GUIErosionTool extends GuiScreen{
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
-        //if (mouseButton == 0)
-        //{
-            for (int l = 0; l < this.buttonList.size(); ++l)
-            {
-                GuiButton guibutton = this.buttonList.get(l);
+        for (int l = 0; l < this.buttonList.size(); ++l)
+        {
+            GuiButton guibutton = this.buttonList.get(l);
 
-                if (guibutton.mousePressed(this.mc, mouseX, mouseY))
-                {
-                    ActionPerformedEvent.Pre event = new ActionPerformedEvent.Pre(this, guibutton, this.buttonList);
-                    if (MinecraftForge.EVENT_BUS.post(event))
-                        break;
-                    //this.selectedButton = event.button;
-                    event.getButton().playPressSound(this.mc.getSoundHandler());
-                    this.actionPerformed(event.getButton(), mouseButton);
-                    if (this.equals(this.mc.currentScreen))
-                        MinecraftForge.EVENT_BUS.post(new ActionPerformedEvent.Post(this, event.getButton(), this.buttonList));
-                }
+            if (guibutton.mousePressed(this.mc, mouseX, mouseY))
+            {
+                ActionPerformedEvent.Pre event = new ActionPerformedEvent.Pre(this, guibutton, this.buttonList);
+                if (MinecraftForge.EVENT_BUS.post(event))
+                    break;
+                //this.selectedButton = event.button;
+                event.getButton().playPressSound(this.mc.getSoundHandler());
+                this.actionPerformed(event.getButton(), mouseButton);
+                if (this.equals(this.mc.currentScreen))
+                    MinecraftForge.EVENT_BUS.post(new ActionPerformedEvent.Post(this, event.getButton(), this.buttonList));
             }
-        //}
+        }
     }
 	
 	//@Override
@@ -115,8 +111,6 @@ public class GUIErosionTool extends GuiScreen{
     	
     	PacketDispatcher.sendToServer(new SendNBTCommandPacket(commandPacket));
 		
-		
-		//PacketDispatcher.sendToServer(new SendGuiButtonPressedToItemMessage((byte) button.id, mouseButton, isCtrlKeyDown(), isAltKeyDown(), isShiftKeyDown()));
 	}
 	
 }

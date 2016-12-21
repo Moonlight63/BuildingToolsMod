@@ -68,7 +68,6 @@ public class GUISetLogMat extends GUIBlockSelection{
 	}
 	
 	
-	
 	/**
      * Called when the screen is unloaded. Used to disable keyboard repeat events
      */

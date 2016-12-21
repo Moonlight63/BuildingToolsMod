@@ -25,9 +25,7 @@ public class ItemLoader {
 	public static Item toolTapeMeasure;
 	public static Item toolErosion;
 	
-	
 	//public static Item testBucket = new ItemBucketTest();
-	
 	
 	//public static Item idAdvancer;
 	//public static ItemBow autobow;

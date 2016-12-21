@@ -13,7 +13,6 @@ import com.moonlight.buildingtools.utils.RGBA;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
@@ -56,15 +55,8 @@ public class ToolSelection extends ToolBase{
 	        stack.getTagCompound().setInteger("repeatMovmentY", 0);
 	        stack.getTagCompound().setInteger("repeatMovmentZ", 0);
 	        
-	        //ItemStack defaultFill = new ItemStack(Blocks.AIR);
 	        stack.getTagCompound().setTag("fillblocks", new NBTTagCompound());
-	        //stack.getTagCompound().getCompoundTag("fillblocks").setTag("0", new NBTTagCompound());
-	        //stack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag("0").setInteger("chance", 1);
-	        //stack.getTagCompound().getCompoundTag("fillblocks").getCompoundTag("0").setTag("blockstate", defaultFill.writeToNBT(new NBTTagCompound()));
-	        
-	        //ItemStack defaultReplace = new ItemStack(Blocks.AIR);
 	        stack.getTagCompound().setTag("replaceblocks", new NBTTagCompound());
-	        //stack.getTagCompound().getCompoundTag("replaceblocks").setTag("0", defaultReplace.writeToNBT(new NBTTagCompound()));
 	        
 	        stack.getTagCompound().setTag("bpos1", new NBTTagCompound());
 	        stack.getTagCompound().getCompoundTag("bpos1").setInteger("x", 0);
@@ -156,35 +148,28 @@ public class ToolSelection extends ToolBase{
 	}
 	
 	@Override
-    public boolean drawOutline(DrawBlockHighlightEvent event)
-    {
-		//BlockPos target = event.target.getBlockPos();
+    public boolean drawOutline(DrawBlockHighlightEvent event){
+		
 		if(renderer == null){
 	    	renderer = new RenderHelper();
 	    }
+		
 		if(targetBlock!=null){
 			
-	        //if (event.getPlayer().isSneaking())
-	        //{
-	        	renderer.startDraw();
-	        	renderer.addOutlineToBuffer(event.getPlayer(), targetBlock, RGBA.Green.setAlpha(150), event.getPartialTicks());
-	            renderer.finalizeDraw();
-	        	//RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), targetBlock, RGBA.Green.setAlpha(150), 2.0f, event.getPartialTicks());
-	        //    return true;
-	        //}
+        	renderer.startDraw();
+        	renderer.addOutlineToBuffer(event.getPlayer(), targetBlock, RGBA.Green.setAlpha(150), event.getPartialTicks());
+            renderer.finalizeDraw();
 	        
 	        if (getNBT(event.getPlayer().getHeldItemMainhand()).getCompoundTag("bpos1").getBoolean("set")){
 	        	renderer.startDraw();
 	        	renderer.addOutlineToBuffer(event.getPlayer(), getBlockPos1(event.getPlayer().getHeldItemMainhand()), RGBA.Blue.setAlpha(150), event.getPartialTicks());
 	        	renderer.finalizeDraw();
-	        	//RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), getBlockPos1(event.getPlayer().getHeldItemMainhand()), RGBA.Blue, 1.0f, event.getPartialTicks());
 	        }
 	        
 	        if (getNBT(event.getPlayer().getHeldItemMainhand()).getCompoundTag("bpos2").getBoolean("set")){
 	        	renderer.startDraw();
 	        	renderer.addOutlineToBuffer(event.getPlayer(), getBlockPos2(event.getPlayer().getHeldItemMainhand()), RGBA.Blue.setAlpha(150), event.getPartialTicks());
 	        	renderer.finalizeDraw();
-	        	//RenderHelper.renderBlockOutline(event.getContext(), event.getPlayer(), getBlockPos2(event.getPlayer().getHeldItemMainhand()), RGBA.Blue, 1.0f, event.getPartialTicks());
 	        }
 	        
 	        if (getNBT(event.getPlayer().getHeldItemMainhand()).getCompoundTag("bpos1").getBoolean("set") && getNBT(event.getPlayer().getHeldItemMainhand()).getCompoundTag("bpos2").getBoolean("set")){
@@ -200,8 +185,7 @@ public class ToolSelection extends ToolBase{
     }
 
 	
-	public void GuiButtonPressed(int buttonID, int mouseButton,
-			boolean isCtrlDown, boolean isAltDown, boolean isShiftDown) {
+	public void GuiButtonPressed(int buttonID, int mouseButton, boolean isCtrlDown, boolean isAltDown, boolean isShiftDown) {
 		
 		PlayerWrapper player = BuildingTools.getPlayerRegistry().getPlayer(currPlayer).get();
 		World world = DimensionManager.getWorld(Minecraft.getMinecraft().theWorld.provider.getDimension());
@@ -225,14 +209,13 @@ public class ToolSelection extends ToolBase{
 			player.addPending(new ThreadCopyToClipboard(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer));
 			
 		} else if (buttonID == GUISelectionTool.pasteclipboard.id) {
-			//PacketDispatcher.sendToServer(new SyncNBTDataMessage(getNBT(thisStack)));
 			player.addPending(new ThreadPasteClipboard(
 					world, currPlayer, targetBlock,
 					getNBT(thisStack).getInteger("Rotation"),
 					getNBT(thisStack).getBoolean("flipX"),
 					getNBT(thisStack).getBoolean("flipY"),
 					getNBT(thisStack).getBoolean("flipZ")));
-			if(getNBT(thisStack).getInteger("repeat") > 0){				
+			if(getNBT(thisStack).getInteger("repeat") > 0){
 				for(int i = 1; i < getNBT(thisStack).getInteger("repeat"); i++){
 					player.addPending(new ThreadPasteClipboard(
 					world, currPlayer, targetBlock.add(new BlockPos(
@@ -330,11 +313,6 @@ public class ToolSelection extends ToolBase{
 				System.out.println("Recieved Message Fill!");
 				System.out.println(nbtcommand.getCompoundTag("fillblocks"));
 				thisStack.getTagCompound().setTag("fillblocks", nbtcommand.getCompoundTag("fillblocks"));
-//				while(!getNBT(thisStack).getCompoundTag("fillblocks").equals(nbtcommand.getCompoundTag("fillblocks"))){
-//					thisStack.getTagCompound().setTag("fillblocks", nbtcommand.getCompoundTag("fillblocks"));
-//					PacketDispatcher.sendToServer(new SyncNBTDataMessage(thisStack.getTagCompound()));
-//					System.out.println("error set fill");
-//				}
 				System.out.println(getNBT(thisStack).getCompoundTag("fillblocks"));
 				System.out.println(getNBT(thisStack).getCompoundTag("replaceblocks"));
 				break;
@@ -342,11 +320,6 @@ public class ToolSelection extends ToolBase{
 				System.out.println("Recieved Message Replace!");
 				System.out.println(nbtcommand.getCompoundTag("replaceblocks"));
 				thisStack.getTagCompound().setTag("replaceblocks", nbtcommand.getCompoundTag("replaceblocks"));
-//				while(!getNBT(thisStack).getCompoundTag("replaceblocks").equals(nbtcommand.getCompoundTag("replaceblocks"))){
-//					thisStack.getTagCompound().setTag("replaceblocks", nbtcommand.getCompoundTag("replaceblocks"));
-//					PacketDispatcher.sendToServer(new SyncNBTDataMessage(thisStack.getTagCompound()));
-//					System.out.println("error set replace");
-//				}
 				break;
 			case "RunFillReplace":
 				System.out.println(thisStack.getTagCompound().getCompoundTag("fillblocks"));
@@ -358,7 +331,7 @@ public class ToolSelection extends ToolBase{
 				while (getNBT(thisStack).getCompoundTag("replaceblocks") != nbtcommand.getCompoundTag("replaceblocks")) {
 					System.out.println("error replace");
 				}
-				player.addPending(new ThreadAdvancedFill(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, thisStack.getTagCompound()));
+				player.addPending(new ThreadFillReplace(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, thisStack.getTagCompound()));
 				break;
 			case "SaveFile":
 				player.addPending(new ThreadSaveClipboard(currPlayer, nbtcommand.getString("File")));

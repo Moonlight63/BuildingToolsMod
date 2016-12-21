@@ -44,7 +44,6 @@ public class FilterShapeVisualizer implements IShapeable{
 	
 	public void RegenShape(IShapeGenerator generator, int x, int y, int z, int filterType){
 		
-		//System.out.println("Starting Regen");
 		this.filterType = filterType;
 		this.x = x;
 		this.y = y;
@@ -67,11 +66,10 @@ public class FilterShapeVisualizer implements IShapeable{
 		if(!finishedGenerating){
 			return null;
 		}
-		//System.out.println("Block Set");
+		
 		return blocks;
 		
 	}
-	
 	
 	@Override
 	public void setBlock(BlockPos bpos) {
@@ -80,14 +78,12 @@ public class FilterShapeVisualizer implements IShapeable{
 	
 	public BlockPos CalcOffset(BlockPos bpos, BlockPos targetBlock, EnumFacing targetFace, World world){
 		
-        if(filterType == 1)
-        {
+        if(filterType == 1){
             if(!world.isAirBlock(bpos.add(targetBlock)) && world.isAirBlock(bpos.add(targetBlock).up())){
                 return (new BlockPos(bpos.add(targetBlock)));
             }
         } 
-        else if(filterType == 2)
-        {
+        else if(filterType == 2){
             if(
             		!world.isAirBlock(bpos.add(targetBlock)) 
             		&& 
@@ -132,8 +128,7 @@ public class FilterShapeVisualizer implements IShapeable{
         		
         	}
         }
-        else if(filterType == 4)
-        {
+        else if(filterType == 4){
             if(world.getBlockState(bpos.add(targetBlock)) == Blocks.GRASS.getDefaultState() && world.isAirBlock(bpos.add(targetBlock).up())){
             	return (new BlockPos(bpos.add(targetBlock)));
             }

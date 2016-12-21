@@ -94,8 +94,6 @@ public class GUIEditTree extends GuiScreen implements IScrollButtonListener{
 	
 	@Override
 	public void initGui(){
-		//System.out.println("GUIEditTree.initGui()");
-		//System.out.println(this.data.foliage_shape.toString());
 		if(page == 0)
 			this.DrawMain();
 		else if(page == 1){
@@ -103,15 +101,13 @@ public class GUIEditTree extends GuiScreen implements IScrollButtonListener{
 		}
 		else if(page == 2){
 			this.EditFloatArray();
-		}
-				
+		}		
 	}
 	
 	public void DrawMain(){
 		this.buttonList.clear();
 		buttonsLeft.clear();
 		buttonsRight.clear();
-		//System.out.println("GUIEditTree.DrawMain()");
 		
 		treeheight.setValue(data.GetTreeHeight());
 		trunkRadBot.setValue(data.GetTrunkBottom());
@@ -240,11 +236,9 @@ public class GUIEditTree extends GuiScreen implements IScrollButtonListener{
 		scrollpane2.setClip(true);
 		
 		for(int i = 0; i < this.foliageShapes.get(currentFloatArray).size(); i++){
-			//System.out.println(this.foliageShapes.get(currentFloatArray).get(i));
 			GuiSlider slider = new GuiSlider(i, 0, 21*i, 170, 20, "Size: ", " Blocks", 1.0f, 64.0f, this.foliageShapes.get(currentFloatArray).get(i), true, true);
 			slider.precision = 3;
 			slider.updateSlider();
-			//slider.setValue(this.foliageShapes.get(currentFloatArray).get(i));
 			scrollpane2.addButton(slider);
 		}
 		
@@ -293,7 +287,6 @@ public class GUIEditTree extends GuiScreen implements IScrollButtonListener{
 			else{
 				data.clusterShape = 0;
 			}
-			//initGui();
 		}
 		
 		if(button == editTreeMats){
@@ -302,25 +295,21 @@ public class GUIEditTree extends GuiScreen implements IScrollButtonListener{
 		
 		if(button == editFoliageShape){
 			page = 1;
-			//initGui();
 		}
 		
 		if(button == addToPane){
 			if(page == 1){
 				System.out.println(this.foliageShapes.size());
 				this.foliageShapes.add(new ArrayList<Float>());
-				//initGui();
 			}
 			else if(page == 2){
 				this.foliageShapes.get(currentFloatArray).add(0.0f);
-				//initGui();
 			}
 		}
 		
 		if(button == done){
 			if(page == 1){
 				page = 0;
-				//initGui();
 			}
 			else if(page == 2){
 				for (GuiButton guiButton : scrollpane2.GetButtons()) {
@@ -328,7 +317,6 @@ public class GUIEditTree extends GuiScreen implements IScrollButtonListener{
 					this.foliageShapes.get(currentFloatArray).set((guiButton.id), n);
 				}
 				page = 1;
-				//initGui();
 			}
 			else if(page == 0){				
 				PacketDispatcher.sendToServer(new SendTreeDataToItem(data));
@@ -380,12 +368,10 @@ public class GUIEditTree extends GuiScreen implements IScrollButtonListener{
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
-        for (int l = 0; l < this.buttonList.size(); ++l)
-        {
+        for (int l = 0; l < this.buttonList.size(); ++l){
             GuiButton guibutton = this.buttonList.get(l);
 
-            if (guibutton.mousePressed(this.mc, mouseX, mouseY))
-            {
+            if (guibutton.mousePressed(this.mc, mouseX, mouseY)){
                 ActionPerformedEvent.Pre event = new ActionPerformedEvent.Pre(this, guibutton, this.buttonList);
                 if (MinecraftForge.EVENT_BUS.post(event))
                     break;
@@ -407,10 +393,8 @@ public class GUIEditTree extends GuiScreen implements IScrollButtonListener{
      * Called when a mouse button is released.  Args : mouseX, mouseY, releaseButton
      */
     @Override
-	protected void mouseReleased(int mouseX, int mouseY, int state)
-    {
-        if (this.selectedButton != null && state == 0)
-        {
+	protected void mouseReleased(int mouseX, int mouseY, int state){
+        if (this.selectedButton != null && state == 0) {
             this.selectedButton.mouseReleased(mouseX, mouseY);
             this.selectedButton = null;
         }

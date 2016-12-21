@@ -14,7 +14,6 @@ import com.moonlight.buildingtools.items.tools.undoTool.BlockInfoContainer;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
 import com.moonlight.buildingtools.utils.MiscUtils;
 
-import net.minecraft.block.BlockButton;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockHorizontal;
@@ -25,9 +24,6 @@ import net.minecraft.block.BlockTorch;
 import net.minecraft.block.BlockTrapDoor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityHanging;
-import net.minecraft.entity.item.EntityItemFrame;
-import net.minecraft.entity.item.EntityPainting;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -54,8 +50,6 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 	
 	protected Set<ChangeBlockToThis> firstPassSet = new CopyOnWriteArraySet<ChangeBlockToThis>();
 	protected Set<SecondPass> secondPassSet = new CopyOnWriteArraySet<SecondPass>();
-	protected Set<Entity> entitySet = new CopyOnWriteArraySet<Entity>();
-	protected Set<EntityPass> entityPassSet = new CopyOnWriteArraySet<EntityPass>();
 	
 	protected boolean currentlyCalculating = false;
 	
@@ -75,7 +69,6 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 		
 		PlayerWrapper playerwrap = BuildingTools.getPlayerRegistry().getPlayer(player).get();
 		selectionSet.addAll(playerwrap.currentCopyClipboard);
-		entitySet.addAll(playerwrap.currentClipboardEntities);
 		this.rotation = rot;
 		
 		this.flipX = flipx;
@@ -92,8 +85,6 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 		PlayerWrapper playerwrap = BuildingTools.getPlayerRegistry().getPlayer(player).get();
 		if(!playerwrap.undolist.isEmpty())
 			selectionSet = playerwrap.undolist.pollLast();
-		
-		entitySet.addAll(entities);
 		
 		this.copyToPos = new BlockPos(0, 0, 0);		
 		this.rotation = 0;
@@ -393,25 +384,10 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 				
 			}
 			
-			if(!entitySet.isEmpty()){
-				System.out.println("ENTITIES");
-				for(Entity e : entitySet){
-					if (e instanceof EntityHanging){
-						BlockPos entPos = getAdjustedBlockPos(((EntityHanging)e).getHangingPosition());
-						entityPassSet.add(new EntityPass(entPos.add(copyToPos), e, getAdjustedRotation(e.getHorizontalFacing()).getOpposite()));
-						entitySet.remove(e);
-					}
-					else{
-						entitySet.remove(e);
-					}
-				}
-			}
-			
 			count++;
 			
 			if(count > 4096){
 				checkAndAddQueue();
-    			//return;
     		}
 			
 		}
@@ -437,38 +413,11 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 			
 			if(count > 4096){
 				checkAndAddQueue();
-    			//return;
     		}
 			
 		}
 		if(!tempList.isEmpty())
 			checkAndAddQueue();
-		
-	}
-	
-	public void RunEntityPass(){
-		
-		currentlyCalculating = true;
-		for(EntityPass e : entityPassSet){
-			
-			while (world.isAirBlock(e.placmentPos.offset(e.posToCheckForAir))) {
-				
-			}
-			
-			if(!world.isAirBlock(e.placmentPos.offset(e.posToCheckForAir))){
-				if(e.entityToPlace instanceof EntityPainting){
-					world.spawnEntityInWorld(new EntityPainting(world, e.placmentPos, e.posToCheckForAir.getOpposite(), ((EntityPainting)e.entityToPlace).art.title));
-					entityPassSet.remove(e);
-				}
-				else if(e.entityToPlace instanceof EntityItemFrame){
-					EntityItemFrame itemframe = new EntityItemFrame(world, e.placmentPos, e.posToCheckForAir.getOpposite());
-					itemframe.setDisplayedItem(((EntityItemFrame)e.entityToPlace).getDisplayedItem());
-					world.spawnEntityInWorld(itemframe);
-					entityPassSet.remove(e);
-				}
-			}
-			
-		}
 		
 		canFinish = true;
 		
@@ -480,9 +429,7 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 		if(!currentlyCalculating){
 			currentlyCalculating = true;
 			RunFirstPass();
-			RunSecondPass();
-			RunEntityPass();
-			
+			RunSecondPass();			
 		}
 		
 		if(canFinish){
@@ -503,7 +450,7 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 		
 		if(saveUndo)
 			BuildingTools.getPlayerRegistry().getPlayer(entity).get().tempUndoList.addAll(MiscUtils.CalcUndoList(tempList, world));
-		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(tempList, world, true));
+		BuildingTools.getPlayerRegistry().getPlayer(entity).get().pendingChangeQueue.add(new BlockChangeQueue(tempList, world));
 		
 		tempList.clear();
 		count = 0;
@@ -515,17 +462,6 @@ public class ThreadPasteClipboard implements BlockChangeBase{
 		public final BlockPos posToCheckForAir;
 		public SecondPass(ChangeBlockToThis blockChange, BlockPos posForCheck){
 			this.blockChange = blockChange;
-			this.posToCheckForAir = posForCheck;
-		}
-	}
-	
-	public class EntityPass{
-		public final BlockPos placmentPos;
-		public final Entity entityToPlace;
-		public final EnumFacing posToCheckForAir;
-		public EntityPass(BlockPos posToPlace, Entity entityToPlace, EnumFacing posForCheck){
-			this.placmentPos = posToPlace;
-			this.entityToPlace = entityToPlace;
 			this.posToCheckForAir = posForCheck;
 		}
 	}
