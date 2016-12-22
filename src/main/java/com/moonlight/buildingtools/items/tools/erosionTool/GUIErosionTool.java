@@ -1,13 +1,17 @@
 package com.moonlight.buildingtools.items.tools.erosionTool;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendNBTCommandPacket;
+import com.moonlight.buildingtools.utils.KeyBindsHandler;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -24,6 +28,8 @@ public class GUIErosionTool extends GuiScreen{
 	public static final GuiButton presetButton = new GuiButton(1, 0, 0, 170, 20, "");
 	public static final GuiButton radius = new GuiButton(2, 0, 0, 170, 20, "");
 	
+	public static final GuiButton tutorialMode = 	new GuiButton(100, 20, 20, 20, 20, "?");
+	
 	public GUIErosionTool(EntityPlayer player){
 		this.player = player;
 	}
@@ -38,6 +44,51 @@ public class GUIErosionTool extends GuiScreen{
         this.initGui();
 		
 		super.drawScreen(mouseX, mouseY, partialTicks);
+		
+		if (tutorialMode.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"The Erosion Tool: A full and complete recreation of VoxelSniper’s Erode Brush.",
+				"",
+				"Buttons can be left clicked to move forward, or right clicked to move back.",
+				"",
+				"You can also change the tool's radius while outside of the menu by pressing the ",
+				"Increase/Decrease button (" + Keyboard.getKeyName(KeyBindsHandler.keyToolIncrease.getMinecraftKeyBinding().getKeyCode())
+				+ " / " + Keyboard.getKeyName(KeyBindsHandler.keyToolDecrease.getMinecraftKeyBinding().getKeyCode())
+				+ ") (See your options/controls menu).",
+				"",
+				"Melt Mode: Removes landscape by pushing it away from the user.",
+				"",
+				"Fill Mode: Fills edges of holes and pulls landscape out.",
+				"",
+				"Smooth Mode: Smooths the edges of the landscape.",
+				"",
+				"Lift Mode: Similar to the building tool, but in a round shape.",
+				"",
+				"Float Clean Mode: Cleans up floating blocks and fills air blocks that are completely surrounded."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (radius.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Changes the size of the brush.",
+				"",
+				"You can also use (" + Keyboard.getKeyName(KeyBindsHandler.keyToolIncrease.getMinecraftKeyBinding().getKeyCode())
+				+ " / " + Keyboard.getKeyName(KeyBindsHandler.keyToolDecrease.getMinecraftKeyBinding().getKeyCode())
+				+ ") (See your options/controls menu)."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (presetButton.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Changes the mode of the brush. See '?' for an explanation of each mode."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
 	}
 	
 	@Override
@@ -66,6 +117,8 @@ public class GUIErosionTool extends GuiScreen{
 		
 		buttons.add(presetButton);
 		buttons.add(radius);
+		
+		buttonList.add(tutorialMode);
 		
 		for (GuiButton btn : buttons){
 			btn.xPosition = this.width / 2 - (160 / 2);

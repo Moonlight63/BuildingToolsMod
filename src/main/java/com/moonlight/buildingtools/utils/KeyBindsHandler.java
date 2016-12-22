@@ -89,7 +89,7 @@ public class KeyBindsHandler
         }
     }
 
-    private static class ETKeyBinding
+    public static class ETKeyBinding
     {
         private KeyBinding keyBinding;
         private Key.KeyCode keyCode;

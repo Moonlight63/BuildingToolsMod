@@ -1,5 +1,7 @@
 package com.moonlight.buildingtools.items.tools.placetempblock;
 
+import java.util.List;
+
 import com.moonlight.buildingtools.BuildingTools;
 import com.moonlight.buildingtools.helpers.RenderHelper;
 import com.moonlight.buildingtools.helpers.loaders.BlockLoader;
@@ -23,6 +25,17 @@ public class ToolPlaceTempBlock extends ToolBase{
 		setCreativeTab(BuildingTools.tabBT);
 		setMaxStackSize(1);
 	}
+	
+	@Override
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean check)
+    {
+        super.addInformation(stack, player, list, check);
+
+        list.add("Right click to place a temp block at your current location.");
+        list.add("");
+        list.add("Shift + Right click to place a temp block at the block you are looking at.");
+        
+    }
 	
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)

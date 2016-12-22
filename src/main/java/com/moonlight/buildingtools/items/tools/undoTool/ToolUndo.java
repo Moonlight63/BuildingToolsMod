@@ -38,25 +38,10 @@ public class ToolUndo extends ToolBase{
     {
         super.addInformation(stack, player, list, check);
 
-        if (KeyHelper.isShiftDown())
-        {
-            if (stack.getTagCompound() == null)
-            {
-                //setDefaultTag(stack, 0);
-            }
-            
-            //ItemStack pb = ItemStack.loadItemStackFromNBT(getNBT(stack).getCompoundTag("sourceblock"));
-            //list.add(EnumChatFormatting.GREEN + /*LocalisationHelper.localiseString*/("info.exchanger.source " + pb.getDisplayName()) + EnumChatFormatting.RESET);
-
-            //list.add(EnumChatFormatting.GREEN + /*LocalisationHelper.localiseString*/("info.exchanger.radius " + this.getTargetRadius(stack)));
-
-            //list.add(EnumChatFormatting.AQUA + "" + EnumChatFormatting.ITALIC + /*LocalisationHelper.localiseString*/("info.exchanger.shift_to_select_source") + EnumChatFormatting.RESET);
-        } else
-        {
-            //list.add("Hold SHIFT for details");
-            
-            //list.add(player.getDisplayNameString());
-        }
+        list.add("Right click to undo your last change.");
+        list.add("");
+        list.add("Shift + Right click to view/load/save old undo sessions. (USE ONLY IN CASE OF EMERGENCY)");
+        
     }
 	
 	@Override

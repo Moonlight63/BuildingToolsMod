@@ -1,14 +1,18 @@
 package com.moonlight.buildingtools.items.tools.brushtool;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import com.moonlight.buildingtools.helpers.Shapes;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendNBTCommandPacket;
+import com.moonlight.buildingtools.utils.KeyBindsHandler;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -34,6 +38,9 @@ public class GUIToolBrush extends GuiScreen{
 	public static final GuiButton showBlockSel = 	new GuiButton(10, 0, 0, 20, 20, "");
 	public static final GuiButton showBlockRep = 	new GuiButton(11, 0, 0, 20, 20, "");
 	
+	public static final GuiButton tutorialMode = 	new GuiButton(100, 20, 20, 20, 20, "?");
+	
+	
 	public GUIToolBrush(EntityPlayer player){
 		this.player = player;
 	}
@@ -48,6 +55,138 @@ public class GUIToolBrush extends GuiScreen{
         this.initGui();
 		
 		super.drawScreen(mouseX, mouseY, partialTicks);
+		
+		//GL11.glScalef(0.90f, 0.90f, 1.0f);
+		
+		if (tutorialMode.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"This is the Brush Tool: Similar to brush tools from mods like VoxelSniper. ",
+				"This tool allows you to paint shapes of whatever block (or blocks) you want into your world.",
+				"",
+				"All buttons can be left clicked to move forward, or right clicked to move back.",
+				"",
+				"You can also change the tool's radius while outside of the menu by pressing the ",
+				"Increase/Decrease button (" + Keyboard.getKeyName(KeyBindsHandler.keyToolIncrease.getMinecraftKeyBinding().getKeyCode())
+				+ " / " + Keyboard.getKeyName(KeyBindsHandler.keyToolDecrease.getMinecraftKeyBinding().getKeyCode())
+				+ ") (See your options/controls menu).",
+				"",
+				"Set Block to Looking At: Will do exactly that. ",
+				"This provides a quick way to change your paint material without searching in the Paint Block Seletion Menu.",
+				"",
+				"The Set Block to Air button will change the tool to “Erase Mode”, ",
+				"which should be used with the replace block or replace all mode.",
+				"",
+				"Force falling blocks will make any blocks you paint act like sand and ",
+				"instantly fall to the ground. Great for terrain creation.",
+				"",
+				"Replace mode: If set to air, will only replace Air blocks or Temp Blocks(see temp block placer). ",
+				"When set to Block mode, will only replace any block of the same type you are painting onto. ",
+				"When set to All, will replace any block. ",
+				"When set to Custom, will only replace the blocks you specify in the Replace Block Selection Menu."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (generator.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Changes the shape of the brush."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (radiusx.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Changes the size of the brush in the X axis.",
+				"",
+				"You can also use (" + Keyboard.getKeyName(KeyBindsHandler.keyToolIncrease.getMinecraftKeyBinding().getKeyCode())
+				+ " / " + Keyboard.getKeyName(KeyBindsHandler.keyToolDecrease.getMinecraftKeyBinding().getKeyCode())
+				+ ") (See your options/controls menu)."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (radiusy.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Changes the size of the brush in the Y axis.",
+				"",
+				"You can also use (" + Keyboard.getKeyName(KeyBindsHandler.keyToolIncrease.getMinecraftKeyBinding().getKeyCode())
+				+ " / " + Keyboard.getKeyName(KeyBindsHandler.keyToolDecrease.getMinecraftKeyBinding().getKeyCode())
+				+ ") (See your options/controls menu)."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (radiusz.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Changes the size of the brush in the Z axis.",
+				"",
+				"You can also use (" + Keyboard.getKeyName(KeyBindsHandler.keyToolIncrease.getMinecraftKeyBinding().getKeyCode())
+				+ " / " + Keyboard.getKeyName(KeyBindsHandler.keyToolDecrease.getMinecraftKeyBinding().getKeyCode())
+				+ ") (See your options/controls menu)."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (setblock.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Sets your paint material to the same as the block you are currently looking at."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (setair.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Sets the paint material to air, used for erasing blocks."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (fill.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Sets if the shape is solid or hollow."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (fall.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Will cause any played blocks to fall like sand."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (replace.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Changes what blocks will be replaced."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (showBlockSel.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Paint Block Selection Menu."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (showBlockRep.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Replace Block Selection Menu."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
 		
 	}
 	
@@ -91,6 +230,8 @@ public class GUIToolBrush extends GuiScreen{
 		setblock.enabled = ((ToolBrush)player.getHeldItemMainhand().getItem()).targetBlock != null;
 		
 		showBlockRep.enabled = heldnbt.getInteger("replacemode") == 4;
+		
+		buttonList.add(tutorialMode);
 		
 		buttons.add(generator);
 		buttons.add(radiusx);

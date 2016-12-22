@@ -49,9 +49,8 @@ public class ToolBuilding extends ToolBase{
 	    return stack.getTagCompound();	    
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
-    public void addInformation(ItemStack stack, EntityPlayer player, @SuppressWarnings("rawtypes") List list, boolean check)
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean check)
     {
         super.addInformation(stack, player, list, check);
 

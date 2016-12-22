@@ -1,5 +1,6 @@
 package com.moonlight.buildingtools.items.tools.brushtool;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
@@ -10,6 +11,7 @@ import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendNBTCommandPacket;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -19,9 +21,47 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class GUISetPaintBlock extends GUIBlockSelection{
+	
+	public static final GuiButton tutorialMode = 	new GuiButton(100, 20, 20, 20, 20, "?");
 
 	public GUISetPaintBlock(EntityPlayer player) {
 		super(player);
+	}
+	
+	@Override
+	protected boolean showModeSwitchButton() {
+		return false;
+	}
+	
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float partialTicks){
+		super.drawScreen(mouseX, mouseY, partialTicks);
+		
+		if (tutorialMode.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"This is the Paint Block Selection Menu:",
+				"",
+				"Left click on a block to add it to your paint material to it.",
+				"Right click to remove a block from your paint material.",
+				"",
+				"Selecting multiple blocks allows each block you paint to be randomly chosen from your selection.",
+				"You can also add the same block more than once, which makes it more likly to be chosen when you paint.",
+				"For example: If you select Stone blocks 10 times, and Dirt blocks once, Stone will be painted 10 times more than dirt.",
+				"",
+				"Hold Shift to add or remove 10 blocks from your selection at a time.",
+				"",
+				"By default: Blocks of the same ID, but different MetaData are hidden.",
+				"The 'Meta Data' Button will show ALL blocks."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+	}
+	
+	@Override
+	public void initGui() {
+		super.initGui();
+		buttonList.add(tutorialMode);
 	}
 	
 	@Override
@@ -44,16 +84,16 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 		
 		this.keyOrButtonClicked = true;
 		
-        if (mode == 0){
-	        if(clickedButton == 0){
-        		if(stack == null)
-        			return;
-        		
-        		blockFillList.add(stack);
-        		this.mc.thePlayer.closeScreen();
-	        }
-        }
-        else{
+//        if (mode == 0){
+//	        if(clickedButton == 0){
+//        		if(stack == null)
+//        			return;
+//        		
+//        		blockFillList.add(stack);
+//        		this.mc.thePlayer.closeScreen();
+//	        }
+//        }
+//        else{
         	if(clickedButton == 0){
         		if(stack == null)
         			return;
@@ -86,7 +126,7 @@ public class GUISetPaintBlock extends GUIBlockSelection{
         			}	        			
         		}
         	}
-        }
+        //}
         
     }
 	

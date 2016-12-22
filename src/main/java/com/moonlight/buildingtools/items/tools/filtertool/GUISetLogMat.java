@@ -33,26 +33,24 @@ public class GUISetLogMat extends GUIBlockSelection{
 	protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, ClickType clickType){
 		this.keyOrButtonClicked = true;
         
-        if (mode == 0){
-	        if(clickedButton == 0){
-	        	if(clickType == ClickType.PICKUP){
-	        		if(slotIn.getStack() == null)
-	        			return;
-	        		if(blockFillList.isEmpty())
-	        			blockFillList.add(0, slotIn.getStack());
-	        		else
-	        			blockFillList.set(0, slotIn.getStack());
-	        	}
-	        	System.out.println(blockReplaceList);
-	        }
-	        else if(clickedButton == 1){
-	        	if(clickType == ClickType.PICKUP){
-	        		if(blockReplaceList.isEmpty())
-	        			blockReplaceList.add(0, slotIn.getStack());
-	        		else
-	        			blockReplaceList.set(0, slotIn.getStack());
-	        	}
-	        }
+        if(clickedButton == 0){
+        	if(clickType == ClickType.PICKUP){
+        		if(slotIn.getStack() == null)
+        			return;
+        		if(blockFillList.isEmpty())
+        			blockFillList.add(0, slotIn.getStack());
+        		else
+        			blockFillList.set(0, slotIn.getStack());
+        	}
+        	System.out.println(blockReplaceList);
+        }
+        else if(clickedButton == 1){
+        	if(clickType == ClickType.PICKUP){
+        		if(blockReplaceList.isEmpty())
+        			blockReplaceList.add(0, slotIn.getStack());
+        		else
+        			blockReplaceList.set(0, slotIn.getStack());
+        	}
         }
 
     }

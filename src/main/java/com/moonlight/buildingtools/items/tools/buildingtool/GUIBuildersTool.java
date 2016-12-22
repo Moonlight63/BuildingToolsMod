@@ -1,11 +1,16 @@
 package com.moonlight.buildingtools.items.tools.buildingtool;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
+
+import org.lwjgl.input.Keyboard;
 
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendNBTCommandPacket;
+import com.moonlight.buildingtools.utils.KeyBindsHandler;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -23,6 +28,7 @@ public class GUIBuildersTool extends GuiScreen{
 	public static final GuiButton radiusz = 		new GuiButton(2, 0, 0, 160, 20, "");
 	public static final GuiButton allblocks = 		new GuiButton(3, 0, 0, 160, 20, "");
 
+	public static final GuiButton tutorialMode = 	new GuiButton(100, 20, 20, 20, 20, "?");
 	
 	public GUIBuildersTool(EntityPlayer player){
 		this.player = player;
@@ -34,6 +40,56 @@ public class GUIBuildersTool extends GuiScreen{
 		this.buttonList.clear();
         this.initGui();
 		super.drawScreen(mouseX, mouseY, partialTicks);
+		
+		if (tutorialMode.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"The Building Tool: If you have ever used the builder's wand from Extra utilities,",
+				"it’s basically the same thing. It takes an area, and extrudes it out. ",
+				"",
+				"Buttons can be left clicked to move forward, or right clicked to move back.",
+				"",
+				"You can also change the tool's radius while outside of the menu by pressing the ",
+				"Increase/Decrease button (" + Keyboard.getKeyName(KeyBindsHandler.keyToolIncrease.getMinecraftKeyBinding().getKeyCode())
+				+ " / " + Keyboard.getKeyName(KeyBindsHandler.keyToolDecrease.getMinecraftKeyBinding().getKeyCode())
+				+ ") (See your options/controls menu).",
+				"",
+				"If Copy all blocks is false, only blocks of the same type that you are looking at will be extruded."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (radiusx.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Changes the size of the brush in the X axis.",
+				"",
+				"You can also use (" + Keyboard.getKeyName(KeyBindsHandler.keyToolIncrease.getMinecraftKeyBinding().getKeyCode())
+				+ " / " + Keyboard.getKeyName(KeyBindsHandler.keyToolDecrease.getMinecraftKeyBinding().getKeyCode())
+				+ ") (See your options/controls menu)."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (radiusz.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Changes the size of the brush in the Z axis.",
+				"",
+				"You can also use (" + Keyboard.getKeyName(KeyBindsHandler.keyToolIncrease.getMinecraftKeyBinding().getKeyCode())
+				+ " / " + Keyboard.getKeyName(KeyBindsHandler.keyToolDecrease.getMinecraftKeyBinding().getKeyCode())
+				+ ") (See your options/controls menu)."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (allblocks.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"If this is false, only blocks of the same type that you are looking at will be extruded."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
 	}
 	
 	@Override
@@ -63,6 +119,8 @@ public class GUIBuildersTool extends GuiScreen{
 		buttons.add(radiusx);
 		buttons.add(radiusz);
 		buttons.add(allblocks);
+		
+		buttonList.add(tutorialMode);
 		
 		for (GuiButton btn : buttons){
 			btn.xPosition = this.width / 2 - (160 / 2);

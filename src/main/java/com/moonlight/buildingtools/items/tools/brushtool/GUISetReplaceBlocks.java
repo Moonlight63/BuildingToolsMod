@@ -1,5 +1,6 @@
 package com.moonlight.buildingtools.items.tools.brushtool;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
@@ -10,6 +11,7 @@ import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendNBTCommandPacket;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -19,9 +21,36 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class GUISetReplaceBlocks extends GUIBlockSelection{
+	
+	public static final GuiButton tutorialMode = 	new GuiButton(100, 20, 20, 20, 20, "?");
 
 	public GUISetReplaceBlocks(EntityPlayer player) {
 		super(player);
+	}
+	
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float partialTicks){
+		super.drawScreen(mouseX, mouseY, partialTicks);
+		
+		if (tutorialMode.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"This is the Replace Block Selection Menu:",
+				"",
+				"Left click on a block to allow the brush to replace it with your paint material.",
+				"Right click to remove a block from your selection",
+				"",
+				"By default: Blocks of the same ID, but different MetaData are hidden.",
+				"The 'Meta Data' Button will show ALL blocks."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+	}
+	
+	@Override
+	public void initGui() {
+		super.initGui();
+		buttonList.add(tutorialMode);
 	}
 	
 	@Override
@@ -35,19 +64,17 @@ public class GUISetReplaceBlocks extends GUIBlockSelection{
 		
 		this.keyOrButtonClicked = true;
 		if(clickType == ClickType.PICKUP){
-	        if (mode == 0){
-		        if(clickedButton == 0){
-	        		if(stack == null)
-	        			return;
-	        		if(blockReplaceList.contains(stack)){
-	        			blockReplaceList.remove(stack);
-	        		}
-	        		else{
-	        			if(!blockFillList.contains(stack))
-	        				blockReplaceList.add(stack);
-	        		}
-	        	}
-	        }
+	        if(clickedButton == 0){
+        		if(stack == null)
+        			return;
+        		if(blockReplaceList.contains(stack)){
+        			blockReplaceList.remove(stack);
+        		}
+        		else{
+        			if(!blockFillList.contains(stack))
+        				blockReplaceList.add(stack);
+        		}
+        	}
         }
     }
 	
