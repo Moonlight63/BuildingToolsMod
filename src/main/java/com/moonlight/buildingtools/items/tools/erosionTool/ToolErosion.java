@@ -179,12 +179,9 @@ public class ToolErosion extends ToolBase{
 		for (String key : commandset) {
 			String command = nbtcommand.getCompoundTag("Commands").getString(key);
 			
-			switch (command) {
-			case "GetButton":
+			if (command.equals("GetButton")) {
 				GuiButtonPressed(nbtcommand.getInteger("ButtonID"), nbtcommand.getInteger("Mouse"), nbtcommand.getBoolean("CTRL"), nbtcommand.getBoolean("ALT"), nbtcommand.getBoolean("SHIFT"));
-				break;
-			default:
-				break;
+			} else {
 			}
 		}
 	}

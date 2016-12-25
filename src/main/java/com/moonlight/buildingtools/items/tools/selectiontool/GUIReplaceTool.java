@@ -1,5 +1,6 @@
 package com.moonlight.buildingtools.items.tools.selectiontool;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
@@ -10,6 +11,7 @@ import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendNBTCommandPacket;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -20,19 +22,47 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class GUIReplaceTool extends GUIBlockSelection{
 
+	public static final GuiButton tutorialMode = 	new GuiButton(100, 20, 20, 20, 20, "?");
+
 	public GUIReplaceTool(EntityPlayer player) {
 		super(player);
 	}
 	
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float partialTicks){
+		super.drawScreen(mouseX, mouseY, partialTicks);
+		
+		if (tutorialMode.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"This is the Fill and Replace Selection Menu:",
+				"",
+				"Left click on a block to add it to your fill material, or remove it as a replace material.",
+				"Right click to remove a block from your fill material, or add is as a replace material.",
+				"",
+				"Selecting multiple fill blocks will randomly fill your selected area with each of the chosen blocks.",
+				"You can also add the same block more than once, which makes it more likly to be chosen when you fill.",
+				"For example: If you select Stone blocks 10 times, and Dirt blocks once, Stone will be painted 10 times more than dirt.",
+				"",
+				"Adding blocks to your replace material will only replace the blocks that you have selected to be replaced.",
+				"If no blocks are selected as a replace material, then you will fill the entire selection box with your fill materials.",
+				"This is also great for removing a large area of blocks by setting your fill material to AIR. (The empty bucket at the bottom of the block list)",
+				"",
+				"Hold Shift to add or remove 10 blocks from your fill selection at a time.",
+				"",
+				"By default: Blocks of the same ID, but different MetaData are hidden.",
+				"The 'Meta Data' Button will show ALL blocks."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+	}
 	
-	/**
-     * Called when the mouse is clicked over a slot or outside the gui.
-     * Click Type 1 = Shift Click
-     * Click Type 2 = Hotbar key
-     * Click Type 3 = Pick Block
-     * Click Type 4 = Drop Key, Click outside of GUI
-     * Click Type 5 =
-     */
+	@Override
+	public void initGui() {
+		super.initGui();
+		buttonList.add(tutorialMode);
+	}
+	
 	@Override
 	protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, ClickType clickType){
 		this.keyOrButtonClicked = true;

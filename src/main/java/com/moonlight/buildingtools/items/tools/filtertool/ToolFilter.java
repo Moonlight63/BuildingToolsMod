@@ -400,18 +400,13 @@ public class ToolFilter extends ToolBase{
 		for (String key : commandset) {
 			String command = nbtcommand.getCompoundTag("Commands").getString(key);
 			
-			switch (command) {
-			case "GetButton":
+			if (command.equals("GetButton")) {
 				GuiButtonPressed(nbtcommand.getInteger("ButtonID"), nbtcommand.getInteger("Mouse"), nbtcommand.getBoolean("CTRL"), nbtcommand.getBoolean("ALT"), nbtcommand.getBoolean("SHIFT"));
-				break;
-			case "SetTreeMaterial":
+			} else if (command.equals("SetTreeMaterial")) {
 				ItemStack logItem = new ItemStack(nbtcommand.getCompoundTag("log"));
 				ItemStack leafItem = new ItemStack(nbtcommand.getCompoundTag("leaf"));
 				this.treeData.SetMatValues(Block.getBlockFromItem(logItem.getItem()).getStateFromMeta(logItem.getMetadata()), Block.getBlockFromItem(leafItem.getItem()).getStateFromMeta(leafItem.getMetadata()));
-				break;
-				
-			default:
-				break;
+			} else {
 			}
 		}
 	}

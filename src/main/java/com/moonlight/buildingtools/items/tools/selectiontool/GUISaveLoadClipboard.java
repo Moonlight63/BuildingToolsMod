@@ -39,6 +39,8 @@ public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonList
 	
 	public static List<String[]> hoverTextList = new ArrayList<String[]>();
 	
+	public static final GuiButton tutorialMode = 	new GuiButton(100, 20, 20, 20, 20, "?");
+	
 	
 	
 	public GUISaveLoadClipboard(EntityPlayer player){
@@ -74,6 +76,16 @@ public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonList
 					drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
 				}
 			}
+		}
+		
+		if (tutorialMode.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Here you can save or load a selection from file.",
+				"Use the text field to name and save a selection.",
+				"You can load an old save by simply clicking on it's button.",
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
 		}
 		
 	}
@@ -172,6 +184,7 @@ public class GUISaveLoadClipboard extends GuiScreen implements IScrollButtonList
         save.width = 170;
         save.height = 20;
         buttonList.add(save);
+        buttonList.add(tutorialMode);
 	}
 	
 	@Override

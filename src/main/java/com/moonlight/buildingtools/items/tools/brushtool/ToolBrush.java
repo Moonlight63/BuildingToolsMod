@@ -380,24 +380,19 @@ public class ToolBrush extends ToolBase{
 		for (String key : commandset) {
 			String command = nbtcommand.getCompoundTag("Commands").getString(key);
 			
-			switch (command) {
-			case "SetFill":
+			if (command.equals("SetFill")) {
 				System.out.println("Recieved Message!");
 				System.out.println(nbtcommand.getCompoundTag("fillblocks"));
 				thisStack.getTagCompound().setTag("fillblocks", nbtcommand.getCompoundTag("fillblocks"));
 				System.out.println(thisStack.getTagCompound().getCompoundTag("fillblocks"));
-				break;
-			case "SetReplace":
+			} else if (command.equals("SetReplace")) {
 				System.out.println("Recieved Message!");
 				System.out.println(nbtcommand.getCompoundTag("replaceblocks"));
 				thisStack.getTagCompound().setTag("replaceblocks", nbtcommand.getCompoundTag("replaceblocks"));
 				System.out.println(thisStack.getTagCompound().getCompoundTag("replaceblocks"));
-				break;
-			case "GetButton":
+			} else if (command.equals("GetButton")) {
 				GuiButtonPressed(nbtcommand.getInteger("ButtonID"), nbtcommand.getInteger("Mouse"), nbtcommand.getBoolean("CTRL"), nbtcommand.getBoolean("ALT"), nbtcommand.getBoolean("SHIFT"));
-				break;
-			default:
-				break;
+			} else {
 			}
 		}
 	}

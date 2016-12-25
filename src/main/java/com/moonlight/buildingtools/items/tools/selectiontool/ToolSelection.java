@@ -308,20 +308,17 @@ public class ToolSelection extends ToolBase{
 		for (String key : commandset) {
 			String command = nbtcommand.getCompoundTag("Commands").getString(key);
 			
-			switch (command) {
-			case "SetFill":
+			if (command.equals("SetFill")) {
 				System.out.println("Recieved Message Fill!");
 				System.out.println(nbtcommand.getCompoundTag("fillblocks"));
 				thisStack.getTagCompound().setTag("fillblocks", nbtcommand.getCompoundTag("fillblocks"));
 				System.out.println(getNBT(thisStack).getCompoundTag("fillblocks"));
 				System.out.println(getNBT(thisStack).getCompoundTag("replaceblocks"));
-				break;
-			case "SetReplace":
+			} else if (command.equals("SetReplace")) {
 				System.out.println("Recieved Message Replace!");
 				System.out.println(nbtcommand.getCompoundTag("replaceblocks"));
 				thisStack.getTagCompound().setTag("replaceblocks", nbtcommand.getCompoundTag("replaceblocks"));
-				break;
-			case "RunFillReplace":
+			} else if (command.equals("RunFillReplace")) {
 				System.out.println(thisStack.getTagCompound().getCompoundTag("fillblocks"));
 				System.out.println(thisStack.getTagCompound().getCompoundTag("replaceblocks"));
 				PacketDispatcher.sendToServer(new SyncNBTDataMessage(thisStack.getTagCompound()));
@@ -332,18 +329,13 @@ public class ToolSelection extends ToolBase{
 					System.out.println("error replace");
 				}
 				player.addPending(new ThreadFillReplace(getBlockPos1(thisStack), getBlockPos2(thisStack), world, currPlayer, thisStack.getTagCompound()));
-				break;
-			case "SaveFile":
+			} else if (command.equals("SaveFile")) {
 				player.addPending(new ThreadSaveClipboard(currPlayer, nbtcommand.getString("File")));
-				break;
-			case "LoadFile":
+			} else if (command.equals("LoadFile")) {
 				player.addPending(new ThreadLoadClipboard(currPlayer, nbtcommand.getString("File")));
-				break;
-			case "GetButton":
+			} else if (command.equals("GetButton")) {
 				GuiButtonPressed(nbtcommand.getInteger("ButtonID"), nbtcommand.getInteger("Mouse"), nbtcommand.getBoolean("CTRL"), nbtcommand.getBoolean("ALT"), nbtcommand.getBoolean("SHIFT"));
-				break;
-			default:
-				break;
+			} else {
 			}
 		}
 	}

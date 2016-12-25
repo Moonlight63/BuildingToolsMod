@@ -1,14 +1,18 @@
 package com.moonlight.buildingtools.items.tools.filtertool;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import com.moonlight.buildingtools.helpers.Shapes;
 import com.moonlight.buildingtools.network.packethandleing.PacketDispatcher;
 import com.moonlight.buildingtools.network.packethandleing.SendNBTCommandPacket;
+import com.moonlight.buildingtools.utils.KeyBindsHandler;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -30,7 +34,7 @@ public class GUIToolFilter extends GuiScreen{
 	public static final GuiButton treeType = 	new GuiButton(7, 0, 0, 160, 20, "Tree Type: ");
 	public static final GuiButton editTree = 	new GuiButton(8, 0, 0, 160, 20, "Edit Tree");
 	
-	
+	public static final GuiButton tutorialMode = 	new GuiButton(100, 20, 20, 20, 20, "?");
 	
 	public GUIToolFilter(EntityPlayer player){
 		this.player = player;
@@ -53,6 +57,28 @@ public class GUIToolFilter extends GuiScreen{
         this.initGui();
 		
 		super.drawScreen(mouseX, mouseY, partialTicks);
+		
+		if (tutorialMode.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"The Fillter Tool: This is an extreamly powerful tool that basically is a bunch of smaller tools in one.",
+				"",
+				"These tools include:",
+				"Topsoil: Filters the top most blocks in a raduis with grass. Adds dirt below the grass with a specified depth.",
+				"Clear Water: Replaces any water / lava blocks with air.",
+				"Clear Junk: Replaces non-solid or non-full blocks with air. (Plants, Foliage, Webs, Lilypads, Anything you wouldn't want in the way when sculpting terrain.)",
+				"BoneMeal-ify: Creates a bonemeal effect on top of grass in a large area. Grows tall grass and flowers and such.",
+				"Create Tree: Generates different structures like trees, ice spikes, big mushrooms, and a custom tree creator.",
+				"",
+				"Buttons can be left clicked to move forward, or right clicked to move back.",
+				"",
+				"You can also change the tool's radius while outside of the menu by pressing the ",
+				"Increase/Decrease button (" + Keyboard.getKeyName(KeyBindsHandler.keyToolIncrease.getMinecraftKeyBinding().getKeyCode())
+				+ " / " + Keyboard.getKeyName(KeyBindsHandler.keyToolDecrease.getMinecraftKeyBinding().getKeyCode())
+				+ ") (See your options/controls menu)."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
 		
 	}
 	
@@ -152,6 +178,8 @@ public class GUIToolFilter extends GuiScreen{
 		
 		buttonList.add(treeType);
 		buttonList.add(editTree);
+		
+		buttonList.add(tutorialMode);
 				
 	}
 	

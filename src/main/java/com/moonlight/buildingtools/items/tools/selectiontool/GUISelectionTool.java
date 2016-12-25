@@ -1,7 +1,9 @@
 package com.moonlight.buildingtools.items.tools.selectiontool;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
@@ -41,6 +43,8 @@ public class GUISelectionTool extends GuiScreen{
 	public static final GuiButton moveZ = 				new GuiButton(13, 0, 0, 160, 20, "Z Movment: ");
 	public static final GuiButton file = 				new GuiButton(14, 0, 0, 160, 20, "File Save / Load (WIP)");
 	
+	public static final GuiButton tutorialMode = 	new GuiButton(100, 20, 20, 20, 20, "?");
+	
 	
 	public GUISelectionTool(EntityPlayer player){
 		this.player = player;
@@ -55,6 +59,148 @@ public class GUISelectionTool extends GuiScreen{
         this.initGui();
 		
 		super.drawScreen(mouseX, mouseY, partialTicks);
+		
+		if (tutorialMode.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Using the Selection tool is similar to using WorldEdit.",
+				"You can select an area and copy everything in the selection.",
+				"You can then paste this selection elsewhere.",
+				"",
+				"Right click with this tool once to set your first posision.",
+				"Right click agian to set your second posision.",
+				"To unset your selection, open this menu and click the Clear Selection button.",
+				"",
+				"Buttons can be left clicked to move forward, or right clicked to move back.",
+				"",
+				"You can flip, rotate, and repeat the entire selection before pasting.",
+				"",
+				"The larger the selection, the longer it will take to copy, paste, or save / load.",
+				"",
+				"Copy selections are stored with the player, not the selection tool item.",
+				"However, a selection will not be saved through a server restart, unless you save it."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (copytoclipboard.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Copys your current selection.",
+				copytoclipboard.enabled ? "" :
+				"A selection must be made to activate this button."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (pasteclipboard.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Pastes your current selection.",
+				pasteclipboard.enabled ? "" :
+				"A selection must be copied to your clipboard to activate this button."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (rotate90.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Rotates the selection in your clipboard by: 0, 90, 180, and 270 degrees."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (flipx.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Flips the selection in your clipboard on the X axis."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (flipy.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Flips the selection in your clipboard on the Y axis."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (flipz.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Flips the selection in your clipboard on the Z axis."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (fillReplace.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Opens the Fill and Replace Selection Menu."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (clearselction.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Clears your currently set positions."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (selectpaste.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Creates a new selection from the block you are looking at,",
+				"that is the same size as your current clipboard selection.",
+				"",
+				"This is used to preview the size and location of your clipboard before pasting it."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (repeat.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Sets how many times to repeat a paste operation."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (moveX.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Sets how much to offset each repeated paste on the X axis."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (moveY.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Sets how much to offset each repeated paste on the Y axis."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (moveZ.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Sets how much to offset each repeated paste on the Z axis."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
+		
+		if (file.isMouseOver()) { // Tells you if the button is hovered by mouse
+			List<String> temp = Arrays.asList(new String[]{ 
+				"Opens the File Save / Load Window."
+			});
+			
+			drawHoveringText(temp, mouseX, mouseY, fontRendererObj);
+		}
 		
 	}
 	
@@ -132,6 +278,8 @@ public class GUISelectionTool extends GuiScreen{
 			btn.yPosition = ((this.height / 2) - 111) + (22 * (btn.id - buttonsLeft.size()));
 			buttonList.add(btn);
 		}
+		
+		buttonList.add(tutorialMode);
 		
 	}
 	

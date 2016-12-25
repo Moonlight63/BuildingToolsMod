@@ -9,7 +9,6 @@ import com.moonlight.buildingtools.items.tools.ToolBase;
 import com.moonlight.buildingtools.items.tools.selectiontool.ThreadPasteClipboard;
 import com.moonlight.buildingtools.network.GuiHandler;
 import com.moonlight.buildingtools.network.playerWrapper.PlayerWrapper;
-import com.moonlight.buildingtools.utils.KeyHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -99,12 +98,9 @@ public class ToolUndo extends ToolBase{
 		for (String key : commandset) {
 			String command = nbtcommand.getCompoundTag("Commands").getString(key);
 			
-			switch (command) {
-			case "LoadFile":
+			if (command.equals("LoadFile")) {
 				player.addPending(new ThreadLoadUndo(currPlayer, nbtcommand.getString("File")));
-				break;
-			default:
-				break;
+			} else {
 			}
 		}
 	}

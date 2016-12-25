@@ -41,7 +41,7 @@ public class GUISetPaintBlock extends GUIBlockSelection{
 			List<String> temp = Arrays.asList(new String[]{ 
 				"This is the Paint Block Selection Menu:",
 				"",
-				"Left click on a block to add it to your paint material to it.",
+				"Left click on a block to add it to your paint material.",
 				"Right click to remove a block from your paint material.",
 				"",
 				"Selecting multiple blocks allows each block you paint to be randomly chosen from your selection.",
